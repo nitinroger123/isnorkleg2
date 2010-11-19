@@ -13,5 +13,4 @@ public class Guidebook {
 	}
 	
 	private ArrayList<SeaCreature> creatures;
-
 }

@@ -79,7 +79,6 @@ public class JustKeepSwimming extends Player {
 		distance = d;
 		radius = r;
 		numrounds = n;
-
 	}
 
 }
