@@ -2,6 +2,7 @@ package isnork.g2;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -17,10 +18,9 @@ import isnork.sim.GameObject.Direction;
 
 public class JustKeepSwimming extends Player {
 
-	private Direction direction;
 	private SeaBoard board;
 	private Point2D whereIAm = null;
-	private Point2D boat = new Point2D.Double(0, 0);
+	private Point2D boat;
 	private int n = -1;
 	private int radius, distance, penalty, numrounds, roundsleft;
 	private double boatConstant = 1.2;
@@ -29,6 +29,7 @@ public class JustKeepSwimming extends Player {
 	
 
 	private Direction getNewDirection() {
+		Direction direction = null;
 		int r = random.nextInt(100);
 		if (r < 10 || direction == null) {
 			ArrayList<Direction> directions = Direction.allBut(direction);
@@ -48,7 +49,7 @@ public class JustKeepSwimming extends Player {
 			Set<Observation> playerLocations) {
 		
 		//Update variables
-		whereIAm = myPosition;
+		whereIAm.setLocation(myPosition.getX() + distance, myPosition.getY() + distance);
 		roundsleft --;
 		
 		for(Observation o: whatYouSee){
@@ -57,7 +58,7 @@ public class JustKeepSwimming extends Player {
 			board.remove(o.getId());
 			
 			//add to board
-			board.add(o);
+			board.add(o, numrounds - roundsleft);
 		}
 		
 		//return message to isnorq
@@ -73,21 +74,42 @@ public class JustKeepSwimming extends Player {
 		/*If condition to determine when to start heading back.  Boat constant gives you a few extra 
 		 rounds to head back, and dividing by three accounts for the fact that you can only make 
 		 diagonal moves once every three rounds*/ 
-		if(whereIAm.distance(boat) > (boatConstant * roundsleft)/3 ) 
-			return backtrack();
+		/*if(whereIAm.distance(boat) > (boatConstant * roundsleft)/3 ) 
+			return backtrack();*/
 		
-		else return avoidHarm();
+		if(board.getDangerInRadius(whereIAm, numrounds - roundsleft) == true)
+			return avoidHarm();
+		
+		//No dangerous animals around
+		else return randomMove();
 	}
 
 	/**Move to avoid harm*/
 	public Direction avoidHarm() {
-		Direction d = getNewDirection();
+		System.err.println("I am in danger");
+		ArrayList<Direction> pos = Direction.allBut(null);
+		ArrayList<Direction> danger = board.getDangerousDirections(whereIAm, numrounds - roundsleft);
+		System.err.println("Danger length: " + danger.size());
+		
+		for(int i = 0; i < danger.size(); i++){
+			if(pos.contains(danger.get(i)))
+				pos.remove(danger.get(i));
+		}
+		
+		Collections.shuffle(pos); //Randomize safe directions
+		int index = 0;
+		System.err.println("We have " + pos.size() + " safe moves");
+		Direction d = pos.get(index);
 
 		Point2D p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
 				+ d.dy);
 		while (Math.abs(p.getX()) > GameConfig.d
 				|| Math.abs(p.getY()) > GameConfig.d) {
-			d = getNewDirection();
+			index++;
+			if(index < pos.size())
+				d = pos.get(index);
+			else
+				d = getNewDirection();	
 			p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
 					+ d.dy);
 		}
@@ -95,7 +117,8 @@ public class JustKeepSwimming extends Player {
 	}
 	
 	/**Dumb move included with dumb player*/
-	public Direction dumbMove() {
+	public Direction randomMove() {
+		System.err.println("random move");
 		Direction d = getNewDirection();
 
 		Point2D p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
@@ -111,18 +134,7 @@ public class JustKeepSwimming extends Player {
 	
 	/**Move to get the player back to the boat*/
 	public Direction backtrack() {
-		log.trace("backtracking");
-		Direction d = getNewDirection();
-
-		Point2D p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
-				+ d.dy);
-		while (Math.abs(p.getX()) > GameConfig.d
-				|| Math.abs(p.getY()) > GameConfig.d) {
-			d = getNewDirection();
-			p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
-					+ d.dy);
-		}
-		return d;
+		return avoidHarm();
 	}
 
 	/** Initialize our variables when a new game is created */
@@ -133,17 +145,15 @@ public class JustKeepSwimming extends Player {
 		//Initialize game variables
 		log = Logger.getLogger(this.getClass());
 
-		board = new SeaBoard(2*d, 2*d);
-		
-		for (SeaLifePrototype s : seaLifePossibilites) {
-			board.add(new SeaCreature(s));
-		}
-
 		penalty = p;
 		distance = d;
 		radius = r;
 		numrounds = n;
 		roundsleft = n;
+		whereIAm = new Point2D.Double(distance, distance); //is this always true?
+		boat = new Point2D.Double(distance, distance);
+		board = new SeaBoard(2*d, 2*d, radius, seaLifePossibilites, distance);
+
 	}
 
 }

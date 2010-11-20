@@ -10,6 +10,17 @@ public class SeaCreature {
 		seaCreature = s;
 	} 
 	
+	public SeaCreature(SeaLifePrototype p, int id2) {
+		seaCreature = p;
+		this.id = id2;
+	}
+
+	public SeaCreature(SeaLifePrototype p, int id2, int r) {
+		seaCreature = p;
+		this.id = id2;
+		lastseen = r;
+	}
+
 	public int getNumTimesSeen() {
 		return numTimesSeen;
 	}
@@ -30,8 +41,18 @@ public class SeaCreature {
 		return id;
 	}
 	
+	public int getLastseen(){
+		return lastseen;
+	}
+	
+	public void setLastSeen(int r) {
+		lastseen = r;
+	}
+	
 	private int numTimesSeen= 0;
 	private SeaLifePrototype seaCreature;
 	private int id = 1000;
+	private int lastseen = 0;
+	
 
 }
