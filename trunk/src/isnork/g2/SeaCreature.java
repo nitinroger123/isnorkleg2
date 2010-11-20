@@ -1,5 +1,6 @@
 package isnork.g2;
 
+import isnork.sim.SeaLife;
 import isnork.sim.SeaLifePrototype;
 
 /**Represents a sea creature*/
@@ -17,7 +18,20 @@ public class SeaCreature {
 		this.numTimesSeen = numTimesSeen;
 	}
 	
+	public SeaLifePrototype returnCreture(){
+		return seaCreature;
+	}
+	
+	public void setId(int i){
+		id = i;
+	}
+	
+	public int getId(){
+		return id;
+	}
+	
 	private int numTimesSeen= 0;
 	private SeaLifePrototype seaCreature;
+	private int id = 1000;
 
 }
