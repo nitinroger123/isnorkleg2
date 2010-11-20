@@ -50,8 +50,8 @@ public class GameConfig {
 		this.randomSeed = randomSeed;
 		random = new Random(randomSeed);
 	}
-	public static int d = 20;
-	int num_divers = 20;
+	public static int d = 10;
+	int num_divers = 1;
 	long randomSeed = System.currentTimeMillis();
 	
 	public int getNumDivers() {

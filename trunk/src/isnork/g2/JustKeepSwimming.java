@@ -47,7 +47,7 @@ public class JustKeepSwimming extends Player {
 	public String tick(Point2D myPosition, Set<Observation> whatYouSee,
 			Set<iSnorkMessage> incomingMessages,
 			Set<Observation> playerLocations) {
-		
+				
 		//Update variables
 		whereIAm.setLocation(myPosition.getX() + distance, myPosition.getY() + distance);
 		roundsleft --;
@@ -92,8 +92,11 @@ public class JustKeepSwimming extends Player {
 		System.err.println("Danger length: " + danger.size());
 		
 		for(int i = 0; i < danger.size(); i++){
-			if(pos.contains(danger.get(i)))
+			System.err.println(danger.get(i));
+			if(pos.contains(danger.get(i))){
+				System.err.println("removing from pos");
 				pos.remove(danger.get(i));
+			}
 		}
 		
 		Collections.shuffle(pos); //Randomize safe directions
@@ -103,8 +106,8 @@ public class JustKeepSwimming extends Player {
 
 		Point2D p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
 				+ d.dy);
-		while (Math.abs(p.getX()) > GameConfig.d
-				|| Math.abs(p.getY()) > GameConfig.d) {
+		while (!(p.getX() >= 0 || p.getX() < 2*distance
+				|| p.getY() >= 0 || p.getY() < 2*distance)) {
 			index++;
 			if(index < pos.size())
 				d = pos.get(index);
@@ -118,13 +121,12 @@ public class JustKeepSwimming extends Player {
 	
 	/**Dumb move included with dumb player*/
 	public Direction randomMove() {
-		System.err.println("random move");
 		Direction d = getNewDirection();
 
 		Point2D p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
 				+ d.dy);
-		while (Math.abs(p.getX()) > GameConfig.d
-				|| Math.abs(p.getY()) > GameConfig.d) {
+		while (!(p.getX() >= 0 || p.getX() < 2*distance
+				|| p.getY() >= 0 || p.getY() < 2*distance)) {
 			d = getNewDirection();
 			p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
 					+ d.dy);
