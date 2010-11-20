@@ -18,7 +18,7 @@ import isnork.sim.GameObject.Direction;
 public class JustKeepSwimming extends Player {
 
 	private Direction direction;
-	private Guidebook guidebook;
+	private SeaBoard board;
 	private Point2D whereIAm = null;
 	private Point2D boat = new Point2D.Double(0, 0);
 	private int n = -1;
@@ -51,6 +51,16 @@ public class JustKeepSwimming extends Player {
 		whereIAm = myPosition;
 		roundsleft --;
 		
+		for(Observation o: whatYouSee){
+			
+			//remove from board
+			board.remove(o.getId());
+			
+			//add to board
+			board.add(o);
+		}
+		
+		//return message to isnorq
 		if (n % 10 == 0)
 			return "s";
 		else
@@ -60,12 +70,30 @@ public class JustKeepSwimming extends Player {
 	@Override
 	public Direction getMove() {
 		
-		if(whereIAm.distance(boat) < boatConstant * roundsleft)
+		/*If condition to determine when to start heading back.  Boat constant gives you a few extra 
+		 rounds to head back, and dividing by three accounts for the fact that you can only make 
+		 diagonal moves once every three rounds*/ 
+		if(whereIAm.distance(boat) > (boatConstant * roundsleft)/3 ) 
 			return backtrack();
 		
-		return dumbMove();
+		else return avoidHarm();
 	}
 
+	/**Move to avoid harm*/
+	public Direction avoidHarm() {
+		Direction d = getNewDirection();
+
+		Point2D p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
+				+ d.dy);
+		while (Math.abs(p.getX()) > GameConfig.d
+				|| Math.abs(p.getY()) > GameConfig.d) {
+			d = getNewDirection();
+			p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
+					+ d.dy);
+		}
+		return d;
+	}
+	
 	/**Dumb move included with dumb player*/
 	public Direction dumbMove() {
 		Direction d = getNewDirection();
@@ -105,9 +133,10 @@ public class JustKeepSwimming extends Player {
 		//Initialize game variables
 		log = Logger.getLogger(this.getClass());
 
-		guidebook = new Guidebook();
+		board = new SeaBoard(2*d, 2*d);
+		
 		for (SeaLifePrototype s : seaLifePossibilites) {
-			guidebook.add(new SeaCreature(s));
+			board.add(new SeaCreature(s));
 		}
 
 		penalty = p;
