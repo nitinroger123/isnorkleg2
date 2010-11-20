@@ -60,7 +60,7 @@ public class SeaBoard {
 		
 		for(int i = 0;i < board.length; i++){
 			for(int j = 0; j < board[0].length; j++){
-				if(board[i][j].getPoint().distance(me) <= radius){
+				if(insideRadius(me, board[i][j])){
 					if(board[i][j].hasDanger(r)){
 						return true;
 					}
@@ -76,7 +76,7 @@ public class SeaBoard {
 		
 		for(int i = 0;i < board.length; i++){
 			for(int j = 0; j < board[0].length; j++){
-				if(board[i][j].getPoint().distance(me) <= radius){
+				if(insideRadius(me, board[i][j])){
 					if(board[i][j].hasDanger(r)){
 						d.add(board[i][j].getDirection(me));
 					}
@@ -85,6 +85,15 @@ public class SeaBoard {
 		}
 		
 		return d;
+	}
+	
+	public boolean insideRadius(Point2D me, SeaSpace s){
+		
+		if(s.getCenter().distance(new Point2D.Double(me.getX() + .5, me.getY() + .5)) <= radius)
+			return true;
+		
+		else
+			return false;
 	}
 	
 	private ArrayList<SeaCreature> creatures;

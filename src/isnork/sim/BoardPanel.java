@@ -59,6 +59,7 @@ public final class BoardPanel extends JPanel implements MouseMotionListener {
 	private static HashMap<String, Image> icons = new HashMap<String, Image>();
 	private static int cacheWidth = 0;
 	Cursor curCursor;
+	private int distance = 10;
 
 	public BoardPanel() {
 		this.setPreferredSize(new Dimension(600, 600));
@@ -210,7 +211,7 @@ public final class BoardPanel extends JPanel implements MouseMotionListener {
 				floorAbs(MouseCoords.getY()));
 		if (engine != null)
 			engine.mouseChanged();
-		String tip = "<html><b>Location:</b> (" + MouseCoords.getX() + ", " + MouseCoords.getY() + ")"+(MouseCoords.getX()==MouseCoords.getY() && MouseCoords.getX()==0 ? " <b>BOAT</B>" : "")+"<br><b>Sealife here:</b><br>";
+		String tip = "<html><b>Location:</b> (" + (MouseCoords.getX() + distance) + ", " + (MouseCoords.getY() + distance) + ")"+(MouseCoords.getX()==MouseCoords.getY() && MouseCoords.getX()==0 ? " <b>BOAT</B>" : "")+"<br><b>Sealife here:</b><br>";
 		int n=0;
 		if(engine != null && engine.getConfig() != null)
 		{
