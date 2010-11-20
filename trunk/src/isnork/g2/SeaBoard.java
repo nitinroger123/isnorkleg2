@@ -13,9 +13,9 @@ public class SeaBoard {
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d){
 		creatures = new ArrayList<SeaCreature>();
 		prototypes = p;
-		board = new SeaSpace[x][y];
-		for(int i = 0; i < x; i++){
-			for(int j = 0; j < y; j++){
+		board = new SeaSpace[x + 1][y + 1];
+		for(int i = 0; i < x + 1; i++){
+			for(int j = 0; j < y + 1; j++){
 				board[i][j] = new SeaSpace(new Point2D.Double(i, j));
 			}
 		}
@@ -39,9 +39,9 @@ public class SeaBoard {
 				
 		Boolean found = false;
 		for(SeaCreature c: creatures){
-			if(c.getId() == o.getId()){
-				board[(int) o.getLocation().getX() + distance]
-				      [(int) o.getLocation().getY() + distance].addCreature(c, r);
+			if(c.getId() == o.getId()){			
+				board[(int) o.getLocation().getX() + distance ]
+				      [(int) o.getLocation().getY() + distance ].addCreature(c, r);
 				found = true;
 			}
 		}
