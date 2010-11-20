@@ -21,7 +21,6 @@ public class JustKeepSwimming extends Player {
 	private SeaBoard board;
 	private Point2D whereIAm = null;
 	private Point2D boat;
-	private int n = -1;
 	private int radius, distance, penalty, numrounds, roundsleft;
 	private double boatConstant = 1.2;
 	private Logger log;
@@ -62,10 +61,7 @@ public class JustKeepSwimming extends Player {
 		}
 		
 		//return message to isnorq
-		if (n % 10 == 0)
-			return "s";
-		else
-			return null;
+		return null;
 	}
 
 	@Override
@@ -121,6 +117,7 @@ public class JustKeepSwimming extends Player {
 	
 	/**Dumb move included with dumb player*/
 	public Direction randomMove() {
+		System.err.println("random move");
 		Direction d = getNewDirection();
 
 		Point2D p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
@@ -150,8 +147,8 @@ public class JustKeepSwimming extends Player {
 		penalty = p;
 		distance = d;
 		radius = r;
-		numrounds = n;
-		roundsleft = n;
+		numrounds = 480;
+		roundsleft = numrounds;
 		whereIAm = new Point2D.Double(distance, distance); //is this always true?
 		boat = new Point2D.Double(distance, distance);
 		board = new SeaBoard(2*d, 2*d, radius, seaLifePossibilites, distance);

@@ -83,18 +83,19 @@ public class SeaSpace {
 		if(me.getX() < location.getX() && me.getY() == location.getY())
 			return Direction.E;
 		
-		if(me.getX() > location.getX() && me.getY() > location.getY())
+		if(me.getX() < location.getX() && me.getY() > location.getY())
 			return Direction.NE;
 		
-		if(me.getX() < location.getX() && me.getY() > location.getY())
+		if(me.getX() < location.getX() && me.getY() < location.getY())
 			return Direction.SE;
 		
-		if(me.getX() > location.getX() && me.getY() < location.getY())
+		if(me.getX() > location.getX() && me.getY() > location.getY())
 			return Direction.NW;
 		
-		if(me.getX() < location.getX() && me.getY() < location.getY())
+		if(me.getX() > location.getX() && me.getY() < location.getY())
 			return Direction.SW;
 		
+		System.err.println("DIRECTION ERROR");
 		return null;
 	}
 	
