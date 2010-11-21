@@ -50,7 +50,9 @@ public class JustKeepSwimming extends Player {
 		//Update variables
 		whereIAm.setLocation(myPosition.getX() + distance, myPosition.getY() + distance);
 		roundsleft --;
+		System.err.println("Round: " + (numrounds - roundsleft));
 		
+		System.err.println("I see: " + whatYouSee.size() + " things.");
 		for(Observation o: whatYouSee){
 			
 			//remove from board
@@ -58,6 +60,8 @@ public class JustKeepSwimming extends Player {
 			
 			//add to board
 			board.add(o, numrounds - roundsleft);
+			if(o.isDangerous())
+				System.err.println("Dangerous");
 		}
 		
 		//return message to isnorq
@@ -73,7 +77,7 @@ public class JustKeepSwimming extends Player {
 		/*if(whereIAm.distance(boat) > (boatConstant * roundsleft)/3 ) 
 			return backtrack();*/
 		
-		if(board.getDangerInRadius(whereIAm, numrounds - roundsleft) == true)
+		if(board.getDangerInRadius(whereIAm, numrounds - roundsleft))
 			return avoidHarm();
 		
 		//No dangerous animals around
@@ -82,7 +86,7 @@ public class JustKeepSwimming extends Player {
 
 	/**Move to avoid harm*/
 	public Direction avoidHarm() {
-		System.err.println("I am in danger");
+		System.err.println("Move Avoiding Harm");
 		ArrayList<Direction> pos = Direction.allBut(null);
 		ArrayList<Direction> danger = board.getDangerousDirections(whereIAm, numrounds - roundsleft);
 		System.err.println("Danger length: " + danger.size());
@@ -98,7 +102,12 @@ public class JustKeepSwimming extends Player {
 		Collections.shuffle(pos); //Randomize safe directions
 		int index = 0;
 		System.err.println("We have " + pos.size() + " safe moves");
-		Direction d = pos.get(index);
+		Direction d = Direction.N; //Initialize
+		if(pos.size() == 0){//Need to make this better to find the best bad move
+			d = getNewDirection();
+		}
+		else
+			d = pos.get(index);
 
 		Point2D p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
 				+ d.dy);
