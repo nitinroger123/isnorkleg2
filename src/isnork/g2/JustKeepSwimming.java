@@ -22,9 +22,9 @@ public class JustKeepSwimming extends Player {
 	private Point2D whereIAm = null;
 	private Point2D boat;
 	private int radius, distance, penalty, numrounds, roundsleft;
-	private double boatConstant = 1.2;
+	private double boatConstant = .9;
 	private Logger log;
-
+	
 	
 
 	private Direction getNewDirection() {
@@ -73,9 +73,20 @@ public class JustKeepSwimming extends Player {
 		
 		/*If condition to determine when to start heading back.  Boat constant gives you a few extra 
 		 rounds to head back, and dividing by three accounts for the fact that you can only make 
-		 diagonal moves once every three rounds*/ 
-		/*if(whereIAm.distance(boat) > (boatConstant * roundsleft)/3 ) 
-			return backtrack();*/
+		 diagonal moves once every three rounds*/
+		
+		/*Desperate measure. Get back on the boat. This is to avoid the situation where the divers come 
+		  near the boat and then move away. I found this happening
+		   with our current condition*/ 
+		if(roundsleft<45)
+			return backtrack();
+		
+
+		/*If condition to determine when to start heading back.  Boat constant gives you a few extra 
+		 rounds to head back, and dividing by three accounts for the fact that you can only make 
+		 diagonal moves once every three rounds*/
+		if(whereIAm.distance(boat) > (boatConstant * roundsleft)/3 )
+			return backtrack();
 		
 		if(board.getDangerInRadius(whereIAm, numrounds - roundsleft))
 			return avoidHarm();
@@ -142,8 +153,35 @@ public class JustKeepSwimming extends Player {
 	
 	/**Move to get the player back to the boat*/
 	public Direction backtrack() {
-		return avoidHarm();
+		double currX = whereIAm.getX();
+		double currY = whereIAm.getY();
+		System.err.println("Current X: "+currX+" Current Y: "+currY);
+		if(currX==boat.getX()&&currY==boat.getY()){
+			//stay put, we have reached the boat
+			return null;
+		}
+		if(currX>boat.getX()&&currY>boat.getY()){
+			return Direction.NW;
+		}
+		if(currX<boat.getX()&&currY<boat.getY()){
+			return Direction.SE;
+		}
+		if(currX<boat.getX()&&currY>boat.getY()||currX<boat.getX()&&currY==boat.getY()){
+			return Direction.E;
+		}
+		if(currX>boat.getX()&&currY<boat.getY()||currX==boat.getX()&&currY<boat.getY()){
+			return Direction.S;
+		}
+		
+		if(currX==boat.getX()&&currY>boat.getY()){
+			return Direction.N;
+		}
+		if(currX>boat.getX()&&currY==boat.getY()){
+			return Direction.W;
+		}
+		return null;
 	}
+
 
 	/** Initialize our variables when a new game is created */
 	@Override
