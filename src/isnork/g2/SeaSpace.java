@@ -7,14 +7,14 @@ import java.util.ArrayList;
 
 /** Class to represent a space on the board */
 public class SeaSpace {
-	
-	public SeaSpace(Point2D p){
+
+	public SeaSpace(Point2D p) {
 		location = p;
 		center = new Point2D.Double(p.getX() + .5, p.getY() + .5);
 		occupiedby = new ArrayList<SeaCreature>();
 	}
 
-	public Point2D getPoint(){
+	public Point2D getPoint() {
 		return location;
 	}
 
@@ -45,7 +45,7 @@ public class SeaSpace {
 			if (s.getId() == id)
 				temp = s;
 		}
-		
+
 		occupiedby.remove(temp);
 	}
 
@@ -53,59 +53,77 @@ public class SeaSpace {
 		c.setLastSeen(r);
 		occupiedby.add(c);
 	}
-	
-	
-	/**Tells us if there is a dangerous creature on this space*/
-	public Boolean hasDanger(int r){		
-		for(SeaCreature o: occupiedby){
-			if(o.returnCreture().isDangerous() && o.getLastseen() == r){
-				System.err.println("Danger from: " + o.getId() + " on space: " + this.location);
+
+	/** Tells us if there is a dangerous creature on this space */
+	public Boolean hasDanger(int r) {
+		for (SeaCreature o : occupiedby) {
+			// if(o.returnCreture().isDangerous() && o.getLastseen() == r){
+			if (o.returnCreture().isDangerous() && o.getLastseen() == r) {
+				System.err.println("Danger from: " + o.getId() + " on space: "
+						+ this.location);
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	/**Returns the direction from the diver to the creature*/
-	public Direction getDirection(Point2D me) {
-		
-		System.err.println("i am on: " + me);
 
-		if(me.getX() == location.getX() && me.getY() > location.getY())
-			return Direction.N;
-		
-		if(me.getX() == location.getX() && me.getY() < location.getY())
-			return Direction.S;
-		
-		if(me.getX() > location.getX() && me.getY() == location.getY())
-			return Direction.W;
-		
-		if(me.getX() < location.getX() && me.getY() == location.getY())
-			return Direction.E;
-		
-		if(me.getX() < location.getX() && me.getY() > location.getY())
-			return Direction.NE;
-		
-		if(me.getX() < location.getX() && me.getY() < location.getY())
-			return Direction.SE;
-		
-		if(me.getX() > location.getX() && me.getY() > location.getY())
-			return Direction.NW;
-		
-		if(me.getX() > location.getX() && me.getY() < location.getY())
-			return Direction.SW;
-		
-		System.err.println("DIRECTION ERROR");
-		return null;
+	/** Returns the direction from the diver to the creature */
+	public ArrayList<Direction> getDirection(Point2D me) {
+
+		System.err.println("i am on: " + me);
+		ArrayList<Direction> temp = new ArrayList<Direction>();
+
+		if (me.getX() == location.getX() && me.getY() > location.getY()) {
+			temp.add(Direction.N);
+			temp.add(Direction.NE);
+			temp.add(Direction.NW);
+		}
+
+		if (me.getX() == location.getX() && me.getY() < location.getY()) {
+			temp.add(Direction.S);
+			temp.add(Direction.SE);
+			temp.add(Direction.SW);
+		}
+
+		if (me.getX() > location.getX() && me.getY() == location.getY()) {
+			temp.add(Direction.W);
+			temp.add(Direction.NW);
+			temp.add(Direction.SW);
+		}
+		if (me.getX() < location.getX() && me.getY() == location.getY()) {
+			temp.add(Direction.E);
+			temp.add(Direction.NE);
+			temp.add(Direction.SE);
+		}
+		if (me.getX() < location.getX() && me.getY() > location.getY()) {
+			temp.add(Direction.NE);
+			temp.add(Direction.N);
+			temp.add(Direction.E);
+		}
+		if (me.getX() < location.getX() && me.getY() < location.getY()) {
+			temp.add(Direction.SE);
+			temp.add(Direction.S);
+			temp.add(Direction.E);
+		}
+		if (me.getX() > location.getX() && me.getY() > location.getY()) {
+			temp.add(Direction.NW);
+			temp.add(Direction.N);
+			temp.add(Direction.W);
+		}
+		if (me.getX() > location.getX() && me.getY() < location.getY()) {
+			temp.add(Direction.SW);
+			temp.add(Direction.S);
+			temp.add(Direction.W);
+		}
+		return temp;
 	}
-	
-	public Point2D getCenter(){
+
+	public Point2D getCenter() {
 		return center;
 	}
 
 	private ArrayList<SeaCreature> occupiedby;
 	private int roundset;
 	private Point2D location, center;
-	
-	
+
 }

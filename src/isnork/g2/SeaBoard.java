@@ -61,6 +61,7 @@ public class SeaBoard {
 		for(int i = 0;i < board.length; i++){
 			for(int j = 0; j < board[0].length; j++){
 				if(insideRadius(me, board[i][j])){
+					//System.err.println(i + ", " + j + " is inside radius.");
 					if(board[i][j].hasDanger(r)){
 						return true;
 					}
@@ -78,7 +79,7 @@ public class SeaBoard {
 			for(int j = 0; j < board[0].length; j++){
 				if(insideRadius(me, board[i][j])){
 					if(board[i][j].hasDanger(r)){
-						d.add(board[i][j].getDirection(me));
+						d.addAll(board[i][j].getDirection(me));
 					}
 				}
 			}
