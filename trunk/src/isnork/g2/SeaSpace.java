@@ -5,6 +5,8 @@ import isnork.sim.GameObject.Direction;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 /** Class to represent a space on the board */
 public class SeaSpace {
 
@@ -12,6 +14,7 @@ public class SeaSpace {
 		location = p;
 		center = new Point2D.Double(p.getX() + .5, p.getY() + .5);
 		occupiedby = new ArrayList<SeaCreature>();
+		log = Logger.getLogger(this.getClass());
 	}
 
 	public Point2D getPoint() {
@@ -59,7 +62,7 @@ public class SeaSpace {
 		for (SeaCreature o : occupiedby) {
 			// if(o.returnCreture().isDangerous() && o.getLastseen() == r){
 			if (o.returnCreture().isDangerous() && o.getLastseen() == r) {
-				System.err.println("Danger from: " + o.getId() + " on space: "
+				log.trace("Danger from: " + o.getId() + " on space: "
 						+ this.location);
 				return true;
 			}
@@ -70,7 +73,7 @@ public class SeaSpace {
 	/** Returns the direction from the diver to the creature */
 	public ArrayList<Direction> getDirection(Point2D me) {
 
-		System.err.println("i am on: " + me);
+		log.trace("i am on: " + me);
 		ArrayList<Direction> temp = new ArrayList<Direction>();
 
 		if (me.getX() == location.getX() && me.getY() > location.getY()) {
@@ -125,5 +128,6 @@ public class SeaSpace {
 	private ArrayList<SeaCreature> occupiedby;
 	private int roundset;
 	private Point2D location, center;
+	private Logger log;
 
 }
