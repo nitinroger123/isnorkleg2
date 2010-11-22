@@ -1,0 +1,3 @@
+#Use this page to track our scores across boards
+
+||Board Name|| R || Num Divers || Total Score ||
