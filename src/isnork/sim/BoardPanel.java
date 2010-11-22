@@ -255,7 +255,6 @@ public final class BoardPanel extends JPanel implements MouseMotionListener {
 		repaint();
 	}
 
-	@Override
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
 
