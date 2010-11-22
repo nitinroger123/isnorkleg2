@@ -106,7 +106,7 @@ public final class BoardPanel extends JPanel implements MouseMotionListener {
 			g2D.setColor(visible_color);
 			double tx = Board.toScreenSpace(MouseCoords.getX() - engine.getConfig().getR());
 			double ty = Board.toScreenSpace(MouseCoords.getY()- engine.getConfig().getR() );
-			Rectangle2D visibleBox = new Rectangle2D.Double(tx,ty, Board.toScreenSpaceNoOffset(engine.getConfig().getR()*2 + 1) , Board.toScreenSpaceNoOffset(engine.getConfig().getR()*2 + 1) );
+			Ellipse2D visibleBox = new Ellipse2D.Double(tx,ty, Board.toScreenSpaceNoOffset(engine.getConfig().getR()*2 + 1) , Board.toScreenSpaceNoOffset(engine.getConfig().getR()*2 + 1) );
 			g2D.fill(visibleBox);
 		}
 		g2D.setColor(Color.black);
