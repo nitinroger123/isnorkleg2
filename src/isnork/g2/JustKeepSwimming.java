@@ -50,9 +50,9 @@ public class JustKeepSwimming extends Player {
 		//Update variables
 		whereIAm.setLocation(myPosition.getX() + distance, myPosition.getY() + distance);
 		roundsleft --;
-		System.err.println("Round: " + (numrounds - roundsleft));
+		log.trace("Round: " + (numrounds - roundsleft));
 		
-		System.err.println("I see: " + whatYouSee.size() + " things.");
+		log.trace("I see: " + whatYouSee.size() + " things.");
 		for(Observation o: whatYouSee){
 			
 			//remove from board
@@ -61,7 +61,7 @@ public class JustKeepSwimming extends Player {
 			//add to board
 			board.add(o, numrounds - roundsleft);
 			if(o.isDangerous())
-				System.err.println("Dangerous");
+				log.trace("Dangerous");
 		}
 		
 		//return message to isnorq
@@ -70,10 +70,6 @@ public class JustKeepSwimming extends Player {
 
 	@Override
 	public Direction getMove() {
-		
-		/*If condition to determine when to start heading back.  Boat constant gives you a few extra 
-		 rounds to head back, and dividing by three accounts for the fact that you can only make 
-		 diagonal moves once every three rounds*/
 		
 		/*Desperate measure. Get back on the boat. This is to avoid the situation where the divers come 
 		  near the boat and then move away. I found this happening
@@ -97,22 +93,22 @@ public class JustKeepSwimming extends Player {
 
 	/**Move to avoid harm*/
 	public Direction avoidHarm() {
-		System.err.println("Move Avoiding Harm");
+		log.trace("Move Avoiding Harm");
 		ArrayList<Direction> pos = Direction.allBut(null);
 		ArrayList<Direction> danger = board.getDangerousDirections(whereIAm, numrounds - roundsleft);
-		System.err.println("Danger length: " + danger.size());
+		log.trace("Danger length: " + danger.size());
 		
 		for(int i = 0; i < danger.size(); i++){
-			System.err.println(danger.get(i));
+			log.trace(danger.get(i));
 			if(pos.contains(danger.get(i))){
-				System.err.println("removing from pos");
+				log.trace("removing from pos");
 				pos.remove(danger.get(i));
 			}
 		}
 		
 		Collections.shuffle(pos); //Randomize safe directions
 		int index = 0;
-		System.err.println("We have " + pos.size() + " safe moves");
+		log.trace("We have " + pos.size() + " safe moves");
 		Direction d = Direction.N; //Initialize
 		if(pos.size() == 0){//Need to make this better to find the best bad move
 			d = getNewDirection();
@@ -137,7 +133,7 @@ public class JustKeepSwimming extends Player {
 	
 	/**Dumb move included with dumb player*/
 	public Direction randomMove() {
-		System.err.println("random move");
+		log.trace("random move");
 		Direction d = getNewDirection();
 
 		Point2D p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
@@ -155,7 +151,7 @@ public class JustKeepSwimming extends Player {
 	public Direction backtrack() {
 		double currX = whereIAm.getX();
 		double currY = whereIAm.getY();
-		System.err.println("Current X: "+currX+" Current Y: "+currY);
+		log.trace("Current X: "+currX+" Current Y: "+currY);
 		if(currX==boat.getX()&&currY==boat.getY()){
 			//stay put, we have reached the boat
 			return null;
