@@ -169,6 +169,8 @@ public final class GameEngine {
 						happy = s.happiness/4;
 						beenSeenByName.get(pl).put(s.getName(), 3);
 					}
+					if(pl.location.getX() == 0 && pl.location.getY() == 0 && s.dangerous)
+						happy = 0;
 					
 					beenSeenById.get(pl).add(s);
 					
@@ -179,6 +181,7 @@ public final class GameEngine {
 					o.happy=happy;
 					o.danger=s.dangerous;
 					observations.add(o);
+
 					pl.happiness += happy;
 					score += happy;
 				}
