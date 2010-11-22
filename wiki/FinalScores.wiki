@@ -1,3 +1,6 @@
 #Use this page to track our scores across boards
 
-||Board Name|| R || Num Divers || Total Score ||
+||Board Name|| Dimension || R || Num Divers || Total Score ||
+||isnorq|| 20 || 5 || 20 || 438 ||
+||isnorq|| 30 || 5 || 20 || 1048 ||
+||isnorq|| 20 || 9 || 20 || 1106||
