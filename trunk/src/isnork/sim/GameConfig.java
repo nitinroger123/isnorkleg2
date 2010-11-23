@@ -72,10 +72,11 @@ public class GameConfig {
 		return d;
 	}
 
-	int r = 3;
+	int r = Config.radius;
 
 	public void setR(int r) {
 		this.r = r;
+		Config.radius = r;
 	}
 
 	public int getR() {
