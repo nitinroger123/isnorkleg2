@@ -221,7 +221,12 @@ public final class BoardPanel extends JPanel implements MouseMotionListener {
 				floorAbs(MouseCoords.getY()));
 		if (engine != null)
 			engine.mouseChanged();
-		String tip = "<html><b>Location:</b> (" + MouseCoords.getX() + ", " + MouseCoords.getY() + ")"+(MouseCoords.getX()==MouseCoords.getY() && MouseCoords.getX()==0 ? " <b>BOAT</B>" : "")+"<br><b>Sealife here:</b><br>";
+		
+		String tip = "";
+		if(Config.useConfig)
+			tip = "<html><b>Location:</b> (" + (MouseCoords.getX() + Config.dimension) + ", " + (MouseCoords.getY() + Config.dimension) + ")"+(MouseCoords.getX()==MouseCoords.getY() && MouseCoords.getX()==0 ? " <b>BOAT</B>" : "")+"<br><b>Sealife here:</b><br>";
+		else
+			tip = "<html><b>Location:</b> (" + MouseCoords.getX() + ", " + MouseCoords.getY() + ")"+(MouseCoords.getX()==MouseCoords.getY() && MouseCoords.getX()==0 ? " <b>BOAT</B>" : "")+"<br><b>Sealife here:</b><br>";
 		int n=0;
 		if(engine != null && engine.getConfig() != null)
 		{

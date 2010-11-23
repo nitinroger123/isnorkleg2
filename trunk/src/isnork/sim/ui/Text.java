@@ -7,6 +7,7 @@
 package isnork.sim.ui;
 
 import isnork.sim.BoardPanel;
+import isnork.sim.Config;
 import isnork.sim.GameEngine;
 import isnork.sim.GameListener;
 
@@ -56,18 +57,23 @@ public final class Text implements GameListener
 	}
 	public void play()
 	{
+		int i = 0;
 		if(engine.setUpGame())
 			while(engine.step())
 			{
-				
+				i++;
 			}
+		
 	}
 	public void gameUpdated(GameUpdateType type)
 	{
 		switch (type)
 		{
 		case GAMEOVER:
-		
+			System.out.println(Config.boardName + ", " + Config.playerName + ", " + 
+					Config.radius + ", " + Config.dimension + ", " +
+					Config.divers + ", " + Config.rescuepenalty + ", " +
+					engine.getScores());
 			break;
 		case MOVEPROCESSED:
 			if(longMode)
@@ -75,7 +81,6 @@ public final class Text implements GameListener
 //			configPanel.updateScore(engine.getBoard().mosquitosCaught);
 			break;
 		case STARTING:
-			System.out.println("Time,Num_Caught,Num_Lights,Num_Mosquitos,Board_Name,Player_Name");
 			break;
 		case MOUSEMOVED:
 		default:

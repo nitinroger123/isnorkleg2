@@ -35,13 +35,14 @@ public class GameConfig {
 	int gameDelay = 500;
 	int number_of_rounds;
 	int current_round;
-	int penalty = 100;
+	int penalty = Config.rescuepenalty;
 	
 	public int getPenalty() {
 		return penalty;
 	}
 	public void setPenalty(int penalty) {
 		this.penalty = penalty;
+		Config.rescuepenalty = penalty;
 	}
 	public long getRandomSeed() {
 		return randomSeed;
@@ -50,8 +51,8 @@ public class GameConfig {
 		this.randomSeed = randomSeed;
 		random = new Random(randomSeed);
 	}
-	public static int d = 10;
-	int num_divers = 1;
+	public static int d = Config.dimension;
+	int num_divers = Config.divers;
 	long randomSeed = System.currentTimeMillis();
 	
 	public int getNumDivers() {
@@ -59,10 +60,12 @@ public class GameConfig {
 	}
 	public void setNumDivers(int num_divers) {
 		this.num_divers = num_divers;
+		Config.divers = num_divers;
 	}
 	public void setD(int d) {
 		
 		GameConfig.d = d;
+		Config.dimension = d;
 	}
 
 	public int getD() {
