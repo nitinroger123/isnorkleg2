@@ -1,0 +1,10 @@
+board, playerclass, radius, dimension, divers, rescuepenalty
+boards/happydanger.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -580
+boards/isnork.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -8
+boards/isnork2.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -1761
+boards/happydanger.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -1061
+boards/isnork.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -315
+boards/isnork2.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -2781
+boards/happydanger.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -2561
+boards/isnork.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -172
+boards/isnork2.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -2241

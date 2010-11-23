@@ -7,6 +7,7 @@
 package isnork.sim.ui;
 
 import isnork.sim.BoardPanel;
+import isnork.sim.Config;
 import isnork.sim.GameEngine;
 import isnork.sim.GameListener;
 
@@ -282,6 +283,7 @@ public final class GUI extends JFrame implements ActionListener, GameListener,
 					+ engine.getScores() + ", avg: "+((double)engine.getScores()/engine.getConfig().getNumDivers());
 			JOptionPane.showMessageDialog((Frame) c, s, "Game Over",
 					JOptionPane.INFORMATION_MESSAGE);
+			Config.totalScore = engine.getScores();
 
 			break;
 		case MOVEPROCESSED:

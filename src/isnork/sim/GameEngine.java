@@ -246,7 +246,7 @@ public final class GameEngine {
 	private final static void printUsage() {
 		System.err.println("Usage: GameEngine gui");
 		System.err
-				.println("Usage: GameEngine text <board> <playerclass> <num mosquitos> <num lights> <long|short> {max rounds}");
+				.println("Usage: GameEngine text <board> <playerclass> <radius> <dimension> <divers> <rescuepenalty>");
 	}
 
 	public void removeGameListener(GameListener l) {
@@ -262,33 +262,35 @@ public final class GameEngine {
 
 	public static final void main(String[] args) {
 		
-		if (args.length < 1 || args.length > 7) {
+		if (args.length != 1 && args.length != 7) {
 			printUsage();
 			System.exit(-1);
 		}
 		GameEngine engine = new GameEngine();
 		if (args[0].equalsIgnoreCase("text")) {
+			
 			// TextInterface ti = new TextInterface();
 			// ti.register(engine);
 			// ti.playGame();
-			if (args.length < 6) {
-				printUsage();
-				System.exit(-1);
-			}
 			Text t = new Text(engine);
-			engine.getConfig().setSelectedBoard(new File(args[2]));
+			engine.getConfig().setSelectedBoard(new File(args[1]));
+			Config.boardName = args[1];
+			
 			try {
 				engine.getConfig().setPlayerClass(
-						(Class<Player>) Class.forName(args[3]));
+						(Class<Player>) Class.forName(args[2]));
+				
+				Config.playerName = args[2];
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			if (args[6].equals("long"))
-				t.setLongMode(true);
-			if (args.length == 8)
-				engine.getConfig().setMaxRounds(Integer.valueOf(args[7]));
+			Config.radius = Integer.parseInt(args[3]);
+			Config.dimension = Integer.parseInt(args[4]);
+			Config.divers = Integer.parseInt(args[5]);
+			Config.rescuepenalty = Integer.parseInt(args[6]);
+			
 			t.play();
 			// throw new
 			// RuntimeException("Text interface not implemented. Sorry.");
