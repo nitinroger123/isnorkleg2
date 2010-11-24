@@ -17,9 +17,7 @@ public class iSnorkMessage {
 	}
 	public iSnorkMessage(String msg)
 	{
-		if(msg == null)
-	        this.msg = msg;
-		else if(msg.length() != 1)
+		if(msg.length() != 1)
 			System.err.println("iSnork Received invalid message: " + msg);
 		else if(msg.toLowerCase() != "a" &&
 				msg.toLowerCase() != "b" &&
