@@ -17,11 +17,9 @@ public class GeneralStrategy extends Strategy {
 	private Logger log = Logger.getLogger(this.getClass());
 	public int myId = 1;
 
-	public GeneralStrategy(int p, int d, int r,
-			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id) {
+	public GeneralStrategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id) {
 		super(p, d, r, seaLifePossibilites, rand);
 		myId = id;
-		// TODO Auto-generated constructor stub
 	}
 
 	private Direction getRandomDirection() {
