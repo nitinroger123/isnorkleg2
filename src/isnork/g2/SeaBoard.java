@@ -13,15 +13,11 @@ import isnork.sim.GameObject.Direction;
 /**Represents board*/
 public class SeaBoard {
 	
-	
-	
 	private ArrayList<SeaCreature> creatures;
 	private Set<SeaLifePrototype> prototypes;
-	private SeaSpace[][] board;
+	public SeaSpace[][] board;
 	private int radius, distance;
 	private ArrayList<Point2D> positionOfDangerousCreatures;
-
-	
 	
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d){
 		creatures = new ArrayList<SeaCreature>();
@@ -72,47 +68,8 @@ public class SeaBoard {
 		}
 	}
 	
-	/**Determines if there is a dangerous animal within the radius*/
-	/*public boolean getDangerInRadius(Point2D me){
-		
-		for(int i = 0;i < board.length; i++){
-			for(int j = 0; j < board[0].length; j++){
-				if(insideRadius(me, board[i][j])){
-					if(board[i][j].hasDanger()){
-						return true;
-					}
-				}
-			}
-		}
-		
-		return false;
-	}*/
-	
-
-	/*public ArrayList<Direction> getDangerousDirections(Point2D me) {
-=======
-	public ArrayList<Direction> getDangerousDirections(Point2D me) {
->>>>>>> .r35
-		ArrayList<Direction> d = new ArrayList<Direction>();
-		
-		for(int i = 0;i < board.length; i++){
-			for(int j = 0; j < board[0].length; j++){
-				if(insideRadius(me, board[i][j])){
-<<<<<<< .mine
-					if(board[i][j].hasDanger()){
-=======
-					if(board[i][j].hasDanger(radius)){
->>>>>>> .r35
-						d.addAll(board[i][j].getDirection(me));
-					}
-				}
-			}
-		}
-		
-		return d;
-	}*/
-	
-	/*method which checks of there are dangerous creatures around, and adds 
+	/*
+	 * Method which checks of there are dangerous creatures around, and adds 
 	 * their locations to a list
 	 * */
 	public boolean areThereDangerousCreatures(Set<Observation> whatISee){
@@ -181,17 +138,6 @@ public class SeaBoard {
 		}
 		return harmfulDirections;
 	}
-	
-	
-	/*public boolean insideRadius(Point2D me, SeaSpace s){
-		
-		if(s.getCenter().distance(new Point2D.Double(myX + .5, myY + .5)) <= radius)
-			return true;
-		
-		else
-			return false;
-	}*/
-	
 
 	 public boolean isValidMove(int x, int y, Direction d)
      {
