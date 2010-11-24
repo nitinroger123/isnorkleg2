@@ -58,10 +58,10 @@ public class SeaSpace {
 	}
 
 	/** Tells us if there is a dangerous creature on this space */
-	public Boolean hasDanger(int r) {
+	public Boolean hasDanger() {
 		for (SeaCreature o : occupiedby) {
 			// if(o.returnCreture().isDangerous() && o.getLastseen() == r){
-			if (o.returnCreture().isDangerous() && o.getLastseen() == r) {
+			if (o.returnCreture().isDangerous()) {
 				log.trace("Danger from: " + o.getId() + " on space: "
 						+ this.location);
 				return true;
@@ -72,7 +72,7 @@ public class SeaSpace {
 
 	/** Returns the direction from the diver to the creature */
 	public ArrayList<Direction> getDirection(Point2D me) {
-
+		
 		log.trace("i am on: " + me);
 		ArrayList<Direction> temp = new ArrayList<Direction>();
 

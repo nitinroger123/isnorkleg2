@@ -13,11 +13,15 @@ import isnork.sim.GameObject.Direction;
 /**Represents board*/
 public class SeaBoard {
 	
-	private Logger log = Logger.getLogger(this.getClass());
+	
+	
 	private ArrayList<SeaCreature> creatures;
 	private Set<SeaLifePrototype> prototypes;
 	private SeaSpace[][] board;
 	private int radius, distance;
+	private ArrayList<Point2D> positionOfDangerousCreatures;
+
+	
 	
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d){
 		creatures = new ArrayList<SeaCreature>();
@@ -31,6 +35,10 @@ public class SeaBoard {
 				
 		radius = r;
 		distance = d;
+	}
+	
+	public ArrayList<Point2D> getDangerousPositions(){
+		return positionOfDangerousCreatures;
 	}
 
 	public void remove(int id){
@@ -65,12 +73,12 @@ public class SeaBoard {
 	}
 	
 	/**Determines if there is a dangerous animal within the radius*/
-	public boolean getDangerInRadius(Point2D me, int r){
+	/*public boolean getDangerInRadius(Point2D me){
 		
 		for(int i = 0;i < board.length; i++){
 			for(int j = 0; j < board[0].length; j++){
 				if(insideRadius(me, board[i][j])){
-					if(board[i][j].hasDanger(r)){
+					if(board[i][j].hasDanger()){
 						return true;
 					}
 				}
@@ -78,15 +86,23 @@ public class SeaBoard {
 		}
 		
 		return false;
-	}
+	}*/
 	
+
+	/*public ArrayList<Direction> getDangerousDirections(Point2D me) {
+=======
 	public ArrayList<Direction> getDangerousDirections(Point2D me) {
+>>>>>>> .r35
 		ArrayList<Direction> d = new ArrayList<Direction>();
 		
 		for(int i = 0;i < board.length; i++){
 			for(int j = 0; j < board[0].length; j++){
 				if(insideRadius(me, board[i][j])){
+<<<<<<< .mine
+					if(board[i][j].hasDanger()){
+=======
 					if(board[i][j].hasDanger(radius)){
+>>>>>>> .r35
 						d.addAll(board[i][j].getDirection(me));
 					}
 				}
@@ -94,25 +110,100 @@ public class SeaBoard {
 		}
 		
 		return d;
+	}*/
+	
+	/*method which checks of there are dangerous creatures around, and adds 
+	 * their locations to a list
+	 * */
+	public boolean areThereDangerousCreatures(Set<Observation> whatISee){
+		boolean isThereDanger=false;
+		positionOfDangerousCreatures=new ArrayList<Point2D>();
+		positionOfDangerousCreatures.clear();
+		for(Observation creature: whatISee){
+			if(creature.isDangerous()){
+				positionOfDangerousCreatures.add(creature.getLocation());
+				isThereDanger= true;
+			}
+		}
+		return isThereDanger;
 	}
 	
-	public boolean insideRadius(Point2D me, SeaSpace s){
+	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation,Point2D boatLocation){
+		double myX=myLocation.getX();
+		double myY=myLocation.getY();
+		ArrayList<Direction> harmfulDirections=new ArrayList<Direction>();
+		for(Point2D p: positionOfDangerousCreatures){
+			double dangerX=p.getX()+boatLocation.getX();
+			double dangerY=p.getY()+boatLocation.getY();
+			if (myX == dangerX && myY > dangerY) {
+				harmfulDirections.add(Direction.N);
+				harmfulDirections.add(Direction.NE);
+				harmfulDirections.add(Direction.NW);
+			}
+
+			if (myX == dangerX && myY < dangerY) {
+				harmfulDirections.add(Direction.S);
+				harmfulDirections.add(Direction.SE);
+				harmfulDirections.add(Direction.SW);
+			}
+
+			if (myX > dangerX && myY == dangerY) {
+				harmfulDirections.add(Direction.W);
+				harmfulDirections.add(Direction.NW);
+				harmfulDirections.add(Direction.SW);
+			}
+			if (myX < dangerX && myY == dangerY) {
+				harmfulDirections.add(Direction.E);
+				harmfulDirections.add(Direction.NE);
+				harmfulDirections.add(Direction.SE);
+			}
+			if (myX < dangerX && myY > dangerY) {
+				harmfulDirections.add(Direction.NE);
+				harmfulDirections.add(Direction.N);
+				harmfulDirections.add(Direction.E);
+			}
+			if (myX < dangerX && myY < dangerY) {
+				harmfulDirections.add(Direction.SE);
+				harmfulDirections.add(Direction.S);
+				harmfulDirections.add(Direction.E);
+			}
+			if (myX > dangerX && myY > dangerY) {
+				harmfulDirections.add(Direction.NW);
+				harmfulDirections.add(Direction.N);
+				harmfulDirections.add(Direction.W);
+			}
+			if (myX > dangerX && myY < dangerY) {
+				harmfulDirections.add(Direction.SW);
+				harmfulDirections.add(Direction.S);
+				harmfulDirections.add(Direction.W);
+			}
+			
+		}
+		return harmfulDirections;
+	}
+	
+	
+	/*public boolean insideRadius(Point2D me, SeaSpace s){
 		
-		if(s.getCenter().distance(new Point2D.Double(me.getX() + .5, me.getY() + .5)) <= radius)
+		if(s.getCenter().distance(new Point2D.Double(myX + .5, myY + .5)) <= radius)
 			return true;
 		
 		else
 			return false;
-	}
+	}*/
 	
-	public boolean isValidMove(int x, int y, Direction d)
-	{
-		Point2D p = new Point2D.Double(x + d.dx, y + d.dy);
+
+	 public boolean isValidMove(int x, int y, Direction d)
+     {
+             Point2D p = new Point2D.Double(x + d.dx, y + d.dy);
+             
+             //check if the point is out of bounds
+             if(p.getX() < 0 || p.getX() > distance*2-1 || p.getY() < 0 || p.getY() > distance*2-1)
+                     return false;
+             
+             return true;
+     }       
+
+	
 		
-		//check if the point is out of bounds
-		if(p.getX() < 0 || p.getX() > distance*2-1 || p.getY() < 0 || p.getY() > distance*2-1)
-			return false;
-		
-		return true;
-	}	
 }

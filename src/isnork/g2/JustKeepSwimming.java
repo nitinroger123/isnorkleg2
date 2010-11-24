@@ -53,7 +53,7 @@ public class JustKeepSwimming extends Player {
 		log = Logger.getLogger(this.getClass());
 		
 		//initialize strategy
-		this.strategy = new GeneralStrategy(p, d, r, seaLifePossibilites, random);
+		this.strategy = new GeneralStrategy(p, d, r, seaLifePossibilites, random,this.getId());
 		
 		/*Pre processing that we should do:
 		 * Is dangerous -> Strategy that basically just leaves you off the board

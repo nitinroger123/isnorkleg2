@@ -6,6 +6,11 @@ import isnork.sim.SeaLifePrototype;
 /**Represents a sea creature!*/
 public class SeaCreature {
 	
+	private int numTimesSeen= 0;
+	private SeaLifePrototype seaCreature;
+	private int id = 1000;
+	private int lastseen = 0;
+	
 	public SeaCreature(SeaLifePrototype s){
 		seaCreature = s;
 	} 
@@ -49,10 +54,6 @@ public class SeaCreature {
 		lastseen = r;
 	}
 	
-	private int numTimesSeen= 0;
-	private SeaLifePrototype seaCreature;
-	private int id = 1000;
-	private int lastseen = 0;
-	
+
 
 }
