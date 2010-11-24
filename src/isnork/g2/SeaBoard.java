@@ -6,10 +6,18 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import isnork.sim.GameObject.Direction;
 
 /**Represents board*/
 public class SeaBoard {
+	
+	private Logger log = Logger.getLogger(this.getClass());
+	private ArrayList<SeaCreature> creatures;
+	private Set<SeaLifePrototype> prototypes;
+	private SeaSpace[][] board;
+	private int radius, distance;
 	
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d){
 		creatures = new ArrayList<SeaCreature>();
@@ -72,13 +80,13 @@ public class SeaBoard {
 		return false;
 	}
 	
-	public ArrayList<Direction> getDangerousDirections(Point2D me, int r) {
+	public ArrayList<Direction> getDangerousDirections(Point2D me) {
 		ArrayList<Direction> d = new ArrayList<Direction>();
 		
 		for(int i = 0;i < board.length; i++){
 			for(int j = 0; j < board[0].length; j++){
 				if(insideRadius(me, board[i][j])){
-					if(board[i][j].hasDanger(r)){
+					if(board[i][j].hasDanger(radius)){
 						d.addAll(board[i][j].getDirection(me));
 					}
 				}
@@ -97,9 +105,14 @@ public class SeaBoard {
 			return false;
 	}
 	
-	private ArrayList<SeaCreature> creatures;
-	private Set<SeaLifePrototype> prototypes;
-	private SeaSpace[][] board;
-	private int radius, distance;
-	
+	public boolean isValidMove(int x, int y, Direction d)
+	{
+		Point2D p = new Point2D.Double(x + d.dx, y + d.dy);
+		
+		//check if the point is out of bounds
+		if(p.getX() < 0 || p.getX() > distance*2-1 || p.getY() < 0 || p.getY() > distance*2-1)
+			return false;
+		
+		return true;
+	}	
 }
