@@ -1,6 +1,7 @@
 package isnork.g2.Strategy;
 
 import java.awt.geom.Point2D;
+import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
@@ -14,7 +15,10 @@ import isnork.sim.iSnorkMessage;
 import isnork.sim.GameObject.Direction;
 
 public abstract class Strategy {
-
+	
+	
+	protected Set<Observation> whatISee;
+	
 	public static ArrayList<Direction> directions = new ArrayList<Direction>();
 	
 	private Logger log = Logger.getLogger(this.getClass());
@@ -48,6 +52,7 @@ public abstract class Strategy {
 		boat = new Point2D.Double(distance, distance);
 		board = new SeaBoard(2*d, 2*d, radius, seaLifePossibilites, distance);
 		random = rand;
+		whatISee=new HashSet<Observation>();
 	}
 
 	public abstract Direction getMove();
@@ -57,6 +62,7 @@ public abstract class Strategy {
 			Set<Observation> playerLocations) {
 		
 		//Update variables
+		this.whatISee=whatYouSee;
 		whereIAm.setLocation(myPosition.getX() + distance, myPosition.getY() + distance);
 		roundsleft --;
 		log.trace("Round: " + (numrounds - roundsleft));
@@ -73,4 +79,5 @@ public abstract class Strategy {
 				log.trace("Dangerous");
 		}
 	}
+
 }
