@@ -61,7 +61,7 @@ public class SeaSpace {
 	public Boolean hasDanger() {
 		for (SeaCreature o : occupiedby) {
 			// if(o.returnCreture().isDangerous() && o.getLastseen() == r){
-			if (o.returnCreture().isDangerous()) {
+			if (o.returnCreature().isDangerous()) {
 				log.trace("Danger from: " + o.getId() + " on space: "
 						+ this.location);
 				return true;

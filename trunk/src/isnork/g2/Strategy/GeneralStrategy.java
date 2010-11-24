@@ -10,24 +10,27 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import isnork.g2.SeaBoard;
+import isnork.g2.SeaCreature;
 import isnork.sim.Observation;
 import isnork.sim.SeaLifePrototype;
 import isnork.sim.GameObject.Direction;
 
 public class GeneralStrategy extends Strategy {
 
-
 	private static final int TIME_TO_GO_HOME = 45;
-
 
 	private Logger log = Logger.getLogger(this.getClass());
 	public int myId = 1;
+	
+	public boolean goingOut = false;
+	public Direction outDirection = null;
 
-
-	public GeneralStrategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id) {
+	public GeneralStrategy(int p, int d, int r,
+			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id) {
 
 		super(p, d, r, seaLifePossibilites, rand);
 		myId = id;
+		outDirection = getRandomDirection();
 	}
 
 	private Direction getRandomDirection() {
@@ -36,188 +39,163 @@ public class GeneralStrategy extends Strategy {
 
 	@Override
 	public Direction getMove() {
-			
-		System.err.println("What I see now :");
-			for(Observation o: this.whatISee){
-				System.err.println(o.getName()+ " dangerous? :" +o.isDangerous());
-			}
 		
-			/*Desperate measure. Get back on the boat. This is to avoid the situation where the divers come 
-			  near the boat and then move away. I found this happening
-			   with our current condition*/ 
-			if(roundsleft<TIME_TO_GO_HOME)
-				return backtrack();
-			
-			/*If condition to determine when to start heading back.  Boat constant gives you a few extra 
-			 rounds to head back, and dividing by three accounts for the fact that you can only make 
-			 diagonal moves once every three rounds*/
-			if(whereIAm.distance(boat) > (boatConstant * roundsleft)/3 )
-				return backtrack();
-			
-			if(board.areThereDangerousCreatures(this.whatISee)){
-				System.err.println("Dangerous creatures around");
-				ArrayList<Point2D> positionOfDangerousCreatures=new ArrayList<Point2D>();
-				positionOfDangerousCreatures=board.getDangerousPositions();
-				System.err.println("Position of dangerous stuff");
-				for(Point2D p : positionOfDangerousCreatures){
-					System.err.println("X: "+p.getX()+" Y: "+p.getY());
-				}
-				ArrayList<Direction> directionsToAvoid=board.getHarmfulDirections(this.whereIAm, this.boat);
-				System.err.println("Directions to avoid ");
-				for(Direction d: directionsToAvoid){
-					System.err.println(d.name());
-				}
-				return runAwayFromDanger(directionsToAvoid);
-				
-			}
-			
-			//No dangerous animals around
-			else{ 
-				return randomMove();
-			}
-			
+		/*
+		 * Desperate measure. Get back on the boat. This is to avoid the
+		 * situation where the divers come near the boat and then move away. I
+		 * found this happening with our current condition
+		 */
+		if (roundsleft < TIME_TO_GO_HOME)
+			return backtrack();
 
-			}
+		/*
+		 * If condition to determine when to start heading back. Boat constant
+		 * gives you a few extra rounds to head back, and dividing by three
+		 * accounts for the fact that you can only make diagonal moves once
+		 * every three rounds
+		 */
+		if (whereIAm.distance(boat) > (boatConstant * roundsleft) / 3)
+			return backtrack();
 
-	
-	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections){
-		ArrayList<Direction> safeMoves=getOpposites(harmfulDirections); 
-		if(!safeMoves.isEmpty()){
-			for(Direction d: safeMoves){
-				System.err.println("Safe moves : "+d.name());
-			}
+		// If there are dangerous creatures nearby, run like hell.
+		if (board.areThereDangerousCreatures(this.whatISee)) 
+		{
+			ArrayList<Point2D> positionOfDangerousCreatures = new ArrayList<Point2D>();
+			positionOfDangerousCreatures = board.getDangerousPositions();
+			ArrayList<Direction> directionsToAvoid = board.getHarmfulDirections(this.whereIAm, this.boat);
+			return runAwayFromDanger(directionsToAvoid);
+		}
+
+		/**
+		 * NO DANGEROUS ANIMALS AROUND
+		 */
+		
+		//if he's at the boat, generate a random direction and go out
+		if(!goingOut && whereIAm.getX()==distance && whereIAm.getY()==distance)
+		{
+			goingOut = true;
+			outDirection = getRandomDirection();
+			return outDirection;
+		}
+		
+		//if he's going out and reached an edge, start coming back to the boat
+		if(goingOut && !(whereIAm.getX() < radius || whereIAm.getX() > board.board.length-radius ||
+				whereIAm.getY() < radius || whereIAm.getY() > board.board.length-radius))
+		{
+			return outDirection;
+		}
+		
+		//if he's going out and reached an edge, start coming back to the boat
+		if(goingOut && (whereIAm.getX() < radius || whereIAm.getX() > board.board.length-radius ||
+				whereIAm.getY() < radius || whereIAm.getY() > board.board.length-radius))
+		{
+			goingOut = false;
+			outDirection = null;
+			return backtrack();
+		}
+		
+		//if he's coming in and not at the boat, keep coming in
+		if(!goingOut && !(whereIAm.getX()==distance && whereIAm.getY()==distance))
+		{
+			return backtrack();
+		}
+
+		if(!goingOut)
+		{
+			return backtrack();
+		}
+		
+		if(outDirection == null)
+		{
+			outDirection = randomMove();
+			return outDirection;
+		}
+
+		return outDirection;
+	}
+
+	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections) {
+		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
+		if (!safeMoves.isEmpty()) 
+		{
 			Collections.shuffle(safeMoves);
-			for(Direction safe: safeMoves){
-				if(board.isValidMove((int)whereIAm.getX(), (int)whereIAm.getY(), safe)){
+			for (Direction safe : safeMoves) {
+				if (board.isValidMove((int) whereIAm.getX(), (int) whereIAm
+						.getY(), safe)) {
 					return safe;
 				}
-				
 			}
-			
 		}
-		/*We are surrounded*/
-		else{
-			System.err.println("Screwed we are surrounded!");
+		/* We are surrounded */
+		else {
 			return randomMove();
 		}
-		//We could not find a valid safe move
+		// We could not find a valid safe move
 		return randomMove();
 	}
-	
-	private ArrayList<Direction> getOpposites(ArrayList<Direction> harmfulDirections) {
-		ArrayList<Direction> opposites=new ArrayList<Direction>();
-		for(Direction d: harmfulDirections){
-			
-			if(d.equals(Direction.N)){
-				if(!harmfulDirections.contains(Direction.S)){
+
+	private ArrayList<Direction> getOpposites(
+			ArrayList<Direction> harmfulDirections) {
+		ArrayList<Direction> opposites = new ArrayList<Direction>();
+		for (Direction d : harmfulDirections) {
+
+			if (d.equals(Direction.N)) {
+				if (!harmfulDirections.contains(Direction.S)) {
 					opposites.add(Direction.S);
 				}
 			}
-			
-			if(d.equals(Direction.NW)){
-				if(!harmfulDirections.contains(Direction.SE)){
+
+			if (d.equals(Direction.NW)) {
+				if (!harmfulDirections.contains(Direction.SE)) {
 					opposites.add(Direction.SE);
 				}
 			}
-			
-			if(d.equals(Direction.NE)){
-				if(!harmfulDirections.contains(Direction.SW)){
+
+			if (d.equals(Direction.NE)) {
+				if (!harmfulDirections.contains(Direction.SW)) {
 					opposites.add(Direction.SW);
 				}
 			}
-			
-			if(d.equals(Direction.S)){
-				if(!harmfulDirections.contains(Direction.N)){
+
+			if (d.equals(Direction.S)) {
+				if (!harmfulDirections.contains(Direction.N)) {
 					opposites.add(Direction.N);
 				}
 			}
-			
-			if(d.equals(Direction.SE)){
-				if(!harmfulDirections.contains(Direction.NW)){
+
+			if (d.equals(Direction.SE)) {
+				if (!harmfulDirections.contains(Direction.NW)) {
 					opposites.add(Direction.NW);
 				}
 			}
-			
-			if(d.equals(Direction.SW)){
-				if(!harmfulDirections.contains(Direction.NE)){
+
+			if (d.equals(Direction.SW)) {
+				if (!harmfulDirections.contains(Direction.NE)) {
 					opposites.add(Direction.NE);
 				}
 			}
-			
-			if(d.equals(Direction.E)){
-				if(!harmfulDirections.contains(Direction.W)){
+
+			if (d.equals(Direction.E)) {
+				if (!harmfulDirections.contains(Direction.W)) {
 					opposites.add(Direction.W);
 				}
 			}
-			if(d.equals(Direction.W)){
-				if(!harmfulDirections.contains(Direction.E)){
+			if (d.equals(Direction.W)) {
+				if (!harmfulDirections.contains(Direction.E)) {
 					opposites.add(Direction.E);
 				}
 			}
-			
+
 		}
 		return opposites;
-	}
-
-	public Direction avoidHarm() {
-		/*log.trace("Move Avoiding Harm");
-		ArrayList<Direction> pos = Direction.allBut(null);
-<<<<<<< .mine
-		ArrayList<Direction> danger = board.getDangerousDirections(whereIAm);
-=======
-
-		// determine the dangerous directions based on where you currently are
-		ArrayList<Direction> danger = board.getDangerousDirections(whereIAm);
->>>>>>> .r33
-		log.trace("Danger length: " + danger.size());
-
-		for (int i = 0; i < danger.size(); i++) {
-			log.trace(danger.get(i));
-			// if the direction is dangerous OR the direction is an invalid
-			// move, remove the direction
-			if (pos.contains(danger.get(i))
-					|| board.isValidMove((int) whereIAm.getX(), (int) whereIAm
-							.getY(), danger.get(i))) {
-				log.trace("removing from pos");
-				pos.remove(danger.get(i));
-			}
-		}
-
-		Collections.shuffle(pos); // Randomize safe directions
-		int index = 0;
-		log.trace("We have " + pos.size() + " safe moves");
-		Direction d = Direction.N; // Initialize
-		if (pos.size() == 0) {// Need to make this better to find the best bad
-			// move
-			d = randomMove();
-		} 
-		else
-		{
-			d = pos.get(index);
-		}
-
-		Point2D p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
-				+ d.dy);
-		while (p.getX() < 0 || p.getX() > distance * 2 - 1 || p.getY() < 0
-				|| p.getY() > distance * 2 - 1) {
-			index++;
-			if (index < pos.size())
-				d = pos.get(index);
-			else
-				d = randomMove();
-			p = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY()
-					+ d.dy);
-		}*/
-		//return d;
-		return randomMove();
 	}
 
 	/** Dumb move included with dumb player */
 	public Direction randomMove() {
 		log.trace("random move");
 		Direction d = getRandomDirection();
-		while (!board.isValidMove((int) whereIAm.getX(), (int) whereIAm.getY(),
-				d)) {
+		while (!board.isValidMove((int) whereIAm.getX(), (int) whereIAm.getY(), d)) 
+		{
 			d = getRandomDirection();
 		}
 		return d;
@@ -232,12 +210,22 @@ public class GeneralStrategy extends Strategy {
 			// stay put, we have reached the boat
 			return null;
 		}
+		
+		//in a quadrant
 		if (currX > boat.getX() && currY > boat.getY()) {
 			return Direction.NW;
 		}
 		if (currX < boat.getX() && currY < boat.getY()) {
 			return Direction.SE;
 		}
+		if (currX < boat.getX() && currY > boat.getY()) {
+			return Direction.NE;
+		}
+		if (currX > boat.getX() && currY < boat.getY()) {
+			return Direction.SW;
+		}	
+		
+		//on a line
 		if (currX < boat.getX() && currY > boat.getY() || currX < boat.getX()
 				&& currY == boat.getY()) {
 			return Direction.E;
@@ -254,5 +242,26 @@ public class GeneralStrategy extends Strategy {
 			return Direction.W;
 		}
 		return null;
+	}
+
+	/**
+	 * Rate the creatures using several heuristics.
+	 * These are to determine the ranking at which creatures will be placed
+	 * on the lettering of the iSnork. Creatures are ranked by their happiness,
+	 * their frequency, and the amount of the board you can see.
+	 */
+	public void rateCreatures(Set<SeaLifePrototype> seaLifePossibilities)
+	{
+		//calculate each of the sea creature's ranking value
+		for(SeaCreature sc : creatureRating)
+		{
+			//happiness x avg frequency
+			double ranking = sc.returnCreature().getHappiness() * 
+				(sc.returnCreature().getMinCount() + sc.returnCreature().getMaxCount()) / 2.0;
+			sc.ranking = ranking;
+		}
+		
+		Collections.sort(creatureRating);
+		Collections.reverse(creatureRating);
 	}
 }
