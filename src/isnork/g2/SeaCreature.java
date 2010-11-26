@@ -115,7 +115,6 @@ public class SeaCreature implements Comparable<SeaCreature> {
 		return false;
 	}
 
-	@Override
 	public int compareTo(SeaCreature arg0) {
 		if(this.ranking > arg0.ranking)
 			return 1;

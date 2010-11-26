@@ -177,6 +177,7 @@ public final class GameEngine {
 					Observation o = new Observation();
 					o.id=s.getId();
 					o.name=s.getName();
+					o.dir=s.getDirection();
 					o.location=(Point2D) s.getLocation().clone();
 					o.happy=happy;
 					o.danger=s.dangerous;
