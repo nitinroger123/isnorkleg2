@@ -1,30 +1,39 @@
 package isnork.sim;
 
+import isnork.sim.GameObject.Direction;
+
 import java.awt.geom.Point2D;
 
 public class Observation {
 	Point2D location;
 	int id;
 	String name;
-	public Point2D getLocation(){
+	Direction dir;
+
+	public Point2D getLocation() {
 		return location;
 	}
-	public int getId()
-	{
+
+	public int getId() {
 		return id;
 	}
-	public String getName()
-	{
+
+	public String getName() {
 		return name;
 	}
-	public boolean isDangerous()
-	{
+
+	public boolean isDangerous() {
 		return danger;
 	}
-	public int happiness()
-	{
+
+	public int happiness() {
 		return happy;
 	}
+
+	public Direction getDirection() {
+		return dir;
+	}
+
 	int happy;
 	boolean danger;
 }
