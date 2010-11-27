@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import isnork.g2.SeaBoard;
 import isnork.g2.SeaCreature;
 import isnork.sim.Observation;
+import isnork.sim.Player;
 import isnork.sim.SeaLifePrototype;
 import isnork.sim.iSnorkMessage;
 import isnork.sim.GameObject.Direction;
@@ -21,7 +22,7 @@ public abstract class Strategy {
 	
 	protected Set<Observation> whatISee;
 	
-	public static ArrayList<Direction> directions = new ArrayList<Direction>();
+	public static ArrayList<Direction> directions = Direction.allBut(null);
 	
 	private Logger log = Logger.getLogger(this.getClass());
 	protected SeaBoard board;
@@ -38,18 +39,6 @@ public abstract class Strategy {
 	public int avgPossibleHappiness = 0;
 	public int maxPossibleHappiness = 0;
 	public int myHappiness = 0;
-	
-	static
-	{
-		directions.add(Direction.N);
-		directions.add(Direction.NE);
-		directions.add(Direction.E);
-		directions.add(Direction.SE);
-		directions.add(Direction.S);
-		directions.add(Direction.SW);
-		directions.add(Direction.W);
-		directions.add(Direction.NW);
-	};
 	
 	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand){
 		penalty = p;
