@@ -1,6 +1,6 @@
 #Use this page to track our scores across boards
 
-||Board Name|| Dimension || R || Num Divers || Total Score ||
+||Board Name|| Player ||  Dimension || R || Num Divers || Total Score ||
 ||boards/HiddenTreasureWithMines.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 75 || 
 ||boards/Lochness.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 1000 || 
 ||boards/Piranha.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -56250 || 
