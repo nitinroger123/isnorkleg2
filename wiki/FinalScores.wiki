@@ -1,13 +1,13 @@
 #Use this page to track our scores across boards
 
 ||Board Name|| Dimension || R || Num Divers || Total Score ||
-||isnorq|| 20 || 5 || 20 || 438 ||
-||isnorq|| 30 || 5 || 20 || 1048 ||
-||isnorq|| 20 || 9 || 20 || 1106||
-||isnork|| 30 || 9 || 20 || 2855||
-||isnork|| 30 || 5 || 20 || 2389||
-||benchmark|| 30 || 5 || 20 || 15084||
-||benchmark|| 30 || 9 || 20 || 22539||
-||benchmark|| 20 || 9 || 20 || 25000||
-||benchmark|| 20 || 5 || 20 || 22728||
-||benchmark - run in class 11/24/2010|| 20 || 5 || 20 || 17839||
+||boards/HiddenTreasureWithMines.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 75 || 
+||boards/Lochness.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 1000 || 
+||boards/Piranha.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -56250 || 
+||boards/g2Benchmark.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 725 || 
+||boards/g2DontGetEaten.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -1217 || 
+||boards/g3board.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 23 || 
+||boards/g3board2.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -161 || 
+||boards/happydanger.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 139 || 
+||boards/isnork.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -661 || 
+||boards/isnork2.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -2641 ||
