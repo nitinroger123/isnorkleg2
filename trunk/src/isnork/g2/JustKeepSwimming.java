@@ -36,8 +36,8 @@ public class JustKeepSwimming extends Player {
 		
 		//return message to isnork
 		String mes = strategy.getTick(whatYouSee);
-		if(getId() == 0)
-			System.err.println(mes);
+//		if(getId() == 0)
+//			System.err.println(mes);
 		return (String)mes;
 	}
 
