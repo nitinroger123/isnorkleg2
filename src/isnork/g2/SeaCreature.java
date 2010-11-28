@@ -19,6 +19,11 @@ public class SeaCreature implements Comparable<SeaCreature> {
 	public int nextHappiness = 0;
 	public boolean hasValue = true; 
 	public double ranking = 0;
+	public int minPossibleHappiness = 0;
+	public int maxPossibleHappiness = 0;
+	public int avgPossibleHappiness = 0;
+	public String isnorkMessage = null;
+	public boolean seenOnce = false;
 	
 	public SeaCreature(SeaLifePrototype s){
 		seaCreature = s;
@@ -45,6 +50,8 @@ public class SeaCreature implements Comparable<SeaCreature> {
 	 */
 	public int addSeen(int newId)
 	{
+		seenOnce = true;
+		
 		//check that you haven't seen the exact same creature
 		if(!this.seen.contains(newId))
 		{
