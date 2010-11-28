@@ -58,8 +58,11 @@ public class GeneralStrategy extends Strategy {
 		// If there are dangerous creatures nearby, run like hell.
 		if (board.areThereDangerousCreatures(this.whatISee)) 
 		{
-//			ArrayList<Point2D> positionOfDangerousCreatures = new ArrayList<Point2D>();
-//			positionOfDangerousCreatures = board.getDangerousPositions();
+			//these 2 lines of code are needed:
+			ArrayList<Point2D> positionOfDangerousCreatures = new ArrayList<Point2D>();
+			positionOfDangerousCreatures = board.getDangerousPositions();
+			
+			//the rest of the schtuff
 			ArrayList<Direction> directionsToAvoid = board.getHarmfulDirections(this.whereIAm);
 			return runAwayFromDanger(directionsToAvoid);
 		}
