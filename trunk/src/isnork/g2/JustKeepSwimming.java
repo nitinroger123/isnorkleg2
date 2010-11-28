@@ -35,7 +35,10 @@ public class JustKeepSwimming extends Player {
 		strategy.update(myPosition, whatYouSee, incomingMessages, playerLocations);
 		
 		//return message to isnork
-		return strategy.toIsnork();
+		String mes = strategy.getTick(whatYouSee);
+		if(getId() == 0)
+			System.err.println(mes);
+		return (String)mes;
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class JustKeepSwimming extends Player {
 		log = Logger.getLogger(this.getClass());
 		
 		//initialize strategy
-		this.strategy = new GeneralStrategy(p, d, r, seaLifePossibilites, random,this.getId());
+		this.strategy = new GeneralStrategy(p, d, r, seaLifePossibilites, random, this.getId());
 		
 		/*Pre processing that we should do:
 		 * Is dangerous -> Strategy that basically just leaves you off the board

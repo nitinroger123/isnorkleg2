@@ -13,45 +13,61 @@ import org.apache.log4j.Logger;
 import isnork.g2.SeaBoard;
 import isnork.g2.SeaCreature;
 import isnork.sim.Observation;
-import isnork.sim.Player;
 import isnork.sim.SeaLifePrototype;
 import isnork.sim.iSnorkMessage;
 import isnork.sim.GameObject.Direction;
 
 public abstract class Strategy {
 	
+	public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz"; 
+	
 	protected Set<Observation> whatISee;
 	
-	public static ArrayList<Direction> directions = Direction.allBut(null);
+	public static ArrayList<Direction> directions = new ArrayList<Direction>();
 	
 	private Logger log = Logger.getLogger(this.getClass());
 	protected SeaBoard board;
 	protected Random random;
 	protected Point2D whereIAm = null;
 	protected Point2D boat;
-	protected int radius, distance, penalty, numrounds, roundsleft;
+	protected int radius, distance, penalty, numrounds;
+	protected int roundsleft;
+	protected double boatConstant = .9;
 	
-	public ArrayList<SeaCreature> creatureRating = new ArrayList<SeaCreature>();
+	public ArrayList<SeaCreature> ratedCreatures = new ArrayList<SeaCreature>();
+	public HashMap<String, SeaCreature> creatureMapping = new HashMap<String, SeaCreature>();
 	public HashMap<String, SeaCreature> knownCreatures = new HashMap<String, SeaCreature>();
 	public int minPossibleHappiness = 0;
 	public int avgPossibleHappiness = 0;
 	public int maxPossibleHappiness = 0;
 	public int myHappiness = 0;
+	public int myId = 0;
+	public Point2D intermediateGoal = null;
 	
-	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand){
+	static
+	{
+		directions.add(Direction.N);
+		directions.add(Direction.NE);
+		directions.add(Direction.E);
+		directions.add(Direction.SE);
+		directions.add(Direction.S);
+		directions.add(Direction.SW);
+		directions.add(Direction.W);
+		directions.add(Direction.NW);
+	};
+	
+	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id){
+		myId = id;
 		penalty = p;
 		distance = d;
 		radius = r;
 		numrounds = 480;
-		roundsleft = numrounds + 1;
+		roundsleft = numrounds;
 		whereIAm = new Point2D.Double(distance, distance); //is this always true?
 		boat = new Point2D.Double(distance, distance);
 		board = new SeaBoard(2*d, 2*d, radius, seaLifePossibilities, distance, boat);
 		random = rand;
 		whatISee=new HashSet<Observation>();
-		
-		//given the prototypes, rate all the creatures using several heuristics
-		rateCreatures(seaLifePossibilities);
 		
 		//create the basic arraylist of points based on the minimum amount that can be there
 		for(SeaLifePrototype slp : seaLifePossibilities)
@@ -59,29 +75,44 @@ public abstract class Strategy {
 			SeaCreature sc = new SeaCreature(slp);
 			int h = slp.getHappiness();
 			int combinedH = (h + (int)((double)h * .5) + (int)((double)h * .25));
+			int minH = 0;
+			int maxH = 0;
+			int avgH = 0;
 			
 			//determine the min, max, and avg total happiness given the prototypes
 			if(slp.getMinCount() > 0)
-				minPossibleHappiness += h;
+				minH += h;
 			if(slp.getMinCount() > 1)
-				minPossibleHappiness += (int)((double)h * .5);
+				minH += (int)((double)h * .5);
 			if(slp.getMinCount() > 2)
-				minPossibleHappiness += (int)((double)h * .25);
+				minH += (int)((double)h * .25);
 			
 			if(slp.getMaxCount() > 0)
-				maxPossibleHappiness += h;
+				maxH += h;
 			if(slp.getMaxCount() > 1)
-				maxPossibleHappiness += (int)((double)h * .5);
+				maxH += (int)((double)h * .5);
 			if(slp.getMaxCount() > 2)
-				maxPossibleHappiness += (int)((double)h * .25);
+				maxH += (int)((double)h * .25);
 			
-			avgPossibleHappiness += (minPossibleHappiness + maxPossibleHappiness) / 2;
+			avgH += (minH + maxH) / 2;
+			
+			//add these values to the running tally
+			minPossibleHappiness += minH;
+			maxPossibleHappiness += maxH;
+			avgPossibleHappiness += avgH;
 			
 			//add the prototype that maps the name to the sea life prototype (used later)
 			SeaCreature temp = new SeaCreature(slp);
+			temp.minPossibleHappiness = minH;
+			temp.maxPossibleHappiness = maxH;
+			temp.avgPossibleHappiness = avgH;
 			knownCreatures.put(slp.getName(), temp);
-			creatureRating.add(temp);
+			ratedCreatures.add(temp);
 		}
+		
+		//given the prototypes, rate all the creatures using several heuristics
+		rateCreatures(seaLifePossibilities);
+		setiSnorkLetterMapping();
 	}
 	
 	public void update(Point2D myPosition, Set<Observation> whatYouSee,
@@ -103,10 +134,14 @@ public abstract class Strategy {
 			
 			//add to board
 			board.add(o, numrounds - roundsleft);
+			if(o.isDangerous())
+				log.trace("Dangerous");
 			
 			//determine which creatures you've seen already and decrement how many points they're worth
 			updateMyPosition(myPosition, o);
 		}
+		
+		updateIncomingMessages(incomingMessages);
 	}
 
 	/**
@@ -132,6 +167,14 @@ public abstract class Strategy {
 		}
 	}
 	
+	private void setiSnorkLetterMapping()
+	{
+		for(int count=0; count<ratedCreatures.size(); count++)
+		{
+			ratedCreatures.get(count).isnorkMessage = Character.toString(ALPHABET.charAt(count));
+		}
+	}
+	
 	public abstract Direction getMove();
 	
 	/**
@@ -141,7 +184,15 @@ public abstract class Strategy {
 	 * their frequency, and the amount of the board you can see.
 	 */
 	public abstract void rateCreatures(Set<SeaLifePrototype> seaLifePossibilities);
-
-	/**Return a message to the Isnork*/
-	public abstract String toIsnork();
+	
+	/**
+	 * Returns the snorklers message that will be broadcast to the other snorklers.
+	 */
+	public abstract String getTick(Set<Observation> whatYouSee);
+	
+	/**
+	 * Reads in the messages from the other snorklers and determines which
+	 * point on the board to swim to.
+	 */
+	public abstract void updateIncomingMessages(Set<iSnorkMessage> incomingMessages);
 }
