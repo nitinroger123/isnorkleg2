@@ -66,7 +66,7 @@ public class BackTrackMove implements Comparable<BackTrackMove>{
 			return -1;
 		
 		if(d.toBoat && !toBoat)
-			return 1;	
+			return 1;
 		
 		return 0;
 	}
