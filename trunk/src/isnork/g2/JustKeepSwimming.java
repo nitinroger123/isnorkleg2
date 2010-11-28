@@ -35,7 +35,7 @@ public class JustKeepSwimming extends Player {
 		strategy.update(myPosition, whatYouSee, incomingMessages, playerLocations);
 		
 		//return message to isnork
-		return null;
+		return strategy.toIsnork();
 	}
 
 	@Override

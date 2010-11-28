@@ -21,10 +21,9 @@ public class GeneralStrategy extends Strategy {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	public int myId = 1;
-	
 	public boolean goingOut = false;
 	public Direction outDirection = null;
-
+	
 	public GeneralStrategy(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id) {
 
@@ -40,28 +39,37 @@ public class GeneralStrategy extends Strategy {
 	@Override
 	public Direction getMove() {
 		
+		//do backtrack
+		//add in waitawhile patch
+		
+		/*If we are on the boat with our max happiness then don't do anything*/
+		if(this.myHappiness >= board.getMaxScore() && whereIAm == boat)
+			return null;
+		
 		/*
 		 * Desperate measure. Get back on the boat. This is to avoid the
 		 * situation where the divers come near the boat and then move away. I
 		 * found this happening with our current condition
 		 */
-		if (roundsleft < TIME_TO_GO_HOME)
-			return backtrack();
-
 		/*
 		 * If condition to determine when to start heading back. Boat constant
 		 * gives you a few extra rounds to head back, and dividing by three
 		 * accounts for the fact that you can only make diagonal moves once
 		 * every three rounds
 		 */
-		if (whereIAm.distance(boat) > (boatConstant * roundsleft) / 3)
+		//where did we get TIME_TO_GO_HOME from?
+		if (roundsleft < TIME_TO_GO_HOME 
+				|| (whereIAm.distance(boat) > (boatConstant * roundsleft) / 3)
+				|| this.myHappiness >= board.getMaxScore())
 			return backtrack();
 
 		// If there are dangerous creatures nearby, run like hell.
 		if (board.areThereDangerousCreatures(this.whatISee)) 
 		{
+			//What do these first two lines of code do?
 			ArrayList<Point2D> positionOfDangerousCreatures = new ArrayList<Point2D>();
 			positionOfDangerousCreatures = board.getDangerousPositions();
+			
 			ArrayList<Direction> directionsToAvoid = board.getHarmfulDirections(this.whereIAm, this.boat);
 			return runAwayFromDanger(directionsToAvoid);
 		}
@@ -263,5 +271,16 @@ public class GeneralStrategy extends Strategy {
 		
 		Collections.sort(creatureRating);
 		Collections.reverse(creatureRating);
+	}
+
+	@Override
+	public String toIsnork() {
+		
+		if(board.getHighScoringCreatureInRadius() != null){
+			return Character.toString(board.getHighScoringCreatureInRadius().
+					returnCreature().getName().toCharArray()[0]).toLowerCase();
+			}
+		else
+			return null;
 	}
 }

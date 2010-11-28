@@ -16,11 +16,22 @@ public class SeaBoard {
 	private ArrayList<SeaCreature> creatures;
 	private Set<SeaLifePrototype> prototypes;
 	public SeaSpace[][] board;
-	private int radius, distance;
+	private int radius, distance, maxscore;
 	private ArrayList<Point2D> positionOfDangerousCreatures;
 	
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d){
 		creatures = new ArrayList<SeaCreature>();
+		for(SeaLifePrototype c: p){
+			
+			if(c.getMaxCount() >= 3)
+				maxscore += 1.75 * c.getHappiness();
+			
+			if(c.getMaxCount() == 2)
+				maxscore += 1.5*c.getHappiness();
+				
+			if(c.getMaxCount() == 1)
+				maxscore += c.getHappiness();
+		}
 		prototypes = p;
 		board = new SeaSpace[x + 1][y + 1];
 		for(int i = 0; i < x + 1; i++){
@@ -150,6 +161,28 @@ public class SeaBoard {
              return true;
      }       
 
-	
+	 public SeaCreature getHighScoringCreatureInRadius(){
+		 SeaCreature high = null;
+		 
+		 for(int i = 0;i < board.length; i++){
+			 for(int j = 0; j < board[0].length; j++){
+				 for( SeaCreature o: board[i][j].getOccupiedby()){
+					 
+					 if(high == null) //first creature
+						 high = o;
+					 
+					 if(o.returnCreature().getHappiness() > high.returnCreature().getHappiness())
+						 high = o;
+				 }
+			 }
+		 }
+		 
+		 return high;
+	 }
+
+	public int getMaxScore() {
+		return maxscore;
+	}
+	 
 		
 }

@@ -1,10 +1,11 @@
 board, playerclass, radius, dimension, divers, rescuepenalty
-boards/happydanger.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, 120
-boards/isnork.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, 105
-boards/isnork2.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, 39
-boards/happydanger.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -83
-boards/isnork.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -513
-boards/isnork2.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -2361
-boards/happydanger.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, 127
-boards/isnork.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -363
-boards/isnork2.xml, isnork.g2.JustKeepSwimming, 4, 20, 1, 100, -721
+||boards/HiddenTreasureWithMines.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 75 || 
+||boards/Lochness.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 0 || 
+||boards/Piranha.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 1750 || 
+||boards/g2Benchmark.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 151 || 
+||boards/g2DontGetEaten.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -722 || 
+||boards/g3board.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 20 || 
+||boards/g3board2.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 38 || 
+||boards/happydanger.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 139 || 
+||boards/isnork.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -278 || 
+||boards/isnork2.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -121 || 
