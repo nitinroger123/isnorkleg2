@@ -124,7 +124,7 @@ public class GeneralStrategy extends Strategy {
 
 	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections) {
 
-//		System.err.println("run away from danger");
+		// System.err.println("run away from danger");
 
 		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
 		if (!safeMoves.isEmpty()) {
@@ -220,11 +220,15 @@ public class GeneralStrategy extends Strategy {
 	/** Move to get the player back to the boat */
 	public Direction backtrack() {
 
-//		System.err.println("Backtracking on round " + (480 - this.roundsleft)
-//				+ " from:" + whereIAm + " and boat is: " + boat);
+		return goToGoal(boat);
+	}
 
-		if (whereIAm.equals(boat)) {
-			log.trace("we are staying put, we reached the boat");
+	private Direction goToGoal(Point2D goal) {
+		// System.err.println("Backtracking on round " + (480 - this.roundsleft)
+		// + " from:" + whereIAm + " and boat is: " + boat);
+
+		if (whereIAm.equals(goal)) {
+			log.trace("we are staying put, we reached the goal");
 			return null;
 		}
 
@@ -234,17 +238,17 @@ public class GeneralStrategy extends Strategy {
 
 		ArrayList<BackTrackMove> backMoves = new ArrayList<BackTrackMove>();
 		for (Direction d : this.directions) {
-			
+
 			if (temp.contains(d))
-				backMoves.add(new BackTrackMove(d, board.toBoat(whereIAm, d),
-						false, roundsleft, whereIAm, boat));
+				backMoves.add(new BackTrackMove(d, board.toGoal(whereIAm, d, goal),
+						false, roundsleft, whereIAm, goal));
 			else
-				backMoves.add(new BackTrackMove(d, board.toBoat(whereIAm, d),
-						true, roundsleft, whereIAm, boat));
+				backMoves.add(new BackTrackMove(d, board.toGoal(whereIAm, d, goal),
+						true, roundsleft, whereIAm, goal));
 
 		}
 		Collections.sort(backMoves);
-		//System.err.println("First move is: " + backMoves.get(0));
+		System.err.println("First move is: " + backMoves.get(0));
 		for (BackTrackMove safe : backMoves) {
 			log.trace(safe);
 		}
@@ -290,10 +294,10 @@ public class GeneralStrategy extends Strategy {
 		for (SeaCreature sc : ratedCreatures) {
 			creatureMapping.put(Character.toString(ALPHABET.charAt(count)), sc);
 
-//			if (myId == 0)
-//				System.err.println(count + " " + ALPHABET.charAt(count)
-//						+ " id: " + sc.getId() + " "
-//						+ sc.returnCreature().getName());
+			// if (myId == 0)
+			// System.err.println(count + " " + ALPHABET.charAt(count)
+			// + " id: " + sc.getId() + " "
+			// + sc.returnCreature().getName());
 			count++;
 		}
 	}
@@ -381,9 +385,9 @@ public class GeneralStrategy extends Strategy {
 				}
 			}
 		}
-		
-//		if (myId == 0 && intermediateGoal != null && changed)
-//			System.err.println(myId + " rcvd: " + rcvd + " ||| going to "
-//					+ intermediateGoal.toString());
+
+		// if (myId == 0 && intermediateGoal != null && changed)
+		// System.err.println(myId + " rcvd: " + rcvd + " ||| going to "
+		// + intermediateGoal.toString());
 	}
 }

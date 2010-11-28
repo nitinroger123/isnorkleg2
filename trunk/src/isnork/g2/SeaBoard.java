@@ -195,48 +195,45 @@ public class SeaBoard {
 		return board[(int) p.getX()][(int) p.getY()];
 	}
 
-	public Boolean toBoat(Point2D whereIAm, Direction d) {
-
+	public Boolean toGoal(Point2D whereIAm, Direction d, Point2D goal) {
 		// in a quadrant
-		if (whereIAm.getX() > boat.getX() && whereIAm.getY() > boat.getY()) {
+		if (whereIAm.getX() > goal.getX() && whereIAm.getY() > goal.getY()) {
 			if(d == Direction.NW)
 				return true;
 		}
 		
-		if (whereIAm.getX() < boat.getX() && whereIAm.getY() < boat.getY()) {
+		if (whereIAm.getX() < goal.getX() && whereIAm.getY() < goal.getY()) {
 			if(d == Direction.SE)
 				return true;
 		}
 		
-		if (whereIAm.getX() < boat.getX() && whereIAm.getY() > boat.getY()) {
+		if (whereIAm.getX() < goal.getX() && whereIAm.getY() > goal.getY()) {
 			if(d == Direction.NE)
 				return true;
 		}
 		
-		if (whereIAm.getX() > boat.getX() && whereIAm.getY() < boat.getY()) {
+		if (whereIAm.getX() > goal.getX() && whereIAm.getY() < goal.getY()) {
 			if(d == Direction.SW)
 				return true;
 		}
 
 		// on a line
-		if (whereIAm.getX() < boat.getX() && whereIAm.getY() > boat.getY()
-				|| whereIAm.getX() < boat.getX()
-				&& whereIAm.getY() == boat.getY()) {
+		if (whereIAm.getX() < goal.getX()
+				&& whereIAm.getY() == goal.getY()) {
 			if(d == Direction.E)
 				return true;
 		}
-		if (whereIAm.getX() > boat.getX() && whereIAm.getY() < boat.getY()
-				|| whereIAm.getX() == boat.getX()
-				&& whereIAm.getY() < boat.getY()) {
+		if (whereIAm.getX() == goal.getX()
+				&& whereIAm.getY() < goal.getY()) {
 			if(d == Direction.S)
 				return true;
 		}
 
-		if (whereIAm.getX() == boat.getX() && whereIAm.getY() > boat.getY()) {
+		if (whereIAm.getX() == goal.getX() && whereIAm.getY() > goal.getY()) {
 			if(d == Direction.N)
 				return true;
 		}
-		if (whereIAm.getX() > boat.getX() && whereIAm.getY() == boat.getY()) {
+		if (whereIAm.getX() > goal.getX() && whereIAm.getY() == goal.getY()) {
 			if(d == Direction.W)
 				return true;
 		}
