@@ -23,7 +23,7 @@ public abstract class Strategy {
 	
 	protected Set<Observation> whatISee;
 	
-	public static ArrayList<Direction> directions = new ArrayList<Direction>();
+	public static ArrayList<Direction> directions = Direction.allBut(null);
 	
 	private Logger log = Logger.getLogger(this.getClass());
 	protected SeaBoard board;
@@ -43,18 +43,6 @@ public abstract class Strategy {
 	public int myHappiness = 0;
 	public int myId = 0;
 	public Point2D intermediateGoal = null;
-	
-	static
-	{
-		directions.add(Direction.N);
-		directions.add(Direction.NE);
-		directions.add(Direction.E);
-		directions.add(Direction.SE);
-		directions.add(Direction.S);
-		directions.add(Direction.SW);
-		directions.add(Direction.W);
-		directions.add(Direction.NW);
-	};
 	
 	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id){
 		myId = id;
@@ -167,6 +155,9 @@ public abstract class Strategy {
 		}
 	}
 	
+	/**
+	 * Sets the creatures to a specific lettering so the snorklers know which letters refer to which creature.
+	 */
 	private void setiSnorkLetterMapping()
 	{
 		for(int count=0; count<ratedCreatures.size(); count++)
@@ -174,8 +165,6 @@ public abstract class Strategy {
 			ratedCreatures.get(count).isnorkMessage = Character.toString(ALPHABET.charAt(count));
 		}
 	}
-	
-	public abstract Direction getMove();
 	
 	/**
 	 * Rate the creatures using several heuristics.
@@ -195,4 +184,9 @@ public abstract class Strategy {
 	 * point on the board to swim to.
 	 */
 	public abstract void updateIncomingMessages(Set<iSnorkMessage> incomingMessages);
+	
+	/**
+	 * Returns a move for the snorkler
+	 */
+	public abstract Direction getMove();
 }
