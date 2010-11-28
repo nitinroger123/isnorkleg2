@@ -25,7 +25,6 @@ public class GeneralStrategy extends Strategy {
 	public Direction outDirection = null;
 	protected double boatConstant = 2;
 
-
 	public GeneralStrategy(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id) {
 
@@ -66,19 +65,16 @@ public class GeneralStrategy extends Strategy {
 		/**
 		 * NO DANGEROUS ANIMALS AROUND
 		 */
-		System.err.println("no dangerous animals around");
 		// if he has a direction in progress, go there!
-		// if(intermediateGoal!=null && intermediateGoal.equals(whereIAm))
-		// {
-		// intermediateGoal = null;
-		// }
-		//		
-		// //if he's on route to his goal and there are no dangerous creatures
+		if (intermediateGoal != null && intermediateGoal.equals(whereIAm)) {
+			intermediateGoal = null;
+		}
+
+		// if he's on route to his goal and there are no dangerous creatures
 		// around, go to goal
-		// if(intermediateGoal!=null)
-		// {
-		// return getDirectionToGoal(intermediateGoal);
-		// }
+		if (intermediateGoal != null) {
+			return getDirectionToGoal(intermediateGoal);
+		}
 
 		// if he's at the boat, generate a random direction and go out
 		if (!goingOut && whereIAm.getX() == distance
@@ -127,9 +123,9 @@ public class GeneralStrategy extends Strategy {
 	}
 
 	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections) {
-		
-		System.err.println("run away from danger");
-		
+
+//		System.err.println("run away from danger");
+
 		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
 		if (!safeMoves.isEmpty()) {
 			Collections.shuffle(safeMoves);
@@ -224,8 +220,8 @@ public class GeneralStrategy extends Strategy {
 	/** Move to get the player back to the boat */
 	public Direction backtrack() {
 
-		System.err.println("Backtracking on round " + (480 - this.roundsleft) + " from:"
-				+ whereIAm + " and boat is: " + boat);
+//		System.err.println("Backtracking on round " + (480 - this.roundsleft)
+//				+ " from:" + whereIAm + " and boat is: " + boat);
 
 		if (whereIAm.equals(boat)) {
 			log.trace("we are staying put, we reached the boat");
@@ -247,7 +243,7 @@ public class GeneralStrategy extends Strategy {
 
 		}
 		Collections.sort(backMoves);
-		System.err.println("First move is: " + backMoves.get(0));
+		//System.err.println("First move is: " + backMoves.get(0));
 		for (BackTrackMove safe : backMoves) {
 			log.trace(safe);
 		}
@@ -293,10 +289,10 @@ public class GeneralStrategy extends Strategy {
 		for (SeaCreature sc : ratedCreatures) {
 			creatureMapping.put(Character.toString(ALPHABET.charAt(count)), sc);
 
-			if (myId == 0)
-				System.err.println(count + " " + ALPHABET.charAt(count)
-						+ " id: " + sc.getId() + " "
-						+ sc.returnCreature().getName());
+//			if (myId == 0)
+//				System.err.println(count + " " + ALPHABET.charAt(count)
+//						+ " id: " + sc.getId() + " "
+//						+ sc.returnCreature().getName());
 			count++;
 		}
 	}
@@ -340,41 +336,53 @@ public class GeneralStrategy extends Strategy {
 		SeaCreature bestFind = null;
 		double curDist = Double.MAX_VALUE;
 		boolean changed = false;
-		for (iSnorkMessage ism : incomingMessages) {
-			SeaCreature sc = creatureMapping.get(ism.getMsg());
+		String rcvd = null;
 
-			if (ism.getMsg().equals("a") && !sc.seenOnce) {
+		for (iSnorkMessage ism : incomingMessages) {
+			Point2D newLoc = new Point2D.Double(ism.getLocation().getX()
+					+ distance, ism.getLocation().getY() + distance);
+			SeaCreature sc = creatureMapping.get(ism.getMsg());
+			rcvd = ism.getMsg();
+
+			if ((ism.getMsg().equals("a") || ism.getMsg().equals("b"))
+					&& !sc.seenOnce) {
 				// base case
 				if (bestFind == null && sc.nextHappiness > 0) {
-					bestFind = sc;
-					intermediateGoal = ism.getLocation();
-					changed = true;
-				}
-				// equality case, it's two of the same creature
-				else if (sc != null && bestFind != null
-						&& sc.nextHappiness == bestFind.nextHappiness) {
-					double newDist = whereIAm.distance(ism.getLocation());
-					if (newDist < curDist) {
-						curDist = newDist;
-						bestFind = sc;
-						intermediateGoal = ism.getLocation();
-						changed = true;
+					if (ism.getMsg().equals("a") && !sc.seenOnce) {
+						// base case
+						if (bestFind == null && sc.nextHappiness > 0) {
+							bestFind = sc;
+							intermediateGoal = newLoc;
+							changed = true;
+						}
+						// equality case, it's two of the same creature
+						else if (sc != null && bestFind != null
+								&& sc.nextHappiness == bestFind.nextHappiness) {
+							double newDist = whereIAm.distance(newLoc);
+							if (newDist < curDist) {
+								curDist = newDist;
+								bestFind = sc;
+								intermediateGoal = newLoc;
+								changed = true;
+							}
+						}
+						// general case, does this new creature have a higher
+						// next
+						// happiness?
+						else if (sc != null && bestFind != null
+								&& sc.nextHappiness > bestFind.nextHappiness) {
+							curDist = whereIAm.distance(newLoc);
+							bestFind = sc;
+							intermediateGoal = newLoc;
+							changed = true;
+						}
 					}
-				}
-				// general case, does this new creature have a higher next
-				// happiness?
-				else if (sc != null && bestFind != null
-						&& sc.nextHappiness > bestFind.nextHappiness) {
-					curDist = whereIAm.distance(ism.getLocation());
-					bestFind = sc;
-					intermediateGoal = ism.getLocation();
-					changed = true;
 				}
 			}
 		}
-
-		if (myId == 0 && intermediateGoal != null && changed)
-			System.err
-					.println(myId + "'s goal: " + intermediateGoal.toString());
+		
+//		if (myId == 0 && intermediateGoal != null && changed)
+//			System.err.println(myId + " rcvd: " + rcvd + " ||| going to "
+//					+ intermediateGoal.toString());
 	}
 }
