@@ -21,9 +21,9 @@ public class GeneralStrategy extends Strategy {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	public int myId = 1;
-	public boolean goingOut = false;
 	public Direction outDirection = null;
-	
+	protected double boatConstant = 2;
+
 	public GeneralStrategy(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id) {
 
@@ -38,94 +38,44 @@ public class GeneralStrategy extends Strategy {
 
 	@Override
 	public Direction getMove() {
-		
-		//do backtrack
-		//add in waitawhile patch
-		
-		/*If we are on the boat with our max happiness then don't do anything*/
-		if(this.myHappiness >= board.getMaxScore() && whereIAm == boat)
-			return null;
-		
+
+		/*
+		 * If we are on the boat and there is danger on the boat we should not
+		 * move
+		 */
+		if (whereIAm.equals(boat) && board.getSeaSpace(boat).hasDanger()){
+			log.trace("returning null");
+			return null;}
+
 		/*
 		 * Desperate measure. Get back on the boat. This is to avoid the
 		 * situation where the divers come near the boat and then move away. I
 		 * found this happening with our current condition
 		 */
-		/*
-		 * If condition to determine when to start heading back. Boat constant
-		 * gives you a few extra rounds to head back, and dividing by three
-		 * accounts for the fact that you can only make diagonal moves once
-		 * every three rounds
-		 */
-		//where did we get TIME_TO_GO_HOME from?
-		if (roundsleft < TIME_TO_GO_HOME 
-				|| (whereIAm.distance(boat) > (boatConstant * roundsleft) / 3)
+		if(this.myHappiness >= board.getMaxScore())
+			log.trace("backtrack because we are happy, max: " + board.getMaxScore());
+		if ((boatConstant * (whereIAm.distance(boat) + 2) > (roundsleft) / 3)
 				|| this.myHappiness >= board.getMaxScore())
 			return backtrack();
 
 		// If there are dangerous creatures nearby, run like hell.
-		if (board.areThereDangerousCreatures(this.whatISee)) 
-		{
-			//What do these first two lines of code do?
-			ArrayList<Point2D> positionOfDangerousCreatures = new ArrayList<Point2D>();
-			positionOfDangerousCreatures = board.getDangerousPositions();
-			
-			ArrayList<Direction> directionsToAvoid = board.getHarmfulDirections(this.whereIAm, this.boat);
-			return runAwayFromDanger(directionsToAvoid);
+		if (board.areThereDangerousCreatures(this.whatISee)) {
+			return runAwayFromDanger();
 		}
 
 		/**
 		 * NO DANGEROUS ANIMALS AROUND
 		 */
-		
-		//if he's at the boat, generate a random direction and go out
-		if(!goingOut && whereIAm.getX()==distance && whereIAm.getY()==distance)
-		{
-			goingOut = true;
-			outDirection = getRandomDirection();
-			return outDirection;
-		}
-		
-		//if he's going out and reached an edge, start coming back to the boat
-		if(goingOut && !(whereIAm.getX() < radius || whereIAm.getX() > board.board.length-radius ||
-				whereIAm.getY() < radius || whereIAm.getY() > board.board.length-radius))
-		{
-			return outDirection;
-		}
-		
-		//if he's going out and reached an edge, start coming back to the boat
-		if(goingOut && (whereIAm.getX() < radius || whereIAm.getX() > board.board.length-radius ||
-				whereIAm.getY() < radius || whereIAm.getY() > board.board.length-radius))
-		{
-			goingOut = false;
-			outDirection = null;
-			return backtrack();
-		}
-		
-		//if he's coming in and not at the boat, keep coming in
-		if(!goingOut && !(whereIAm.getX()==distance && whereIAm.getY()==distance))
-		{
-			return backtrack();
-		}
-
-		if(!goingOut)
-		{
-			return backtrack();
-		}
-		
-		if(outDirection == null)
-		{
-			outDirection = randomMove();
-			return outDirection;
-		}
-
-		return outDirection;
+		return randomMove();
 	}
 
-	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections) {
-		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
-		if (!safeMoves.isEmpty()) 
-		{
+	public Direction runAwayFromDanger() {
+
+		log.trace("Running away from danger");
+
+		ArrayList<Direction> safeMoves = getOpposites(board
+				.getHarmfulDirections(this.whereIAm));
+		if (!safeMoves.isEmpty()) {
 			Collections.shuffle(safeMoves);
 			for (Direction safe : safeMoves) {
 				if (board.isValidMove((int) whereIAm.getX(), (int) whereIAm
@@ -135,11 +85,7 @@ public class GeneralStrategy extends Strategy {
 			}
 		}
 		/* We are surrounded */
-		else {
-			return randomMove();
-		}
-		// We could not find a valid safe move
-		return randomMove();
+		return null;
 	}
 
 	private ArrayList<Direction> getOpposites(
@@ -200,10 +146,10 @@ public class GeneralStrategy extends Strategy {
 
 	/** Dumb move included with dumb player */
 	public Direction randomMove() {
-		log.trace("random move");
+		log.trace("random move on round " + (480 - this.roundsleft));
 		Direction d = getRandomDirection();
-		while (!board.isValidMove((int) whereIAm.getX(), (int) whereIAm.getY(), d)) 
-		{
+		while (!board.isValidMove((int) whereIAm.getX(), (int) whereIAm.getY(),
+				d)) {
 			d = getRandomDirection();
 		}
 		return d;
@@ -211,76 +157,73 @@ public class GeneralStrategy extends Strategy {
 
 	/** Move to get the player back to the boat */
 	public Direction backtrack() {
-		double currX = whereIAm.getX();
-		double currY = whereIAm.getY();
-		log.trace("Current X: " + currX + " Current Y: " + currY);
-		if (currX == boat.getX() && currY == boat.getY()) {
-			// stay put, we have reached the boat
+
+		log.trace("Backtracking on round " + (480 -  this.roundsleft) + " from:" + whereIAm + " and boat is: " + boat);
+		
+		if (whereIAm.equals(boat)) {
+			log.trace("we are staying put, we reached the boat");
 			return null;
 		}
 		
-		//in a quadrant
-		if (currX > boat.getX() && currY > boat.getY()) {
-			return Direction.NW;
-		}
-		if (currX < boat.getX() && currY < boat.getY()) {
-			return Direction.SE;
-		}
-		if (currX < boat.getX() && currY > boat.getY()) {
-			return Direction.NE;
-		}
-		if (currX > boat.getX() && currY < boat.getY()) {
-			return Direction.SW;
-		}	
+		ArrayList<Direction> temp = getOpposites(board
+				.getHarmfulDirections(this.whereIAm));
 		
-		//on a line
-		if (currX < boat.getX() && currY > boat.getY() || currX < boat.getX()
-				&& currY == boat.getY()) {
-			return Direction.E;
-		}
-		if (currX > boat.getX() && currY < boat.getY() || currX == boat.getX()
-				&& currY < boat.getY()) {
-			return Direction.S;
-		}
+		ArrayList<BackTrackMove> backMoves = new ArrayList<BackTrackMove>();
+		for(Direction d: this.directions){
+			if(temp.contains(d))
+				backMoves.add(new BackTrackMove(d, board.toBoat(whereIAm, d), false, roundsleft, whereIAm, boat));
+			else
+				backMoves.add(new BackTrackMove(d, board.toBoat(whereIAm, d), true, roundsleft, whereIAm, boat));
 
-		if (currX == boat.getX() && currY > boat.getY()) {
-			return Direction.N;
 		}
-		if (currX > boat.getX() && currY == boat.getY()) {
-			return Direction.W;
+		if (!backMoves.isEmpty()) {
+			Collections.sort(backMoves);
+			log.trace("First move is: " + backMoves.get(0));
+			for (BackTrackMove safe : backMoves) {
+				log.trace(safe);
+			}
+
+			for (BackTrackMove safe : backMoves) {
+				if (board.isValidMove((int) whereIAm.getX(), (int) whereIAm
+						.getY(), safe.d)) {
+					return safe.d;
+				}
+			}
 		}
+		
+		//wont get here
 		return null;
 	}
 
 	/**
-	 * Rate the creatures using several heuristics.
-	 * These are to determine the ranking at which creatures will be placed
-	 * on the lettering of the iSnork. Creatures are ranked by their happiness,
-	 * their frequency, and the amount of the board you can see.
+	 * Rate the creatures using several heuristics. These are to determine the
+	 * ranking at which creatures will be placed on the lettering of the iSnork.
+	 * Creatures are ranked by their happiness, their frequency, and the amount
+	 * of the board you can see.
 	 */
-	public void rateCreatures(Set<SeaLifePrototype> seaLifePossibilities)
-	{
-		//calculate each of the sea creature's ranking value
-		for(SeaCreature sc : creatureRating)
-		{
-			//happiness x avg frequency
-			double ranking = sc.returnCreature().getHappiness() * 
-				(sc.returnCreature().getMinCount() + sc.returnCreature().getMaxCount()) / 2.0;
+	public void rateCreatures(Set<SeaLifePrototype> seaLifePossibilities) {
+		
+		// calculate each of the sea creature's ranking value
+		for (SeaCreature sc : creatureRating) {
+			// happiness x avg frequency
+			double ranking = sc.returnCreature().getHappiness()
+					* (sc.returnCreature().getMinCount() + sc.returnCreature()
+							.getMaxCount()) / 2.0;
 			sc.ranking = ranking;
 		}
-		
+
 		Collections.sort(creatureRating);
 		Collections.reverse(creatureRating);
 	}
 
 	@Override
 	public String toIsnork() {
-		
-		if(board.getHighScoringCreatureInRadius() != null){
-			return Character.toString(board.getHighScoringCreatureInRadius().
-					returnCreature().getName().toCharArray()[0]).toLowerCase();
-			}
-		else
+
+		if (board.getHighScoringCreatureInRadius() != null) {
+			return Character.toString(
+					board.getHighScoringCreatureInRadius().returnCreature()
+							.getName().toCharArray()[0]).toLowerCase();
+		} else
 			return null;
 	}
 }
