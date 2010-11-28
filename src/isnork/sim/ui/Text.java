@@ -70,10 +70,10 @@ public final class Text implements GameListener
 		switch (type)
 		{
 		case GAMEOVER:
-			System.out.println(Config.boardName + ", " + Config.playerName + ", " + 
-					Config.radius + ", " + Config.dimension + ", " +
-					Config.divers + ", " + Config.rescuepenalty + ", " +
-					engine.getScores());
+			System.out.println("||" + Config.boardName + " || " + Config.playerName + " || " + 
+					Config.radius + " || " + Config.dimension + " || " +
+					Config.divers + " || " + Config.rescuepenalty + " || " +
+					engine.getScores()+ " || ");
 			break;
 		case MOVEPROCESSED:
 			if(longMode)

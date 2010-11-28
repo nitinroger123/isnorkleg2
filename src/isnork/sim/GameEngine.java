@@ -150,29 +150,33 @@ public final class GameEngine {
 						beenSeenByName.put(pl, new HashMap<String, Integer>());
 					int happy = 0;
 					
-					if(s.dangerous && s.getLocation().distance(pl.location) <= 1.5)
-						happy = happy - 2*s.happiness;
-					else if(beenSeenById.get(pl).contains(s))
-						happy = 0;
-					else if(!beenSeenByName.get(pl).containsKey(s.getName()))
-					{
-						happy = s.happiness;
-						beenSeenByName.get(pl).put(s.getName(), 1);
+					if(!pl.location.equals(new Point2D.Double(0, 0))) { // if on the boat, doesn't affect
+					    if(s.dangerous && s.getLocation().distance(pl.location) <= 1.5)
+					        happy = happy - 2*s.happiness;
+					    else if(beenSeenById.get(pl).contains(s))
+					        happy = 0;
+					    else if(!beenSeenByName.get(pl).containsKey(s.getName()))
+					    {
+					        happy = s.happiness;
+					        beenSeenByName.get(pl).put(s.getName(), 1);
+					    }
+					    else if(beenSeenByName.get(pl).get(s.getName()) == 1)
+					    {
+					        if(!pl.location.equals(new Point2D.Double(0, 0))) {
+					            happy = s.happiness/2;
+					            beenSeenByName.get(pl).put(s.getName(), 2);					        
+					        }
+					    }
+					    else if(beenSeenByName.get(pl).get(s.getName()) == 2 && !pl.location.equals(new Point2D.Double(0, 0)))
+					    {
+					        happy = s.happiness/4;
+					        beenSeenByName.get(pl).put(s.getName(), 3);
+					    }
+
+					    beenSeenById.get(pl).add(s);
+					    pl.happiness += happy;
+					    score += happy;
 					}
-					else if(beenSeenByName.get(pl).get(s.getName()) == 1)
-					{
-						happy = s.happiness/2;
-						beenSeenByName.get(pl).put(s.getName(), 2);
-					}
-					else if(beenSeenByName.get(pl).get(s.getName()) == 2)
-					{
-						happy = s.happiness/4;
-						beenSeenByName.get(pl).put(s.getName(), 3);
-					}
-					if(pl.location.getX() == 0 && pl.location.getY() == 0 && s.dangerous)
-						happy = 0;
-					
-					beenSeenById.get(pl).add(s);
 					
 					Observation o = new Observation();
 					o.id=s.getId();
@@ -182,9 +186,6 @@ public final class GameEngine {
 					o.happy=happy;
 					o.danger=s.dangerous;
 					observations.add(o);
-
-					pl.happiness += happy;
-					score += happy;
 				}
 			}
 			HashSet<Observation> locations = new HashSet<Observation>();

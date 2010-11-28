@@ -29,8 +29,7 @@ public abstract class Strategy {
 	protected Random random;
 	protected Point2D whereIAm = null;
 	protected Point2D boat;
-	protected int radius, distance, penalty, numrounds;
-	protected int roundsleft;
+	protected int radius, distance, penalty, numrounds, roundsleft;
 	protected double boatConstant = .9;
 	
 	public ArrayList<SeaCreature> creatureRating = new ArrayList<SeaCreature>();
@@ -105,8 +104,6 @@ public abstract class Strategy {
 			
 			//add to board
 			board.add(o, numrounds - roundsleft);
-			if(o.isDangerous())
-				log.trace("Dangerous");
 			
 			//determine which creatures you've seen already and decrement how many points they're worth
 			updateMyPosition(myPosition, o);
@@ -145,4 +142,7 @@ public abstract class Strategy {
 	 * their frequency, and the amount of the board you can see.
 	 */
 	public abstract void rateCreatures(Set<SeaLifePrototype> seaLifePossibilities);
+
+	/**Return a message to the Isnork*/
+	public abstract String toIsnork();
 }
