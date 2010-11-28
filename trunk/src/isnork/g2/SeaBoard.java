@@ -18,8 +18,9 @@ public class SeaBoard {
 	public SeaSpace[][] board;
 	private int radius, distance, maxscore;
 	private ArrayList<Point2D> positionOfDangerousCreatures;
+	private Point2D boat;
 	
-	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d){
+	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d, Point2D b){
 		creatures = new ArrayList<SeaCreature>();
 		for(SeaLifePrototype c: p){
 			
@@ -42,6 +43,7 @@ public class SeaBoard {
 				
 		radius = r;
 		distance = d;
+		boat = b;
 	}
 	
 	public ArrayList<Point2D> getDangerousPositions(){
@@ -96,13 +98,13 @@ public class SeaBoard {
 		return isThereDanger;
 	}
 	
-	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation,Point2D boatLocation){
+	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation){
 		double myX=myLocation.getX();
 		double myY=myLocation.getY();
 		ArrayList<Direction> harmfulDirections=new ArrayList<Direction>();
 		for(Point2D p: positionOfDangerousCreatures){
-			double dangerX=p.getX()+boatLocation.getX();
-			double dangerY=p.getY()+boatLocation.getY();
+			double dangerX=p.getX()+boat.getX();
+			double dangerY=p.getY()+boat.getY();
 			if (myX == dangerX && myY > dangerY) {
 				harmfulDirections.add(Direction.N);
 				harmfulDirections.add(Direction.NE);
@@ -182,6 +184,20 @@ public class SeaBoard {
 
 	public int getMaxScore() {
 		return maxscore;
+	}
+	
+	public SeaSpace getSeaSpace(Point2D p){
+		
+		return board[(int) p.getX()][(int) p.getY()];
+	}
+
+	public Boolean toBoat(Point2D whereIAm, Direction d) {
+		
+		Point2D going = new Point2D.Double(whereIAm.getX() + d.getDx(), whereIAm.getY() + d.getDy());
+		if(whereIAm.distance(boat) > going.distance(boat))
+			return true;
+		return false;
+		
 	}
 	 
 		

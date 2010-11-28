@@ -30,7 +30,6 @@ public abstract class Strategy {
 	protected Point2D whereIAm = null;
 	protected Point2D boat;
 	protected int radius, distance, penalty, numrounds, roundsleft;
-	protected double boatConstant = .9;
 	
 	public ArrayList<SeaCreature> creatureRating = new ArrayList<SeaCreature>();
 	public HashMap<String, SeaCreature> knownCreatures = new HashMap<String, SeaCreature>();
@@ -44,10 +43,10 @@ public abstract class Strategy {
 		distance = d;
 		radius = r;
 		numrounds = 480;
-		roundsleft = numrounds;
+		roundsleft = numrounds + 1;
 		whereIAm = new Point2D.Double(distance, distance); //is this always true?
 		boat = new Point2D.Double(distance, distance);
-		board = new SeaBoard(2*d, 2*d, radius, seaLifePossibilities, distance);
+		board = new SeaBoard(2*d, 2*d, radius, seaLifePossibilities, distance, boat);
 		random = rand;
 		whatISee=new HashSet<Observation>();
 		
