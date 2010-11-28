@@ -102,6 +102,7 @@ public class SeaBoard {
 		double myX=myLocation.getX();
 		double myY=myLocation.getY();
 		ArrayList<Direction> harmfulDirections=new ArrayList<Direction>();
+		
 		for(Point2D p: positionOfDangerousCreatures){
 			double dangerX=p.getX()+boat.getX();
 			double dangerY=p.getY()+boat.getY();

@@ -32,7 +32,6 @@ public abstract class Strategy {
 	protected Point2D boat;
 	protected int radius, distance, penalty, numrounds;
 	protected int roundsleft;
-	protected double boatConstant = .9;
 	
 	public ArrayList<SeaCreature> ratedCreatures = new ArrayList<SeaCreature>();
 	public HashMap<String, SeaCreature> creatureMapping = new HashMap<String, SeaCreature>();
