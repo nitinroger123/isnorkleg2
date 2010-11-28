@@ -1,23 +1,13 @@
 #Use this page to track our scores across boards
 
 ||Board Name|| Player ||  Dimension || R || Num Divers || Rescue Penalty || Total Score ||
-||boards/HiddenTreasureWithMines.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 87 || 
-||boards/Lochness.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 0 || 
-||boards/Piranha.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -4000 || 
-||boards/g2Benchmark.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 713 || 
-||boards/g2DontGetEaten.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -893 || 
-||boards/g3board.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -72 || 
-||boards/g3board2.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 29 || 
-||boards/happydanger.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -680 || 
-||boards/isnork.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || 77 || 
-||boards/isnork2.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 20 || 100 || -721 || 
-||boards/HiddenTreasureWithMines.xml || isnork.g2.JustKeepSwimming || 10 || 30 || 20 || 100 || 87 || 
-||boards/Lochness.xml || isnork.g2.JustKeepSwimming || 10 || 30 || 20 || 100 || 0 || 
-||boards/Piranha.xml || isnork.g2.JustKeepSwimming || 10 || 30 || 20 || 100 || -250 || 
-||boards/g2Benchmark.xml || isnork.g2.JustKeepSwimming || 10 || 30 || 20 || 100 || 171 || 
-||boards/g2DontGetEaten.xml || isnork.g2.JustKeepSwimming || 10 || 30 || 20 || 100 || -707 || 
-||boards/g3board.xml || isnork.g2.JustKeepSwimming || 10 || 30 || 20 || 100 || -561 || 
-||boards/g3board2.xml || isnork.g2.JustKeepSwimming || 10 || 30 || 20 || 100 || 39 || 
-||boards/happydanger.xml || isnork.g2.JustKeepSwimming || 10 || 30 || 20 || 100 || 139 || 
-||boards/isnork.xml || isnork.g2.JustKeepSwimming || 10 || 30 || 20 || 100 || -633 || 
-||boards/isnork2.xml || isnork.g2.JustKeepSwimming || 10 || 30 || 20 || 100 || -121 || 
+||boards/HiddenTreasureWithMines.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 100 || 100 || 87 || 
+||boards/Lochness.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 100 || 100 || 0 || 
+||boards/Piranha.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 100 || 100 || 1000 || 
+||boards/g2Benchmark.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 100 || 100 || -3287 || 
+||boards/g2DontGetEaten.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 100 || 100 || -561 || 
+||boards/g3board.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 100 || 100 || -8 || 
+||boards/g3board2.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 100 || 100 || 31 || 
+||boards/happydanger.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 100 || 100 || -220 || 
+||boards/isnork.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 100 || 100 || 57 || 
+||boards/isnork2.xml || isnork.g2.JustKeepSwimming || 5 || 30 || 100 || 100 || -122 || 
