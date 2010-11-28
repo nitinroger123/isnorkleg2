@@ -2,7 +2,7 @@ package isnork.sim;
 
 public class Config {
 
-	public static int radius = 4;
+	public static int radius = 5;
 	public static int dimension = 20;
 	public static int divers = 1;
 	public static int rescuepenalty = 100;

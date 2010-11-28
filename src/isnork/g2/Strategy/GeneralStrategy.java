@@ -234,6 +234,7 @@ public class GeneralStrategy extends Strategy {
 
 		ArrayList<BackTrackMove> backMoves = new ArrayList<BackTrackMove>();
 		for (Direction d : this.directions) {
+			
 			if (temp.contains(d))
 				backMoves.add(new BackTrackMove(d, board.toBoat(whereIAm, d),
 						false, roundsleft, whereIAm, boat));
