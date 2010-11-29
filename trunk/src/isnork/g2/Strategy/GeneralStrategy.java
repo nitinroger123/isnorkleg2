@@ -18,7 +18,7 @@ import isnork.sim.GameObject.Direction;
 
 public class GeneralStrategy extends Strategy {
 
-	private static final int TIME_TO_GO_HOME = 60;
+	private static final int TIME_TO_GO_HOME = 55;
 
 	private Logger log = Logger.getLogger(this.getClass());
 	public boolean goingOut = false;
