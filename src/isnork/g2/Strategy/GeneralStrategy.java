@@ -24,6 +24,7 @@ public class GeneralStrategy extends Strategy {
 	public boolean goingOut = false;
 	public Direction outDirection = null;
 	protected double boatConstant = 2;
+	boolean goingHome = false;
 
 	public GeneralStrategy(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id) {
@@ -41,7 +42,7 @@ public class GeneralStrategy extends Strategy {
 		/*
 		 * temp fix.
 		 */
-		if(roundsleft<TIME_TO_GO_HOME){
+		if(roundsleft < TIME_TO_GO_HOME || goingHome){
 			return backtrack(true);
 		}
 		
@@ -60,9 +61,14 @@ public class GeneralStrategy extends Strategy {
 //			System.err.println("backtracking " + roundsleft);
 //			return backtrack(false);
 //		}
-		if(whereIAm.distance(boat) > roundsleft*3)
+		if(whereIAm.distance(boat) > roundsleft/2 || this.myHappiness >= board.getMaxScore())
 		{
-			System.err.println("backtracking " + roundsleft);
+			goingHome = true;
+			return backtrack(true);
+		}
+		
+		if(whereIAm.distance(boat) > roundsleft/3 || this.myHappiness >= board.getMaxScore())
+		{
 			return backtrack(false);
 		}
 
