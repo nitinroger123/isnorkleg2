@@ -280,10 +280,13 @@ public final class GUI extends JFrame implements ActionListener, GameListener,
 			controlPanel.begin.setEnabled(true);
 			configPanel.setEnabled(true);
 			String s = "After 8 hours, total happiness: "
-					+ engine.getScores() + ", avg: "+((double)engine.getScores()/engine.getConfig().getNumDivers());
+					+ engine.getScores() + ", avg: "+
+					((double)engine.getScores()/engine.getConfig().getNumDivers()
+							+ " DSQ: " + engine.getDsq());
 			JOptionPane.showMessageDialog((Frame) c, s, "Game Over",
 					JOptionPane.INFORMATION_MESSAGE);
 			Config.totalScore = engine.getScores();
+			Config.dq = engine.getDsq();
 
 			break;
 		case MOVEPROCESSED:
