@@ -38,7 +38,13 @@ public class GeneralStrategy extends Strategy {
 
 	@Override
 	public Direction getMove() {
-
+		/*
+		 * temp fix.
+		 * 
+		 */
+		if(roundsleft<TIME_TO_GO_HOME){
+			return backtrack(true);
+		}
 		/**
 		 * ON BOAT, DANGEROUS CREATURES RIGHT BELOW US
 		 */
@@ -53,7 +59,7 @@ public class GeneralStrategy extends Strategy {
 		if ((boatConstant * (whereIAm.distance(boat) + 2) > (roundsleft / 3))
 				|| this.myHappiness >= board.getMaxScore()) {
 			System.err.println("backtracking " + roundsleft);
-			return backtrack();
+			return backtrack(false);
 		}
 
 		/**
@@ -104,17 +110,17 @@ public class GeneralStrategy extends Strategy {
 						- radius + 1)) {
 			goingOut = false;
 			outDirection = null;
-			return backtrack();
+			return backtrack(false);
 		}
 
 		// if he's coming in and not at the boat, keep coming in
 		if (!goingOut
 				&& !(whereIAm.getX() == distance && whereIAm.getY() == distance)) {
-			return backtrack();
+			return backtrack(false);
 		}
 
 		if (!goingOut) {
-			return backtrack();
+			return backtrack(false);
 		}
 
 		if (outDirection == null) {
@@ -219,11 +225,52 @@ public class GeneralStrategy extends Strategy {
 		}
 		return d;
 	}
+	/*
+	 * New method to go to a goal without getting hurt. 
+	 * desperate time tells us if its imperative that we reach the boat or not. If true, we just go
+	 * to the boat and don't avoid danger. 
+	 * 
+	 */
+	public Direction goToGoalWithoutGettingBit(Point2D goal,boolean desperateTime){
+		
+		if(!desperateTime && board.areThereDangerousCreatures(whatISee)){
+			return runAwayFromDanger(board.getHarmfulDirections(whereIAm));
+		}
+		double currX = whereIAm.getX();
+        double currY = whereIAm.getY();
+        log.trace("Current X: " + currX + " Current Y: " + currY);
+        if (currX == goal.getX() && currY == goal.getY()) {
+                // stay put, we have reached the goal
+                return null;
+        }
+        if (currX > goal.getX() && currY > goal.getY()) {
+                return Direction.NW;
+        }
+        if (currX < goal.getX() && currY < goal.getY()) {
+                return Direction.SE;
+        }
+        if (currX < goal.getX() && currY > goal.getY() || currX < goal.getX()
+                        && currY == goal.getY()) {
+                return Direction.E;
+        }
+        if (currX > goal.getX() && currY < goal.getY() || currX == goal.getX()
+                        && currY < goal.getY()) {
+                return Direction.S;
+        }
+
+        if (currX == goal.getX() && currY > goal.getY()) {
+                return Direction.N;
+        }
+        if (currX > goal.getX() && currY == goal.getY()) {
+                return Direction.W;
+        }
+        return null;
+		
+	}
 
 	/** Move to get the player back to the boat */
-	public Direction backtrack() {
-
-		return goToGoal(boat);
+	public Direction backtrack(boolean desperateTime) {
+		return goToGoalWithoutGettingBit(boat,desperateTime);
 	}
 
 	private Direction goToGoal(Point2D goal) {
