@@ -67,15 +67,25 @@ public final class GameEngine {
 	HashMap<Player, QueuedPlayer> queuedPlayers;
 	HashMap<Player,HashSet<SeaLife>> beenSeenById;
 	HashMap<Player,HashMap<String, Integer>> beenSeenByName;
+	
+	int dsq = 0;
+	public int getDsq() {
+		return dsq;
+	}
+	
 	public boolean step() {
 		if(round > 480)
 		{
 			Point2D origin = new Point2D.Double(0, 0);
+			dsq = 0;
+
 			for (Player pl : players) {
 				if(!pl.location.equals(origin))
 				{
 					pl.happiness-=config.getPenalty();
 					score-=config.getPenalty();
+					dsq++;
+
 				}
 			}
 			notifyListeners(GameUpdateType.GAMEOVER);

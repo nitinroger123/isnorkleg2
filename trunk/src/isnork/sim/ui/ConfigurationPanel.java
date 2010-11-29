@@ -1,3 +1,7 @@
+                                                                     
+                                                                     
+                                                                     
+                                             
 /*
  * 	$Id: ConfigurationPanel.java,v 1.3 2007/11/14 22:00:22 johnc Exp $
  * 
@@ -61,7 +65,6 @@ public final class ConfigurationPanel extends JPanel implements ChangeListener,
 	private JLabel score;
 	private JButton remove;
 	private JSpinner randomSeed;
-	private JSpinner penalty;
 	
 	private JLabel playerLabel;
 	private JComboBox playerBox;
@@ -79,7 +82,7 @@ public final class ConfigurationPanel extends JPanel implements ChangeListener,
 
 		this.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(), "Configuration"));
-//		this.setPreferredSize(new Dimension(350, 1200));
+		this.setPreferredSize(new Dimension(350, 1200));
 		
 		this.setLayout(new GridLayout(0, 2));
 
@@ -89,7 +92,7 @@ public final class ConfigurationPanel extends JPanel implements ChangeListener,
 		numAntsLabel.setFont(config_font);
 		dSpinner = new JSpinner(new SpinnerNumberModel(
 				GameConfig.d, 1, null, 1));
-		dSpinner.setPreferredSize(new Dimension(120, 10));
+		dSpinner.setPreferredSize(new Dimension(100, 10));
 		dSpinner.addChangeListener(this);
 
 		add(numAntsLabel);
@@ -100,7 +103,7 @@ public final class ConfigurationPanel extends JPanel implements ChangeListener,
 		lbl.setFont(config_font);
 		rSpinner = new JSpinner(new SpinnerNumberModel(
 				this.config.getR(), 1, null, 1));
-		rSpinner.setPreferredSize(new Dimension(120, 10));
+		rSpinner.setPreferredSize(new Dimension(100, 10));
 		rSpinner.addChangeListener(this);
 
 		add(lbl);
@@ -110,17 +113,11 @@ public final class ConfigurationPanel extends JPanel implements ChangeListener,
 		label.setFont(config_font);
 		numDiversSpinner = new JSpinner(new SpinnerNumberModel(this.config.getNumDivers(), 1, null,
 				1));
-		numDiversSpinner.setPreferredSize(new Dimension(120, 10));
+		numDiversSpinner.setPreferredSize(new Dimension(100, 10));
 		numDiversSpinner.addChangeListener(this);
 		add(label);
 		add(numDiversSpinner);
 
-		penalty = new JSpinner(new SpinnerNumberModel(this.config.getPenalty(), 0, null,
-				1));
-		penalty.addChangeListener(this);
-		add(new JLabel("Rescue Penalty"));
-		add(penalty);
-		
 		randomSeed = new JSpinner(new SpinnerNumberModel(this.config.getRandomSeed(), new Long(1), null,
 				new Long(1)));
 		randomSeed.addChangeListener(this);
@@ -184,9 +181,6 @@ public final class ConfigurationPanel extends JPanel implements ChangeListener,
 		 else if(arg0.getSource().equals(numDiversSpinner))
 		 config.setNumDivers(((Integer) ((JSpinner)
 		 arg0.getSource()).getValue()).intValue());
-		 else if(arg0.getSource().equals(penalty))
-			 config.setPenalty(((Integer) ((JSpinner)
-			 arg0.getSource()).getValue()).intValue());
 		 else if(arg0.getSource().equals(randomSeed))
 			 config.setRandomSeed(((Long) ((JSpinner)
 			 arg0.getSource()).getValue()).longValue());
