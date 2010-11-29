@@ -72,7 +72,7 @@ public class BackTrackMove implements Comparable<BackTrackMove>{
 	}
 	
 	public String toString(){
-		return "move in " + d + " togoal: " + toGoal + ", safe: " + safe; 
+		return "move in " + d + " to goal: " + toGoal + ", safe: " + safe; 
 	}
 	public Direction d = null;
 	public Boolean toGoal = false;

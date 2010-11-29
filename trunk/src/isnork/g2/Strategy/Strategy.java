@@ -42,6 +42,7 @@ public abstract class Strategy {
 	public int myHappiness = 0;
 	public int myId = 0;
 	public Point2D intermediateGoal = null;
+	public SeaCreature searchingFor = null;
 	
 	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id){
 		myId = id;
@@ -128,6 +129,7 @@ public abstract class Strategy {
 			updateMyPosition(myPosition, o);
 		}
 		
+		checkFoundGoal(incomingMessages);
 		updateIncomingMessages(incomingMessages);
 	}
 
@@ -188,4 +190,10 @@ public abstract class Strategy {
 	 * Returns a move for the snorkler
 	 */
 	public abstract Direction getMove();
+	
+	/**
+	 * Checks if we found the creature we were looking for, so we no longer have
+	 * an intermediate goal.
+	 */
+	public abstract void checkFoundGoal(Set<iSnorkMessage> incomingMessages);
 }
