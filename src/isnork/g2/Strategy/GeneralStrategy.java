@@ -39,23 +39,26 @@ public class GeneralStrategy extends Strategy {
 	@Override
 	public Direction getMove() {
 
-		/*
-		 * If we are on the boat and there is danger on the boat we should not
-		 * move
+		/**
+		 * ON BOAT, DANGEROUS CREATURES RIGHT BELOW US
 		 */
 		if (whereIAm.equals(boat) && board.getSeaSpace(boat).hasDanger()) {
 			log.trace("returning null");
 			return null;
 		}
 
-		/*
-		 * Get back on the boat.
+		/**
+		 * GET BACK ON BOAT, NO TIME LEFT!!!
 		 */
-		if ((boatConstant * (whereIAm.distance(boat) + 2) > (roundsleft) / 3)
-				|| this.myHappiness >= board.getMaxScore())
+		if ((boatConstant * (whereIAm.distance(boat) + 2) > (roundsleft / 3))
+				|| this.myHappiness >= board.getMaxScore()) {
+			System.err.println("backtracking " + roundsleft);
 			return backtrack();
+		}
 
-		// If there are dangerous creatures nearby, run like hell.
+		/**
+		 * DANGEROUS CREATURES NEARBY, RUN LIKE HELL
+		 */
 		if (board.areThereDangerousCreatures(this.whatISee)) {
 			ArrayList<Direction> directionsToAvoid = board
 					.getHarmfulDirections(this.whereIAm);
@@ -65,7 +68,7 @@ public class GeneralStrategy extends Strategy {
 		/**
 		 * NO DANGEROUS ANIMALS AROUND
 		 */
-		// if he has a direction in progress, go there!
+		// if he's reached intermediate goal, do something else
 		if (intermediateGoal != null && intermediateGoal.equals(whereIAm)) {
 			intermediateGoal = null;
 		}
@@ -237,7 +240,7 @@ public class GeneralStrategy extends Strategy {
 			temp = board.getHarmfulDirections(this.whereIAm);
 
 		ArrayList<BackTrackMove> backMoves = new ArrayList<BackTrackMove>();
-		for (Direction d : this.directions) {
+		for (Direction d : Strategy.directions) {
 
 			if (temp.contains(d))
 				backMoves.add(new BackTrackMove(d, board.toGoal(whereIAm, d, goal),
@@ -248,7 +251,6 @@ public class GeneralStrategy extends Strategy {
 
 		}
 		Collections.sort(backMoves);
-		System.err.println("First move is: " + backMoves.get(0));
 		for (BackTrackMove safe : backMoves) {
 			log.trace(safe);
 		}
@@ -358,9 +360,10 @@ public class GeneralStrategy extends Strategy {
 						if (bestFind == null && sc.nextHappiness > 0) {
 							bestFind = sc;
 							intermediateGoal = newLoc;
+							searchingFor = sc;
 							changed = true;
 						}
-						// equality case, it's two of the same creature
+						// equality case, it's two of the same creature, get the closest one
 						else if (sc != null && bestFind != null
 								&& sc.nextHappiness == bestFind.nextHappiness) {
 							double newDist = whereIAm.distance(newLoc);
@@ -368,6 +371,7 @@ public class GeneralStrategy extends Strategy {
 								curDist = newDist;
 								bestFind = sc;
 								intermediateGoal = newLoc;
+								searchingFor = sc;
 								changed = true;
 							}
 						}
@@ -379,6 +383,7 @@ public class GeneralStrategy extends Strategy {
 							curDist = whereIAm.distance(newLoc);
 							bestFind = sc;
 							intermediateGoal = newLoc;
+							searchingFor = sc;
 							changed = true;
 						}
 					}
@@ -390,4 +395,14 @@ public class GeneralStrategy extends Strategy {
 		// System.err.println(myId + " rcvd: " + rcvd + " ||| going to "
 		// + intermediateGoal.toString());
 	}
+	
+	public void checkFoundGoal(Set<iSnorkMessage> incomingMessages)
+	{
+		if(searchingFor!=null && searchingFor.seenOnce)
+		{
+			intermediateGoal = null;
+			searchingFor = null;
+		}
+	}
+
 }
