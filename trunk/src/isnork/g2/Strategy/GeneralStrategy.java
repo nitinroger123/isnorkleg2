@@ -40,24 +40,28 @@ public class GeneralStrategy extends Strategy {
 	public Direction getMove() {
 		/*
 		 * temp fix.
-		 * 
 		 */
 		if(roundsleft<TIME_TO_GO_HOME){
 			return backtrack(true);
 		}
+		
 		/**
 		 * ON BOAT, DANGEROUS CREATURES RIGHT BELOW US
 		 */
 		if (whereIAm.equals(boat) && board.getSeaSpace(boat).hasDanger()) {
-			log.trace("returning null");
 			return null;
 		}
 
 		/**
 		 * GET BACK ON BOAT, NO TIME LEFT!!!
 		 */
-		if ((boatConstant * (whereIAm.distance(boat) + 2) > (roundsleft / 3))
-				|| this.myHappiness >= board.getMaxScore()) {
+//		if (((whereIAm.distance(boat) + 2) > (roundsleft / 3))
+//				|| this.myHappiness >= board.getMaxScore()) {
+//			System.err.println("backtracking " + roundsleft);
+//			return backtrack(false);
+//		}
+		if(whereIAm.distance(boat) > roundsleft*3)
+		{
 			System.err.println("backtracking " + roundsleft);
 			return backtrack(false);
 		}
