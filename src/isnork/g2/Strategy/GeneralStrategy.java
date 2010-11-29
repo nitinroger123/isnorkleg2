@@ -18,7 +18,7 @@ import isnork.sim.GameObject.Direction;
 
 public class GeneralStrategy extends Strategy {
 
-	private static final int TIME_TO_GO_HOME = 45;
+	private static final int TIME_TO_GO_HOME = 60;
 
 	private Logger log = Logger.getLogger(this.getClass());
 	public boolean goingOut = false;
@@ -136,9 +136,12 @@ public class GeneralStrategy extends Strategy {
 	}
 
 	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections) {
-
+		//If you are on the boat, you dont need to run
+		if(whereIAm.getX()==boat.getX() && whereIAm.getY()==boat.getY()){
+			//you are safe
+			return null;
+		}
 		// System.err.println("run away from danger");
-
 		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
 		if (!safeMoves.isEmpty()) {
 			Collections.shuffle(safeMoves);
@@ -247,12 +250,22 @@ public class GeneralStrategy extends Strategy {
                 // stay put, we have reached the goal
                 return null;
         }
+        
+        //in a quadrant
         if (currX > goal.getX() && currY > goal.getY()) {
                 return Direction.NW;
         }
         if (currX < goal.getX() && currY < goal.getY()) {
                 return Direction.SE;
         }
+        if (currX < goal.getX() && currY > goal.getY()) {
+                return Direction.NE;
+        }
+        if (currX > goal.getX() && currY < goal.getY()) {
+                return Direction.SW;
+        }       
+        
+        //on a line
         if (currX < goal.getX() && currY > goal.getY() || currX < goal.getX()
                         && currY == goal.getY()) {
                 return Direction.E;
@@ -269,6 +282,7 @@ public class GeneralStrategy extends Strategy {
                 return Direction.W;
         }
         return null;
+
 		
 	}
 
