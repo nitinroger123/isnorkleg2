@@ -10,7 +10,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import isnork.g2.SeaBoard;
-import isnork.g2.SeaCreature;
+import isnork.g2.EachSeaCreature;
+import isnork.g2.SeaCreatureType;
 import isnork.sim.Observation;
 import isnork.sim.SeaLifePrototype;
 import isnork.sim.iSnorkMessage;
@@ -39,13 +40,7 @@ public class GeneralStrategy extends Strategy {
 
 	@Override
 	public Direction getMove() {
-		/*
-		 * temp fix.
-		 */
-		if(roundsleft < TIME_TO_GO_HOME || goingHome){
-			return backtrack(true);
-		}
-		
+	
 		/**
 		 * ON BOAT, DANGEROUS CREATURES RIGHT BELOW US
 		 */
@@ -56,21 +51,12 @@ public class GeneralStrategy extends Strategy {
 		/**
 		 * GET BACK ON BOAT, NO TIME LEFT!!!
 		 */
-//		if (((whereIAm.distance(boat) + 2) > (roundsleft / 3))
-//				|| this.myHappiness >= board.getMaxScore()) {
-//			System.err.println("backtracking " + roundsleft);
-//			return backtrack(false);
-//		}
-		if(whereIAm.distance(boat) > roundsleft/2 || this.myHappiness >= board.getMaxScore())
-		{
-			goingHome = true;
-			return backtrack(true);
-		}
-		
-		if(whereIAm.distance(boat) > roundsleft/3 || this.myHappiness >= board.getMaxScore())
-		{
+		if (((whereIAm.distance(boat) + 2) > (roundsleft / 3))
+				|| this.myHappiness >= board.getMaxScore()) {
+			System.err.println("backtracking " + roundsleft);
 			return backtrack(false);
 		}
+		
 
 		/**
 		 * DANGEROUS CREATURES NEARBY, RUN LIKE HELL
@@ -345,7 +331,7 @@ public class GeneralStrategy extends Strategy {
 	 */
 	public void rateCreatures(Set<SeaLifePrototype> seaLifePossibilities) {
 		// calculate each of the sea creature's ranking value
-		for (SeaCreature sc : ratedCreatures) {
+		for (SeaCreatureType sc : ratedCreatures) {
 			// ranking = happiness x avg frequency
 			// double ranking = sc.returnCreature().getHappiness() *
 			// (sc.returnCreature().getMinCount() +
@@ -364,7 +350,7 @@ public class GeneralStrategy extends Strategy {
 		Collections.reverse(ratedCreatures);
 
 		int count = 0;
-		for (SeaCreature sc : ratedCreatures) {
+		for (SeaCreatureType sc : ratedCreatures) {
 			creatureMapping.put(Character.toString(ALPHABET.charAt(count)), sc);
 
 			// if (myId == 0)
@@ -376,14 +362,14 @@ public class GeneralStrategy extends Strategy {
 	}
 
 	public String getTick(Set<Observation> whatYouSee) {
-		SeaCreature bestVisible = null;
-		SeaCreature worstVisible = null;
+		SeaCreatureType bestVisible = null;
+		SeaCreatureType worstVisible = null;
 		double bestRanking = Double.MIN_VALUE;
 		double worstRanking = Double.MAX_VALUE;
 
 		// track which is the best creature that you can currently see
 		for (Observation o : whatYouSee) {
-			SeaCreature cur = knownCreatures.get(o.getName());
+			SeaCreatureType cur = knownCreatures.get(o.getName());
 
 			if (cur != null) {
 				if (cur.ranking > bestRanking) {
@@ -411,7 +397,7 @@ public class GeneralStrategy extends Strategy {
 	}
 
 	public void updateIncomingMessages(Set<iSnorkMessage> incomingMessages) {
-		SeaCreature bestFind = null;
+		SeaCreatureType bestFind = null;
 		double curDist = Double.MAX_VALUE;
 		boolean changed = false;
 		String rcvd = null;
@@ -419,7 +405,7 @@ public class GeneralStrategy extends Strategy {
 		for (iSnorkMessage ism : incomingMessages) {
 			Point2D newLoc = new Point2D.Double(ism.getLocation().getX()
 					+ distance, ism.getLocation().getY() + distance);
-			SeaCreature sc = creatureMapping.get(ism.getMsg());
+			SeaCreatureType sc = creatureMapping.get(ism.getMsg());
 			rcvd = ism.getMsg();
 
 			if ((ism.getMsg().equals("a") || ism.getMsg().equals("b"))

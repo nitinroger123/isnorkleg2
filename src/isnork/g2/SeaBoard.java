@@ -13,7 +13,7 @@ import isnork.sim.GameObject.Direction;
 /** Represents board */
 public class SeaBoard {
 
-	private ArrayList<SeaCreature> creatures;
+	private ArrayList<EachSeaCreature> creatures;
 	private Set<SeaLifePrototype> prototypes;
 	public SeaSpace[][] board;
 	private int radius, distance, maxscore;
@@ -22,7 +22,7 @@ public class SeaBoard {
 
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d,
 			Point2D b) {
-		creatures = new ArrayList<SeaCreature>();
+		creatures = new ArrayList<EachSeaCreature>();
 		for (SeaLifePrototype c : p) {
 
 			if (c.getMaxCount() >= 3)
@@ -65,7 +65,7 @@ public class SeaBoard {
 	public void add(Observation o, int r) {
 
 		Boolean found = false;
-		for (SeaCreature c : creatures) {
+		for (EachSeaCreature c : creatures) {
 			if (c.getId() == o.getId()) {
 				board[(int) o.getLocation().getX() + distance][(int) o
 						.getLocation().getY()
@@ -77,7 +77,7 @@ public class SeaBoard {
 		if (!found) {
 			for (SeaLifePrototype p : prototypes) {
 				if (p.getName() == o.getName()) {
-					creatures.add(new SeaCreature(p, o.getId(), r));
+					creatures.add(new EachSeaCreature(p, o.getId(), r));
 				}
 			}
 		}
@@ -166,12 +166,12 @@ public class SeaBoard {
 		return true;
 	}
 
-	public SeaCreature getHighScoringCreatureInRadius() {
-		SeaCreature high = null;
+	public EachSeaCreature getHighScoringCreatureInRadius() {
+		EachSeaCreature high = null;
 
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[0].length; j++) {
-				for (SeaCreature o : board[i][j].getOccupiedby()) {
+				for (EachSeaCreature o : board[i][j].getOccupiedby()) {
 
 					if (high == null) // first creature
 						high = o;
