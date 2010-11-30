@@ -28,9 +28,10 @@ public class GeneralStrategy extends Strategy {
 	boolean goingHome = false;
 
 	public GeneralStrategy(int p, int d, int r,
-			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id) {
+			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id,
+			int numDivers) {
 
-		super(p, d, r, seaLifePossibilites, rand, id);
+		super(p, d, r, seaLifePossibilites, rand, id, numDivers);
 		outDirection = getRandomDirection();
 	}
 
@@ -40,7 +41,12 @@ public class GeneralStrategy extends Strategy {
 
 	@Override
 	public Direction getMove() {
-	
+		/*
+		 * temp fix.
+		 */
+		if (roundsleft < TIME_TO_GO_HOME || goingHome) {
+			return backtrack(true);
+		}
 		/**
 		 * ON BOAT, DANGEROUS CREATURES RIGHT BELOW US
 		 */
@@ -51,19 +57,27 @@ public class GeneralStrategy extends Strategy {
 		/**
 		 * GET BACK ON BOAT, NO TIME LEFT!!!
 		 */
-		if (((whereIAm.distance(boat) + 2) > (roundsleft / 3))
+		// if (((whereIAm.distance(boat) + 2) > (roundsleft / 3))
+		// || this.myHappiness >= board.getMaxScore()) {
+		// System.err.println("backtracking " + roundsleft);
+		// return backtrack(false);
+		// }
+		if (whereIAm.distance(boat) > roundsleft / 2
 				|| this.myHappiness >= board.getMaxScore()) {
-			System.err.println("backtracking " + roundsleft);
-			return backtrack(false);
+			goingHome = true;
+			return backtrack(true);
 		}
 		
+		if (whereIAm.distance(boat) > roundsleft / 3
+				|| this.myHappiness >= board.getMaxScore()) {
+			return backtrack(false);
+		}
 
 		/**
 		 * DANGEROUS CREATURES NEARBY, RUN LIKE HELL
 		 */
 		if (board.areThereDangerousCreatures(this.whatISee)) {
-			ArrayList<Direction> directionsToAvoid = board
-					.getHarmfulDirections(this.whereIAm);
+			ArrayList<Direction> directionsToAvoid = board.getHarmfulDirections(this.whereIAm);
 			return runAwayFromDanger(directionsToAvoid);
 		}
 
@@ -128,9 +142,9 @@ public class GeneralStrategy extends Strategy {
 	}
 
 	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections) {
-		//If you are on the boat, you dont need to run
-		if(whereIAm.getX()==boat.getX() && whereIAm.getY()==boat.getY()){
-			//you are safe
+		// If you are on the boat, you dont need to run
+		if (whereIAm.getX() == boat.getX() && whereIAm.getY() == boat.getY()) {
+			// you are safe
 			return null;
 		}
 		// System.err.println("run away from danger");
@@ -224,63 +238,64 @@ public class GeneralStrategy extends Strategy {
 		}
 		return d;
 	}
+
 	/*
-	 * New method to go to a goal without getting hurt. 
-	 * desperate time tells us if its imperative that we reach the boat or not. If true, we just go
-	 * to the boat and don't avoid danger. 
+	 * New method to go to a goal without getting hurt. desperate time tells us
+	 * if its imperative that we reach the boat or not. If true, we just go to
+	 * the boat and don't avoid danger.
 	 * 
 	 */
-	public Direction goToGoalWithoutGettingBit(Point2D goal,boolean desperateTime){
-		
-		if(!desperateTime && board.areThereDangerousCreatures(whatISee)){
+	public Direction goToGoalWithoutGettingBit(Point2D goal,
+			boolean desperateTime) {
+
+		if (!desperateTime && board.areThereDangerousCreatures(whatISee)) {
 			return runAwayFromDanger(board.getHarmfulDirections(whereIAm));
 		}
 		double currX = whereIAm.getX();
-        double currY = whereIAm.getY();
-        log.trace("Current X: " + currX + " Current Y: " + currY);
-        if (currX == goal.getX() && currY == goal.getY()) {
-                // stay put, we have reached the goal
-                return null;
-        }
-        
-        //in a quadrant
-        if (currX > goal.getX() && currY > goal.getY()) {
-                return Direction.NW;
-        }
-        if (currX < goal.getX() && currY < goal.getY()) {
-                return Direction.SE;
-        }
-        if (currX < goal.getX() && currY > goal.getY()) {
-                return Direction.NE;
-        }
-        if (currX > goal.getX() && currY < goal.getY()) {
-                return Direction.SW;
-        }       
-        
-        //on a line
-        if (currX < goal.getX() && currY > goal.getY() || currX < goal.getX()
-                        && currY == goal.getY()) {
-                return Direction.E;
-        }
-        if (currX > goal.getX() && currY < goal.getY() || currX == goal.getX()
-                        && currY < goal.getY()) {
-                return Direction.S;
-        }
+		double currY = whereIAm.getY();
+		log.trace("Current X: " + currX + " Current Y: " + currY);
+		if (currX == goal.getX() && currY == goal.getY()) {
+			// stay put, we have reached the goal
+			return null;
+		}
 
-        if (currX == goal.getX() && currY > goal.getY()) {
-                return Direction.N;
-        }
-        if (currX > goal.getX() && currY == goal.getY()) {
-                return Direction.W;
-        }
-        return null;
+		// in a quadrant
+		if (currX > goal.getX() && currY > goal.getY()) {
+			return Direction.NW;
+		}
+		if (currX < goal.getX() && currY < goal.getY()) {
+			return Direction.SE;
+		}
+		if (currX < goal.getX() && currY > goal.getY()) {
+			return Direction.NE;
+		}
+		if (currX > goal.getX() && currY < goal.getY()) {
+			return Direction.SW;
+		}
 
-		
+		// on a line
+		if (currX < goal.getX() && currY > goal.getY() || currX < goal.getX()
+				&& currY == goal.getY()) {
+			return Direction.E;
+		}
+		if (currX > goal.getX() && currY < goal.getY() || currX == goal.getX()
+				&& currY < goal.getY()) {
+			return Direction.S;
+		}
+
+		if (currX == goal.getX() && currY > goal.getY()) {
+			return Direction.N;
+		}
+		if (currX > goal.getX() && currY == goal.getY()) {
+			return Direction.W;
+		}
+		return null;
+
 	}
 
 	/** Move to get the player back to the boat */
 	public Direction backtrack(boolean desperateTime) {
-		return goToGoalWithoutGettingBit(boat,desperateTime);
+		return goToGoalWithoutGettingBit(boat, desperateTime);
 	}
 
 	private Direction goToGoal(Point2D goal) {
@@ -300,11 +315,11 @@ public class GeneralStrategy extends Strategy {
 		for (Direction d : Strategy.directions) {
 
 			if (temp.contains(d))
-				backMoves.add(new BackTrackMove(d, board.toGoal(whereIAm, d, goal),
-						false, roundsleft, whereIAm, goal));
+				backMoves.add(new BackTrackMove(d, board.toGoal(whereIAm, d,
+						goal), false, roundsleft, whereIAm, goal));
 			else
-				backMoves.add(new BackTrackMove(d, board.toGoal(whereIAm, d, goal),
-						true, roundsleft, whereIAm, goal));
+				backMoves.add(new BackTrackMove(d, board.toGoal(whereIAm, d,
+						goal), true, roundsleft, whereIAm, goal));
 
 		}
 		Collections.sort(backMoves);
@@ -319,7 +334,7 @@ public class GeneralStrategy extends Strategy {
 			}
 		}
 
-		// wont get here
+		// won't get here
 		return null;
 	}
 
@@ -340,8 +355,8 @@ public class GeneralStrategy extends Strategy {
 			double ranking = sc.avgPossibleHappiness;
 
 			// if he's dangerous, super low rank him
-//			if (sc.returnCreature().isDangerous())
-//				ranking *= -1.0;
+			// if (sc.returnCreature().isDangerous())
+			// ranking *= -1.0;
 
 			sc.ranking = ranking;
 		}
@@ -420,7 +435,8 @@ public class GeneralStrategy extends Strategy {
 							searchingFor = sc;
 							changed = true;
 						}
-						// equality case, it's two of the same creature, get the closest one
+						// equality case, it's two of the same creature, get the
+						// closest one
 						else if (sc != null && bestFind != null
 								&& sc.nextHappiness == bestFind.nextHappiness) {
 							double newDist = whereIAm.distance(newLoc);
@@ -452,14 +468,18 @@ public class GeneralStrategy extends Strategy {
 		// System.err.println(myId + " rcvd: " + rcvd + " ||| going to "
 		// + intermediateGoal.toString());
 	}
-	
-	public void checkFoundGoal(Set<iSnorkMessage> incomingMessages)
-	{
-		if(searchingFor!=null && searchingFor.seenOnce)
-		{
+
+	public void checkFoundGoal(Set<iSnorkMessage> incomingMessages) {
+		if (searchingFor != null && searchingFor.seenOnce) {
 			intermediateGoal = null;
 			searchingFor = null;
 		}
 	}
 
+	
+	public Direction makeSpiralMove()
+	{
+		
+		return null;
+	}
 }
