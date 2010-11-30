@@ -8,7 +8,7 @@ import isnork.sim.SeaLife;
 import isnork.sim.SeaLifePrototype;
 
 /**Represents a sea creature!*/
-public class SeaCreature implements Comparable<SeaCreature> {
+public class SeaCreatureType implements Comparable<SeaCreatureType> {
 	
 	private int numTimesSeen= 0;
 	private SeaLifePrototype seaCreature;
@@ -25,18 +25,18 @@ public class SeaCreature implements Comparable<SeaCreature> {
 	public String isnorkMessage = null;
 	public boolean seenOnce = false;
 	
-	public SeaCreature(SeaLifePrototype s){
+	public SeaCreatureType(SeaLifePrototype s){
 		seaCreature = s;
 		nextHappiness = s.getHappiness();
 		seen = new HashSet<Integer>();
 	} 
 	
-	public SeaCreature(SeaLifePrototype p, int id2) {
+	public SeaCreatureType(SeaLifePrototype p, int id2) {
 		seaCreature = p;
 		this.id = id2;
 	}
 
-	public SeaCreature(SeaLifePrototype p, int id2, int r) {
+	public SeaCreatureType(SeaLifePrototype p, int id2, int r) {
 		seaCreature = p;
 		this.id = id2;
 		lastseen = r;
@@ -116,13 +116,13 @@ public class SeaCreature implements Comparable<SeaCreature> {
 		if(o.getClass() != this.getClass())
 			return false;
 		
-		if(this.id == ((SeaCreature)o).id)
+		if(this.id == ((SeaCreatureType)o).id)
 			return true;
 		
 		return false;
 	}
 
-	public int compareTo(SeaCreature arg0) {
+	public int compareTo(SeaCreatureType arg0) {
 		if(this.ranking > arg0.ranking)
 			return 1;
 		

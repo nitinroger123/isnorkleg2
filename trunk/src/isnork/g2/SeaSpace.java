@@ -13,7 +13,7 @@ public class SeaSpace {
 	public SeaSpace(Point2D p) {
 		location = p;
 		center = new Point2D.Double(p.getX() + .5, p.getY() + .5);
-		occupiedby = new ArrayList<SeaCreature>();
+		occupiedby = new ArrayList<EachSeaCreature>();
 		log = Logger.getLogger(this.getClass());
 	}
 
@@ -21,19 +21,19 @@ public class SeaSpace {
 		return location;
 	}
 
-	public void set(ArrayList<SeaCreature> occupiedby, int r) {
+	public void set(ArrayList<EachSeaCreature> occupiedby, int r) {
 		roundset = r;
 		this.occupiedby = occupiedby;
 
 	}
 
-	public ArrayList<SeaCreature> getOccupiedby() {
+	public ArrayList<EachSeaCreature> getOccupiedby() {
 		return occupiedby;
 	}
 
 	public boolean isoccupideby(int id) {
 
-		for (SeaCreature s : occupiedby) {
+		for (EachSeaCreature s : occupiedby) {
 			if (s.getId() == id)
 				return true;
 		}
@@ -43,8 +43,8 @@ public class SeaSpace {
 
 	public void remove(int id) {
 
-		SeaCreature temp = null;
-		for (SeaCreature s : occupiedby) {
+		EachSeaCreature temp = null;
+		for (EachSeaCreature s : occupiedby) {
 			if (s.getId() == id)
 				temp = s;
 		}
@@ -52,14 +52,14 @@ public class SeaSpace {
 		occupiedby.remove(temp);
 	}
 
-	public void addCreature(SeaCreature c, int r) {
+	public void addCreature(EachSeaCreature c, int r) {
 		c.setLastSeen(r);
 		occupiedby.add(c);
 	}
 
 	/** Tells us if there is a dangerous creature on this space */
 	public Boolean hasDanger() {
-		for (SeaCreature o : occupiedby) {
+		for (EachSeaCreature o : occupiedby) {
 			// if(o.returnCreture().isDangerous() && o.getLastseen() == r){
 			if (o.returnCreature().isDangerous()) {
 				log.trace("Danger from: " + o.getId() + " on space: "
@@ -125,7 +125,7 @@ public class SeaSpace {
 		return center;
 	}
 
-	private ArrayList<SeaCreature> occupiedby;
+	private ArrayList<EachSeaCreature> occupiedby;
 	private int roundset;
 	private Point2D location, center;
 	private Logger log;

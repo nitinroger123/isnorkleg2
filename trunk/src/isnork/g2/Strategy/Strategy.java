@@ -11,7 +11,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import isnork.g2.SeaBoard;
-import isnork.g2.SeaCreature;
+import isnork.g2.EachSeaCreature;
+import isnork.g2.SeaCreatureType;
 import isnork.sim.Observation;
 import isnork.sim.SeaLifePrototype;
 import isnork.sim.iSnorkMessage;
@@ -33,16 +34,16 @@ public abstract class Strategy {
 	protected int radius, distance, penalty, numrounds;
 	protected int roundsleft;
 	
-	public ArrayList<SeaCreature> ratedCreatures = new ArrayList<SeaCreature>();
-	public HashMap<String, SeaCreature> creatureMapping = new HashMap<String, SeaCreature>();
-	public HashMap<String, SeaCreature> knownCreatures = new HashMap<String, SeaCreature>();
+	public ArrayList<SeaCreatureType> ratedCreatures = new ArrayList<SeaCreatureType>();
+	public HashMap<String, SeaCreatureType> creatureMapping = new HashMap<String, SeaCreatureType>();
+	public HashMap<String, SeaCreatureType> knownCreatures = new HashMap<String, SeaCreatureType>();
 	public int minPossibleHappiness = 0;
 	public int avgPossibleHappiness = 0;
 	public int maxPossibleHappiness = 0;
 	public int myHappiness = 0;
 	public int myId = 0;
 	public Point2D intermediateGoal = null;
-	public SeaCreature searchingFor = null;
+	public SeaCreatureType searchingFor = null;
 	
 	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id){
 		myId = id;
@@ -60,7 +61,7 @@ public abstract class Strategy {
 		//create the basic arraylist of points based on the minimum amount that can be there
 		for(SeaLifePrototype slp : seaLifePossibilities)
 		{
-			SeaCreature sc = new SeaCreature(slp);
+			EachSeaCreature sc = new EachSeaCreature(slp);
 			int h = slp.getHappiness();
 			int combinedH = (h + (int)((double)h * .5) + (int)((double)h * .25));
 			int minH = 0;
@@ -90,7 +91,7 @@ public abstract class Strategy {
 			avgPossibleHappiness += avgH;
 			
 			//add the prototype that maps the name to the sea life prototype (used later)
-			SeaCreature temp = new SeaCreature(slp);
+			SeaCreatureType temp = new SeaCreatureType(slp);
 			temp.minPossibleHappiness = minH;
 			temp.maxPossibleHappiness = maxH;
 			temp.avgPossibleHappiness = avgH;
@@ -142,7 +143,7 @@ public abstract class Strategy {
 	 */
 	private void updateMyPosition(Point2D myPosition, Observation o)
 	{
-		SeaCreature sc = knownCreatures.get(o.getName());
+		SeaCreatureType sc = knownCreatures.get(o.getName());
 		if(sc != null && !sc.seen.contains(o.getName()))
 		{
 			//add this creature to the list, increment any points that might be gained
