@@ -42,16 +42,18 @@ public abstract class Strategy {
 	public int maxPossibleHappiness = 0;
 	public int myHappiness = 0;
 	public int myId = 0;
+	public int numSnorkelers = 0;
 	public Point2D intermediateGoal = null;
 	public SeaCreatureType searchingFor = null;
 	
-	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id){
+	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id, int numDivers) {
 		myId = id;
 		penalty = p;
 		distance = d;
 		radius = r;
 		numrounds = 480;
 		roundsleft = numrounds;
+		numSnorkelers = numDivers;
 		whereIAm = new Point2D.Double(distance, distance); //is this always true?
 		boat = new Point2D.Double(distance, distance);
 		board = new SeaBoard(2*d, 2*d, radius, seaLifePossibilities, distance, boat);
