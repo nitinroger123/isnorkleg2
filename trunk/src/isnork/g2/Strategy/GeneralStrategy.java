@@ -354,8 +354,8 @@ public class GeneralStrategy extends Strategy {
 			double ranking = sc.avgPossibleHappiness;
 
 			// if he's dangerous, super low rank him
-			if (sc.returnCreature().isDangerous())
-				ranking *= -1.0;
+//			if (sc.returnCreature().isDangerous())
+//				ranking *= -1.0;
 
 			sc.ranking = ranking;
 		}
