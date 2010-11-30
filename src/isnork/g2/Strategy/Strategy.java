@@ -10,9 +10,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import isnork.g2.SeaBoard;
-import isnork.g2.EachSeaCreature;
-import isnork.g2.SeaCreatureType;
+import isnork.g2.utilities.EachSeaCreature;
+import isnork.g2.utilities.SeaBoard;
+import isnork.g2.utilities.SeaCreatureType;
 import isnork.sim.Observation;
 import isnork.sim.SeaLifePrototype;
 import isnork.sim.iSnorkMessage;
