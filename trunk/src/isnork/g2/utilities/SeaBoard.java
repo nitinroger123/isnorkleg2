@@ -18,11 +18,9 @@ public class SeaBoard {
 	private Set<SeaLifePrototype> prototypes;
 	public SeaSpace[][] board;
 	private int radius, distance, maxscore;
-	private ArrayList<Point2D> positionOfDangerousCreatures;
 	private ArrayList<Direction> lastKnownDirectionOfDangerousCreatures;
 	private Point2D boat;
 	private boolean areDangerousCreaturesMobile;
-	private ArrayList<Observation> dangerousCreatures;
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d,
 			Point2D b) {
 		creatures = new ArrayList<EachSeaCreature>();
@@ -49,11 +47,7 @@ public class SeaBoard {
 		distance = d;
 		boat = b;
 	}
-
-	public ArrayList<Point2D> getDangerousPositions() {
-		return positionOfDangerousCreatures;
-	}
-
+	
 	public void remove(int id) {
 
 		for (int i = 0; i < board.length; i++) {
@@ -94,36 +88,43 @@ public class SeaBoard {
 	 */
 	public boolean areThereDangerousCreatures(Set<Observation> whatISee) {
 		boolean isThereDanger = false;
-		areDangerousCreaturesMobile=false;
-		positionOfDangerousCreatures = new ArrayList<Point2D>();
-		positionOfDangerousCreatures.clear();
-		lastKnownDirectionOfDangerousCreatures=new ArrayList<Direction>();
-		dangerousCreatures=new ArrayList<Observation>();
-		dangerousCreatures.clear();
+		for (Observation creature : whatISee) {
+			if (creature.isDangerous()) {
+				return true;
+			}
+		}
+		return false;
+}
+	
+	public ArrayList<Observation> getDangerousCreaturesInRadius(Set<Observation> whatISee){
+
+		ArrayList<Observation> dangerousCreatures=new ArrayList<Observation>();
 		for (Observation creature : whatISee) {
 			if (creature.isDangerous()) {
 				dangerousCreatures.add(creature);
-				if(creature.getDirection()!=null){
-					areDangerousCreaturesMobile=true;
-					lastKnownDirectionOfDangerousCreatures.add(creature.getDirection());
-				}
-				positionOfDangerousCreatures.add(creature.getLocation());
-				isThereDanger = true;
 			}
 		}
-		return isThereDanger;
+		
+		return dangerousCreatures;	
 	}
 	
-	public ArrayList<Observation> getDangerousCreaturesInRadius(){
-		return dangerousCreatures;
+	public ArrayList<Point2D> getPositionOfDangerousCreatures(Set<Observation> whatISee){
+
+		ArrayList<Point2D> dangerousCreatures=new ArrayList<Point2D>();
+		for (Observation creature : whatISee) {
+			if (creature.isDangerous()) {
+				dangerousCreatures.add(creature.getLocation());
+			}
+		}
+		return dangerousCreatures;	
 	}
 
-	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation) {
+	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation, Set<Observation> whatISee) {
 		double myX = myLocation.getX();
 		double myY = myLocation.getY();
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
 
-		for (Point2D p : positionOfDangerousCreatures) {
+		for (Point2D p : getPositionOfDangerousCreatures(whatISee)) {
 			double dangerX = p.getX() + boat.getX();
 			double dangerY = p.getY() + boat.getY();
 			if (myX == dangerX && myY > dangerY) {
@@ -368,8 +369,16 @@ public class SeaBoard {
 		return lastKnownDirectionOfDangerousCreatures;
 	}
 
-	public boolean isDangerMobile(Point2D whereIAm) {
-		return areDangerousCreaturesMobile;
+	public boolean isDangerMobile(Point2D whereIAm, Set<Observation> whatISee) {
+		
+		Boolean mobile = false;
+		
+		for (Observation creature : whatISee) {
+			if (creature.isDangerous() && creature.getDirection() != null) 
+				mobile = true;
+			}
+		
+		return mobile;
 	}
 
 	

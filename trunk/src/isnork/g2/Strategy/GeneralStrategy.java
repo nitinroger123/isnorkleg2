@@ -1,16 +1,11 @@
 package isnork.g2.Strategy;
 
 import java.awt.geom.Point2D;
-import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
-
-import isnork.g2.utilities.EachSeaCreature;
-import isnork.g2.utilities.SeaBoard;
 import isnork.g2.utilities.SeaCreatureType;
 import isnork.sim.Observation;
 import isnork.sim.SeaLifePrototype;
@@ -88,7 +83,8 @@ public class GeneralStrategy extends Strategy {
 		 * DANGEROUS CREATURES NEARBY, RUN LIKE HELL
 		 */
 		if (board.areThereDangerousCreatures(this.whatISee)) {
-			ArrayList<Direction> directionsToAvoid = board.getHarmfulDirections(this.whereIAm);
+			ArrayList<Direction> directionsToAvoid = 
+				board.getHarmfulDirections(this.whereIAm, this.whatISee);
 			return runAwayFromDanger(directionsToAvoid,intermediateGoal);
 		}
 
@@ -299,14 +295,10 @@ public class GeneralStrategy extends Strategy {
 		if(desperateTime){
 			return goToGoalWithoutGettingBit(goal, desperateTime);
 		}
-		double currentX=whereIAm.getX();
-		double currentY=whereIAm.getY();
-		double distanceToGoal=goal.distance(whereIAm);
+		
 		if(board.areThereDangerousCreatures(whatISee)){
-			ArrayList<Observation> dangerousCreatures=board.getDangerousCreaturesInRadius();
-			ArrayList<Direction> harmfulDirections=board.getHarmfulDirections(whereIAm);
-			ArrayList<Direction> lastDirectionOfHarmfulCreatures=board.getLastDirectionOfHarmfulCreatures();
-			boolean areTheDangerousCreaturesMoving =board.isDangerMobile(whereIAm);
+			ArrayList<Direction> harmfulDirections=board.getHarmfulDirections(whereIAm, whatISee);
+			boolean areTheDangerousCreaturesMoving =board.isDangerMobile(whereIAm, whatISee);
 			//go to goal by selecting the best possible direction to goal without getting bit.
 			if(areTheDangerousCreaturesMoving){
 				return gotoGoalWhenDangerIsMobile(goal, harmfulDirections);
@@ -368,7 +360,7 @@ public class GeneralStrategy extends Strategy {
 			boolean desperateTime) {
 
 		if (!desperateTime && board.areThereDangerousCreatures(whatISee)) {
-			return runAwayFromDanger(board.getHarmfulDirections(whereIAm),goal);
+			return runAwayFromDanger(board.getHarmfulDirections(whereIAm, whatISee),goal);
 		}
 		double currX = whereIAm.getX();
 		double currY = whereIAm.getY();
@@ -428,7 +420,7 @@ public class GeneralStrategy extends Strategy {
 
 		ArrayList<Direction> temp = new ArrayList<Direction>();
 		if (board.areThereDangerousCreatures(whatISee))
-			temp = board.getHarmfulDirections(this.whereIAm);
+			temp = board.getHarmfulDirections(this.whereIAm, whatISee);
 
 		ArrayList<BackTrackMove> backMoves = new ArrayList<BackTrackMove>();
 		for (Direction d : Strategy.directions) {
