@@ -18,9 +18,8 @@ public class SeaBoard {
 	private Set<SeaLifePrototype> prototypes;
 	public SeaSpace[][] board;
 	private int radius, distance, maxscore;
-	private ArrayList<Direction> lastKnownDirectionOfDangerousCreatures;
 	private Point2D boat;
-	private boolean areDangerousCreaturesMobile;
+
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d,
 			Point2D b) {
 		creatures = new ArrayList<EachSeaCreature>();
@@ -47,7 +46,7 @@ public class SeaBoard {
 		distance = d;
 		boat = b;
 	}
-	
+
 	public void remove(int id) {
 
 		for (int i = 0; i < board.length; i++) {
@@ -94,32 +93,35 @@ public class SeaBoard {
 			}
 		}
 		return false;
-}
-	
-	public ArrayList<Observation> getDangerousCreaturesInRadius(Set<Observation> whatISee){
+	}
 
-		ArrayList<Observation> dangerousCreatures=new ArrayList<Observation>();
+	public ArrayList<Observation> getDangerousCreaturesInRadius(
+			Set<Observation> whatISee) {
+
+		ArrayList<Observation> dangerousCreatures = new ArrayList<Observation>();
 		for (Observation creature : whatISee) {
 			if (creature.isDangerous()) {
 				dangerousCreatures.add(creature);
 			}
 		}
-		
-		return dangerousCreatures;	
-	}
-	
-	public ArrayList<Point2D> getPositionOfDangerousCreatures(Set<Observation> whatISee){
 
-		ArrayList<Point2D> dangerousCreatures=new ArrayList<Point2D>();
+		return dangerousCreatures;
+	}
+
+	public ArrayList<Point2D> getPositionOfDangerousCreatures(
+			Set<Observation> whatISee) {
+
+		ArrayList<Point2D> dangerousCreatures = new ArrayList<Point2D>();
 		for (Observation creature : whatISee) {
 			if (creature.isDangerous()) {
 				dangerousCreatures.add(creature.getLocation());
 			}
 		}
-		return dangerousCreatures;	
+		return dangerousCreatures;
 	}
 
-	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation, Set<Observation> whatISee) {
+	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation,
+			Set<Observation> whatISee) {
 		double myX = myLocation.getX();
 		double myY = myLocation.getY();
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
@@ -270,7 +272,7 @@ public class SeaBoard {
 		return null;
 	}
 
-	/**Get the probability that a creature with an ID is on a particular space*/
+	/** Get the probability that a creature with an ID is on a particular space */
 	public double getProbOnSpace(int id, int x, int y, int currRound) {
 
 		EachSeaCreature ourCreature = getCreature(id);
@@ -352,47 +354,62 @@ public class SeaBoard {
 		return cells[x][y].probability;
 	}
 
-	/**Determines whether or not we have seen an animal of a particular id*/
-	public boolean alreadySeen(int id){
-		for(int i = 0; i < board.length; i++){
-			for(int j = 0; j < board[0].length; j++){
-				if(board[i][j].isoccupideby(id))
+	/** Determines whether or not we have seen an animal of a particular id */
+	public boolean alreadySeen(int id) {
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[0].length; j++) {
+				if (board[i][j].isoccupideby(id))
 					return true;
 			}
 		}
-		
+
 		return false;
 	}
 
+	public ArrayList<Direction> getLastDirectionOfHarmfulCreatures(
+			Set<Observation> whatISee) {
 
-	public ArrayList<Direction> getLastDirectionOfHarmfulCreatures() {
+		ArrayList<Direction> lastKnownDirectionOfDangerousCreatures = new ArrayList<Direction>();
+
+		for (Observation creature : whatISee) {
+			if (creature.isDangerous()) {
+				if (creature.getDirection() != null) {
+					lastKnownDirectionOfDangerousCreatures.add(creature
+							.getDirection());
+				}
+			}
+		}
 		return lastKnownDirectionOfDangerousCreatures;
 	}
 
 	public boolean isDangerMobile(Point2D whereIAm, Set<Observation> whatISee) {
-		
+
 		Boolean mobile = false;
-		
+
 		for (Observation creature : whatISee) {
-			if (creature.isDangerous() && creature.getDirection() != null) 
+			if (creature.isDangerous() && creature.getDirection() != null)
 				mobile = true;
-			}
-		
+		}
+
 		return mobile;
 	}
 
-	
-	/**Determines whether or not we have seen the creature of type on that space using a probability model*/
-	public boolean seenCreatureOnSpace(SeaCreatureType c, Point2D space, int currRound){
-		
+	/**
+	 * Determines whether or not we have seen the creature of type on that space
+	 * using a probability model
+	 */
+	public boolean seenCreatureOnSpace(SeaCreatureType c, Point2D space,
+			int currRound) {
+
 		double totalprob = 0;
-		for(Integer id: c.seen){
-			totalprob += getProbOnSpace(id, (int) space.getX(), (int) space.getY(), currRound);
+		for (Integer id : c.seen) {
+			totalprob += getProbOnSpace(id, (int) space.getX(), (int) space
+					.getY(), currRound);
 		}
-		
-		if(totalprob > .1) //this is a constant that we can change in testing
+
+		if (totalprob > .1) // this is a constant that we can change in testing
 			return true;
-		
+
 		return false;
 	}
 }

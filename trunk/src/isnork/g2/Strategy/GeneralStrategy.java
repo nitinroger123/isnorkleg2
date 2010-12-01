@@ -163,7 +163,8 @@ public class GeneralStrategy extends Strategy {
 		System.err.println("Going to goal X: "+goal.getX() +" Y: "+goal.getY());
 		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
 		Direction bestDirection=randomMove();
-		ArrayList<Direction> directionTheDangerousCreaturesMove =board.getLastDirectionOfHarmfulCreatures();
+		ArrayList<Direction> directionTheDangerousCreaturesMove = 
+			board.getLastDirectionOfHarmfulCreatures(whatISee);
 		ArrayList<Direction> bestWorstMoves =new ArrayList<Direction>(); 
 		if(!safeMoves.isEmpty()){
 			/*Remove the direction the dangerous fish moves in. its not safe if he chases you*/
