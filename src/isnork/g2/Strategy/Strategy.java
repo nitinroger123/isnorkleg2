@@ -216,8 +216,6 @@ public abstract class Strategy {
 	public Direction goToGoalWithoutGettingBit(Point2D goal,
 			boolean desperateTime) {
 		
-		System.err.println("going to goal without being bit.  I see: " + whatISee);
-
 		if (!desperateTime && board.areThereDangerousCreatures(whatISee)) {
 			return runAwayFromDanger(
 					board.getHarmfulDirections(whereIAm, whatISee), goal);
@@ -431,13 +429,13 @@ public abstract class Strategy {
 				// System.err.println("Safe Moves are: "+safe.name());
 				if (board.isValidMove((int) whereIAm.getX(), (int) whereIAm
 						.getY(), safe)) {
-					System.err.println("Safe Valid Moves are: "+safe.name());
+					//System.err.println("Safe Valid Moves are: "+safe.name());
 					Point2D newPos=new Point2D.Double(whereIAm.getX()+safe.getDx(),whereIAm.getY()+safe.getDy());
 					if(goal!=null)
-					{		System.err.println("Distance to goal : "+newPos.distance(goal));
+					{		//System.err.println("Distance to goal : "+newPos.distance(goal));
 							if(newPos.distance(goal)<min)
 							{
-								System.err.println("new best dir found");
+								//System.err.println("new best dir found");
 								min=newPos.distance(goal);
 								bestDirection=safe;
 							}
@@ -456,7 +454,7 @@ public abstract class Strategy {
 		 */
 		else if (!bestWorstMoves.isEmpty()) 
 		{
-			System.err.println("inside bestworst");
+			//System.err.println("inside bestworst");
 			Collections.shuffle(bestWorstMoves);
 			for(Direction d: bestWorstMoves){
 				if(board.isValidMove((int)whereIAm.getX(), (int)whereIAm.getY(), d))

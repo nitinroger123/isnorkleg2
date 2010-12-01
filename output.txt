@@ -1,4 +1,11 @@
 board || playerclass || radius || dimension || divers ||
-||boards/HiddenTreasureWithMines.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 1140 || 0 || 1087 || 0.0
-||boards/Lochness.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 20000 || 0 || 1000 || 1.0
-||boards/Piranha.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 35000 || 0 || 1750 || 1.0
+||boards/HiddenTreasureWithMines.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 20870 || 0 || 1087 || 386.48148148148147
+||boards/Lochness.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 20000 || 0 || 1000 || 400.0
+||boards/Piranha.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 32750 || 0 || 1750 || 376.4367816091954
+||boards/g2Benchmark.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 10027 || 0 || 1577 || 128.55128205128204
+||boards/g2DontGetEaten.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || -40513 || 0 || 1127 || -723.4464285714286
+||boards/g2SafeZone.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 15090 || 0 || 827 || 368.0487804878049
+||boards/g3board.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || -2524 || 0 || 39 || -2524.0
+||boards/g3board2.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 467 || 0 || 39 || 467.0
+||boards/happydanger.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 425 || 0 || 139 || 70.83333333333333
+||boards/isnork.xml || isnork.g2.JustKeepSwimming || 6 || 30 || 20 || 2936 || 0 || 282 || 209.71428571428572

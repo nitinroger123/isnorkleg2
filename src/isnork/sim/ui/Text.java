@@ -70,10 +70,14 @@ public final class Text implements GameListener
 		switch (type)
 		{
 		case GAMEOVER:
+			
+			double denom = (double) (Config.maxscore/Config.divers);
+			double percentage = (double) (engine.getScores()/denom);
+			
 			System.out.println("||" + Config.boardName + " || " + Config.playerName + " || " + 
 					Config.radius + " || " + Config.dimension + " || " +
 					Config.divers + " || "  +
-					engine.getScores()+ " || " + engine.getDsq() + " || " +  Config.maxscore + " || " + (double) (engine.getScores()/Config.maxscore/Config.divers));
+					engine.getScores()+ " || " + engine.getDsq() + " || " +  Config.maxscore + " || " + percentage);
 			break;
 		case MOVEPROCESSED:
 			if(longMode)
