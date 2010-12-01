@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
 import org.apache.log4j.Logger;
+
+import isnork.g2.utilities.SeaBoard;
 import isnork.g2.utilities.SeaCreatureType;
 import isnork.sim.Observation;
 import isnork.sim.SeaLifePrototype;
@@ -24,9 +26,9 @@ public class GeneralStrategy extends Strategy {
 
 	public GeneralStrategy(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id,
-			int numDivers) {
+			int numDivers, SeaBoard b) {
 
-		super(p, d, r, seaLifePossibilites, rand, id, numDivers);
+		super(p, d, r, seaLifePossibilites, rand, id, numDivers, b);
 		outDirection = getRandomDirection();
 		setupSpiral();
 	}
@@ -155,10 +157,7 @@ public class GeneralStrategy extends Strategy {
 	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections,Point2D goal) {
 		// If you are on the boat, you dont need to run
 		System.err.println("run away from danger");
-		if (whereIAm.getX() == boat.getX() && whereIAm.getY() == boat.getY()) {
-			// you are safe
-			return null;
-		}
+		
 		if(goal!=null)
 		System.err.println("Going to goal X: "+goal.getX() +" Y: "+goal.getY());
 		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
