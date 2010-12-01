@@ -19,8 +19,6 @@ import isnork.sim.GameObject.Direction;
 /**Player*/
 public class JustKeepSwimming extends Player {
 
-	private SeaBoard board;
-	private Logger log;
 	private Strategy strategy;
 
 	@Override
@@ -52,12 +50,11 @@ public class JustKeepSwimming extends Player {
 	@Override
 	public void newGame(Set<SeaLifePrototype> seaLifePossibilites, int p,
 			int d, int r, int n) {
-		
-		//Initialize game variables
-		log = Logger.getLogger(this.getClass());
-		
+				
 		//initialize strategy
-		this.strategy = new GeneralStrategy(p, d, r, seaLifePossibilites, random, this.getId(), n);
+		SeaBoard board = new SeaBoard(2*d, 2*d, r, seaLifePossibilites, d, new Point2D.Double(d, d));
+
+		this.strategy = new GeneralStrategy(p, d, r, seaLifePossibilites, random, this.getId(), n, board);
 		
 		/*Pre processing that we should do:
 		 * Is dangerous -> Strategy that basically just leaves you off the board

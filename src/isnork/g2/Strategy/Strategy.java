@@ -46,7 +46,7 @@ public abstract class Strategy {
 	public Point2D intermediateGoal = null;
 	public SeaCreatureType searchingFor = null;
 	
-	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id, int numDivers) {
+	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id, int numDivers, SeaBoard b) {
 		myId = id;
 		penalty = p;
 		distance = d;
@@ -56,9 +56,9 @@ public abstract class Strategy {
 		numSnorkelers = numDivers;
 		whereIAm = new Point2D.Double(distance, distance); //is this always true?
 		boat = new Point2D.Double(distance, distance);
-		board = new SeaBoard(2*d, 2*d, radius, seaLifePossibilities, distance, boat);
 		random = rand;
 		whatISee=new HashSet<Observation>();
+		board = b;
 		
 		//create the basic arraylist of points based on the minimum amount that can be there
 		for(SeaLifePrototype slp : seaLifePossibilities)
