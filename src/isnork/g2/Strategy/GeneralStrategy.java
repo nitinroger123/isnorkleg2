@@ -366,7 +366,7 @@ public class GeneralStrategy extends Strategy {
 
 		int count = 0;
 		for (SeaCreatureType sc : ratedCreatures) {
-			creatureMapping.put(Character.toString(ALPHABET.charAt(count)), sc);
+			creatureMapping.put(Character.toString(ALPHABET.charAt(count%26)), sc);
 
 			// if (myId == 0)
 			// System.err.println(count + " " + ALPHABET.charAt(count)

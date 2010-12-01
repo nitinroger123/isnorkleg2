@@ -59,6 +59,7 @@ public class GameConfig {
 	long randomSeed = System.currentTimeMillis();
 
 	public int getNumDivers() {
+		num_divers = Config.divers;
 		return num_divers;
 	}
 

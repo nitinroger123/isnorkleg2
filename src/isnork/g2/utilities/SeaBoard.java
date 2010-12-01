@@ -1,5 +1,6 @@
 package isnork.g2.utilities;
 
+import isnork.sim.Config;
 import isnork.sim.Observation;
 import isnork.sim.SeaLifePrototype;
 import java.awt.geom.Point2D;
@@ -189,6 +190,7 @@ public class SeaBoard {
 	}
 
 	public int getMaxScore() {
+		Config.maxscore = maxscore;
 		return maxscore;
 	}
 
