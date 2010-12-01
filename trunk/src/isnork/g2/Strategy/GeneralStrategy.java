@@ -154,13 +154,7 @@ public class GeneralStrategy extends Strategy {
 		}
 
 		return bestDir;
-	}
-
-	
-
-	
-
-	
+	}	
 
 	/**
 	 * Rate the creatures using several heuristics. These are to determine the
@@ -433,6 +427,10 @@ public class GeneralStrategy extends Strategy {
 		spanningOut = false;
 		spiralGoal = new Point2D.Double(boat.getX(), boat.getY());
 
+		int dist = waveLength * myStartWave;
+		if(myStartWave != 1)
+			dist = (waveLength + radius - 1) * myStartWave;
+		
 		while (distanceFromClosestWall(spiralGoal) >= waveLength * myStartWave) {
 			double newX = spiralGoal.getX() + myStartDirection.dx;
 			double newY = spiralGoal.getY() + myStartDirection.dy;
