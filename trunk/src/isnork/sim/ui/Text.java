@@ -73,7 +73,7 @@ public final class Text implements GameListener
 			System.out.println("||" + Config.boardName + " || " + Config.playerName + " || " + 
 					Config.radius + " || " + Config.dimension + " || " +
 					Config.divers + " || "  +
-					engine.getScores()+ " || " + engine.getDsq() + " || " +  Config.maxscore + " || " + (double) engine.getScores()/Config.maxscore);
+					engine.getScores()+ " || " + engine.getDsq() + " || " +  Config.maxscore + " || " + (double) (engine.getScores()/Config.maxscore/Config.divers));
 			break;
 		case MOVEPROCESSED:
 			if(longMode)

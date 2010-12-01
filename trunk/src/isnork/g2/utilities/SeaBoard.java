@@ -212,8 +212,6 @@ public class SeaBoard {
 				maxscore += c.getHappiness();
 		}
 		
-		System.err.println("max score is: " + maxscore);
-		
 		return maxscore;
 	}
 
