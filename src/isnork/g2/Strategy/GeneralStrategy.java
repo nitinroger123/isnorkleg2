@@ -78,7 +78,7 @@ public class GeneralStrategy extends Strategy {
 		 */
 		if (board.areThereDangerousCreatures(this.whatISee)) {
 			ArrayList<Direction> directionsToAvoid = board.getHarmfulDirections(this.whereIAm);
-			return runAwayFromDanger(directionsToAvoid);
+			return runAwayFromDanger(directionsToAvoid,intermediateGoal);
 		}
 
 		/**
@@ -140,30 +140,64 @@ public class GeneralStrategy extends Strategy {
 
 		return outDirection;
 	}
+	
 
-	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections) {
+	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections,Point2D goal) {
 		// If you are on the boat, you dont need to run
+		System.err.println("run away from danger");
 		if (whereIAm.getX() == boat.getX() && whereIAm.getY() == boat.getY()) {
 			// you are safe
 			return null;
 		}
-		// System.err.println("run away from danger");
+		if(goal!=null)
+		System.err.println("Going to goal X: "+goal.getX() +" Y: "+goal.getY());
 		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
-		if (!safeMoves.isEmpty()) {
-			Collections.shuffle(safeMoves);
-			for (Direction safe : safeMoves) {
-				if (board.isValidMove((int) whereIAm.getX(), (int) whereIAm
-						.getY(), safe)) {
-					return safe;
+		Direction bestDirection=randomMove();
+		ArrayList<Direction> directionTheDangerousCreaturesMove =board.getLastDirectionOfHarmfulCreatures();
+		ArrayList<Direction> bestWorstMoves =new ArrayList<Direction>(); 
+		if(!safeMoves.isEmpty()){
+			/*Remove the direction the dangerous fish moves in. its not safe if he chases you*/
+			if(safeMoves.size()>directionTheDangerousCreaturesMove.size()){
+				for(Direction d:directionTheDangerousCreaturesMove){
+					if(safeMoves.contains(d)){
+						safeMoves.remove(d);
+						bestWorstMoves.add(d);
+					}
 				}
 			}
+			Collections.shuffle(safeMoves);
+			bestDirection=safeMoves.get(0);
 		}
-		/* We are surrounded */
-		else {
+		double min=10000;
+		if(goal!=null)
+			min=goal.distance(new Point2D.Double(whereIAm.getX()+bestDirection.getDx(),whereIAm.getY()+bestDirection.getDy()));
+		if (!safeMoves.isEmpty()) {
+			for (Direction safe : safeMoves) {
+				System.err.println("Safe Moves are: "+safe.name());
+				if (board.isValidMove((int) whereIAm.getX(), (int) whereIAm
+						.getY(), safe)) {
+					Point2D newPos=new Point2D.Double(whereIAm.getX()+safe.getDx(),whereIAm.getY()+safe.getDy());
+					if(goal!=null)
+					if(newPos.distance(goal)<min){
+						min=newPos.distance(goal);
+						bestDirection=safe;
+					}
+				}
+			}
+			System.err.println("Best Direction :"+bestDirection.name());
+			return bestDirection;
+		}
+		/* We don't have a good safe move but we have a move that just runs in the same direction as the
+		 * dangerous creature
+		 **/
+		else if(!bestWorstMoves.isEmpty()) {
+			Collections.shuffle(bestWorstMoves);
+			return bestWorstMoves.get(0);
+		}
+		/*We are screwed, surrounded. Pray to god random move helps you*/
+		else{
 			return randomMove();
 		}
-		// We could not find a valid safe move
-		return randomMove();
 	}
 
 	private Direction getDirectionToGoal(Point2D goal) {
@@ -238,8 +272,80 @@ public class GeneralStrategy extends Strategy {
 		}
 		return d;
 	}
+	/**
+	 * Another method. We need to clean up the code and remove all dead code. 
+	 * run away from danger if any and make the best
+	 * possible move to go to the goal. The priority 
+	 * is avoiding danger though.
+	 */
+	public Direction runAwayFromDangerAndGotoGoal(Point2D goal,boolean desperateTime){
+		/**
+		 * need to go to the boat and its late
+		 */
+		if(desperateTime){
+			return goToGoalWithoutGettingBit(goal, desperateTime);
+		}
+		double currentX=whereIAm.getX();
+		double currentY=whereIAm.getY();
+		double distanceToGoal=goal.distance(whereIAm);
+		if(board.areThereDangerousCreatures(whatISee)){
+			ArrayList<Observation> dangerousCreatures=board.getDangerousCreaturesInRadius();
+			ArrayList<Direction> harmfulDirections=board.getHarmfulDirections(whereIAm);
+			ArrayList<Direction> lastDirectionOfHarmfulCreatures=board.getLastDirectionOfHarmfulCreatures();
+			boolean areTheDangerousCreaturesMoving =board.isDangerMobile(whereIAm);
+			//go to goal by selecting the best possible direction to goal without getting bit.
+			if(areTheDangerousCreaturesMoving){
+				return gotoGoalWhenDangerIsMobile(goal, harmfulDirections);
+				
+			}
+			else{
+				//the danger is static, just avoid it and make sure you are never on a cell right next to it
+				return gotoGoalWhenDangerIsStatic(goal, harmfulDirections);
+			}
+			
+		}
+		return null;
+	}
 
-	/*
+	private Direction gotoGoalWhenDangerIsStatic(Point2D goal,
+			ArrayList<Direction> harmfulDirections) {
+		ArrayList<Direction> allDirections=Direction.allBut(null);
+		double min=100;
+		Direction bestDirectionToGoal=randomMove();
+		for(Direction safe:allDirections){
+			if(harmfulDirections.contains(safe)){
+				/*to do ..remove the direction only when it takes us to close to the static object*/
+				continue;
+			}
+			Point2D newPosition=new Point2D.Double(whereIAm.getX()+safe.getDx(),whereIAm.getY()+safe.getDy());
+			if(newPosition.distance(goal)<min){
+				min= newPosition.distance(goal);
+				bestDirectionToGoal=safe;
+			}
+		}
+		return bestDirectionToGoal;
+	}
+
+	/**
+	 * Go to goal when the danger is mobile. 
+	 * Select the best path to goal when the dangerous creatures are moving around.
+	 */
+	private Direction gotoGoalWhenDangerIsMobile(Point2D goal,
+			ArrayList<Direction> harmfulDirections) {
+		ArrayList<Direction> safeMoves=getOpposites(harmfulDirections);
+		double min=100;
+		Direction bestDirectionToGoal=randomMove();
+		for(Direction safe:safeMoves){
+			Point2D newPosition=new Point2D.Double(whereIAm.getX()+safe.getDx(),whereIAm.getY()+safe.getDy());
+			if(newPosition.distance(goal)<min){
+				min= newPosition.distance(goal);
+				bestDirectionToGoal=safe;
+			}
+		}
+		return bestDirectionToGoal;
+	}
+
+	/**
 	 * New method to go to a goal without getting hurt. desperate time tells us
 	 * if its imperative that we reach the boat or not. If true, we just go to
 	 * the boat and don't avoid danger.
@@ -249,7 +355,7 @@ public class GeneralStrategy extends Strategy {
 			boolean desperateTime) {
 
 		if (!desperateTime && board.areThereDangerousCreatures(whatISee)) {
-			return runAwayFromDanger(board.getHarmfulDirections(whereIAm));
+			return runAwayFromDanger(board.getHarmfulDirections(whereIAm),goal);
 		}
 		double currX = whereIAm.getX();
 		double currY = whereIAm.getY();
