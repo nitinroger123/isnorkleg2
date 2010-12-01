@@ -166,7 +166,7 @@ public abstract class Strategy {
 	{
 		for(int count=0; count<ratedCreatures.size(); count++)
 		{
-			ratedCreatures.get(count).isnorkMessage = Character.toString(ALPHABET.charAt(count));
+			ratedCreatures.get(count%26).isnorkMessage = Character.toString(ALPHABET.charAt(count%26));
 		}
 	}
 	
