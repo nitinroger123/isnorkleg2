@@ -85,9 +85,9 @@ public class GeneralStrategy extends Strategy {
 		 * DANGEROUS CREATURES NEARBY, RUN LIKE HELL
 		 */
 		if (board.areThereDangerousCreatures(this.whatISee)) {
-			ArrayList<Direction> directionsToAvoid = 
-				board.getHarmfulDirections(this.whereIAm, this.whatISee);
-			return runAwayFromDanger(directionsToAvoid,intermediateGoal);
+			ArrayList<Direction> directionsToAvoid = board
+					.getHarmfulDirections(this.whereIAm, this.whatISee);
+			return runAwayFromDanger(directionsToAvoid, intermediateGoal);
 		}
 
 		/**
@@ -105,49 +105,34 @@ public class GeneralStrategy extends Strategy {
 		}
 
 		// if he's at the boat, generate a random direction and go out
-		/*if (!goingOut && whereIAm.getX() == distance
-				&& whereIAm.getY() == distance) {
-			goingOut = true;
-			outDirection = getRandomDirection();
-			return outDirection;
-		}
-
-		// if he's going out and reached an edge, start coming back to the boat
-		if (goingOut
-				&& !(whereIAm.getX() < radius - 1
-						|| whereIAm.getX() > board.board.length - radius + 1
-						|| whereIAm.getY() < radius - 1 || whereIAm.getY() > board.board.length
-						- radius + 1)) {
-			return outDirection;
-		}
-
-		// if he's going out and reached an edge, start coming back to the boat
-		if (goingOut
-				&& (whereIAm.getX() < radius - 1
-						|| whereIAm.getX() > board.board.length - radius + 1
-						|| whereIAm.getY() < radius - 1 || whereIAm.getY() > board.board.length
-						- radius + 1)) {
-			goingOut = false;
-			outDirection = null;
-			return backtrack(false);
-		}
-
-		// if he's coming in and not at the boat, keep coming in
-		if (!goingOut
-				&& !(whereIAm.getX() == distance && whereIAm.getY() == distance)) {
-			return backtrack(false);
-		}
-
-		if (!goingOut) {
-			return backtrack(false);
-		}
-
-		if (outDirection == null) {
-			outDirection = randomMove();
-			return outDirection;
-		}
-
-		return outDirection;*/
+		/*
+		 * if (!goingOut && whereIAm.getX() == distance && whereIAm.getY() ==
+		 * distance) { goingOut = true; outDirection = getRandomDirection();
+		 * return outDirection; }
+		 * 
+		 * // if he's going out and reached an edge, start coming back to the
+		 * boat if (goingOut && !(whereIAm.getX() < radius - 1 ||
+		 * whereIAm.getX() > board.board.length - radius + 1 || whereIAm.getY()
+		 * < radius - 1 || whereIAm.getY() > board.board.length - radius + 1)) {
+		 * return outDirection; }
+		 * 
+		 * // if he's going out and reached an edge, start coming back to the
+		 * boat if (goingOut && (whereIAm.getX() < radius - 1 || whereIAm.getX()
+		 * > board.board.length - radius + 1 || whereIAm.getY() < radius - 1 ||
+		 * whereIAm.getY() > board.board.length - radius + 1)) { goingOut =
+		 * false; outDirection = null; return backtrack(false); }
+		 * 
+		 * // if he's coming in and not at the boat, keep coming in if
+		 * (!goingOut && !(whereIAm.getX() == distance && whereIAm.getY() ==
+		 * distance)) { return backtrack(false); }
+		 * 
+		 * if (!goingOut) { return backtrack(false); }
+		 * 
+		 * if (outDirection == null) { outDirection = randomMove(); return
+		 * outDirection; }
+		 * 
+		 * return outDirection;
+		 */
 
 		return makeSpiralMove();
 	}
@@ -161,10 +146,11 @@ public class GeneralStrategy extends Strategy {
 		// System.err.println("Going to goal X: "+goal.getX() +" Y:
 		// "+goal.getY());
 		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
-		
 		Direction bestDirection=randomMove();
+		
 		ArrayList<Direction> directionTheDangerousCreaturesMove = 
 			board.getLastDirectionOfHarmfulCreatures(whatISee);
+		
 		ArrayList<Direction> bestWorstMoves =new ArrayList<Direction>(); 
 		if(!safeMoves.isEmpty()){
 			/*Remove the direction the dangerous fish moves in. its not safe if he chases you*/
@@ -177,42 +163,51 @@ public class GeneralStrategy extends Strategy {
 				}
 			}
 			Collections.shuffle(safeMoves);
-			bestDirection = safeMoves.get(0);
 		}
+		bestDirection=randomMove();
 		double min = 10000;
-		if (goal != null)
-			min = goal.distance(new Point2D.Double(whereIAm.getX()
-					+ bestDirection.getDx(), whereIAm.getY()
-					+ bestDirection.getDy()));
 		if (!safeMoves.isEmpty()) {
 			for (Direction safe : safeMoves) {
 				// System.err.println("Safe Moves are: "+safe.name());
 				if (board.isValidMove((int) whereIAm.getX(), (int) whereIAm
 						.getY(), safe)) {
-					Point2D newPos = new Point2D.Double(whereIAm.getX()
-							+ safe.getDx(), whereIAm.getY() + safe.getDy());
-					if (goal != null)
-						if (newPos.distance(goal) < min) {
-							min = newPos.distance(goal);
-							bestDirection = safe;
-						}
-				}
-			}
+					System.err.println("Safe Valid Moves are: "+safe.name());
+					Point2D newPos=new Point2D.Double(whereIAm.getX()+safe.getDx(),whereIAm.getY()+safe.getDy());
+					if(goal!=null)
+					{		System.err.println("Distance to goal : "+newPos.distance(goal));
+							if(newPos.distance(goal)<min)
+							{
+								System.err.println("new best dir found");
+								min=newPos.distance(goal);
+								bestDirection=safe;
+							}
+					}
+					else{
+						bestDirection=safe;
+					}
 			// System.err.println("Best Direction :"+bestDirection.name());
 			return bestDirection;
+		}
+			}
 		}
 		/*
 		 * We don't have a good safe move but we have a move that just runs in
 		 * the same direction as the dangerous creature
 		 */
-		else if (!bestWorstMoves.isEmpty()) {
+		else if (!bestWorstMoves.isEmpty()) 
+		{
+			System.err.println("inside bestworst");
 			Collections.shuffle(bestWorstMoves);
-			return bestWorstMoves.get(0);
-		}
-		/* We are screwed, surrounded. Pray to god random move helps you */
-		else {
+			for(Direction d: bestWorstMoves){
+				if(board.isValidMove((int)whereIAm.getX(), (int)whereIAm.getY(), d))
+				{
+					return d;
+				}
+			}
 			return randomMove();
 		}
+		/* We are screwed, surrounded. Pray to god random move helps you */
+		return randomMove();
 	}
 
 	private Direction getDirectionToGoal(Point2D start, Point2D goal) {
@@ -301,12 +296,15 @@ public class GeneralStrategy extends Strategy {
 		if (desperateTime) {
 			return goToGoalWithoutGettingBit(goal, desperateTime);
 		}
-		
-		if(board.areThereDangerousCreatures(whatISee)){
-			ArrayList<Direction> harmfulDirections=board.getHarmfulDirections(whereIAm, whatISee);
-			boolean areTheDangerousCreaturesMoving =board.isDangerMobile(whereIAm, whatISee);
-			//go to goal by selecting the best possible direction to goal without getting bit.
-			if(areTheDangerousCreaturesMoving){
+
+		if (board.areThereDangerousCreatures(whatISee)) {
+			ArrayList<Direction> harmfulDirections = board
+					.getHarmfulDirections(whereIAm, whatISee);
+			boolean areTheDangerousCreaturesMoving = board.isDangerMobile(
+					whereIAm, whatISee);
+			// go to goal by selecting the best possible direction to goal
+			// without getting bit.
+			if (areTheDangerousCreaturesMoving) {
 				return gotoGoalWhenDangerIsMobile(goal, harmfulDirections);
 
 			} else {
@@ -371,7 +369,8 @@ public class GeneralStrategy extends Strategy {
 			boolean desperateTime) {
 
 		if (!desperateTime && board.areThereDangerousCreatures(whatISee)) {
-			return runAwayFromDanger(board.getHarmfulDirections(whereIAm, whatISee),goal);
+			return runAwayFromDanger(
+					board.getHarmfulDirections(whereIAm, whatISee), goal);
 		}
 		double currX = whereIAm.getX();
 		double currY = whereIAm.getY();
@@ -419,8 +418,6 @@ public class GeneralStrategy extends Strategy {
 	public Direction backtrack(boolean desperateTime) {
 		return goToGoalWithoutGettingBit(boat, desperateTime);
 	}
-
-	
 
 	/**
 	 * Rate the creatures using several heuristics. These are to determine the
@@ -657,31 +654,26 @@ public class GeneralStrategy extends Strategy {
 				spiralGoal = new Point2D.Double(spiralGoal.getX() - 1,
 						spiralGoal.getY());
 			else if (spiralGoal.getY() > distance)
-				spiralGoal = new Point2D.Double(spiralGoal.getX(), spiralGoal
-						.getY() - 1);
-		
-			if(numTurns%4 == 0)
-			{
+				spiralGoal = new Point2D.Double(spiralGoal.getX(),
+						spiralGoal.getY() - 1);
+
+			if (numTurns % 4 == 0) {
 				myCurWave++;
 				Direction boatDir = getDirectionToGoal(spiralGoal, boat);
-				
-				if(myCurWave == numWaves)
-				{
+
+				if (myCurWave == numWaves) {
 					myCurWave = 1;
-					//go from inner most wave to outer
-					for(int x=0; x<waveLength; x++)
-					{
-						spiralGoal= new Point2D.Double(spiralGoal.getX() + boatDir.dx*-1, 
-							spiralGoal.getY() + boatDir.dy*-1);
+					// go from inner most wave to outer
+					for (int x = 0; x < waveLength; x++) {
+						spiralGoal = new Point2D.Double(spiralGoal.getX()
+								+ boatDir.dx * -1, spiralGoal.getY()
+								+ boatDir.dy * -1);
 					}
-				}
-				else
-				{
-					//go to an inner wave
-					for(int x=0; x<waveLength; x++)
-					{
-						spiralGoal= new Point2D.Double(spiralGoal.getX() + boatDir.dx, 
-							spiralGoal.getY() + boatDir.dy);
+				} else {
+					// go to an inner wave
+					for (int x = 0; x < waveLength; x++) {
+						spiralGoal = new Point2D.Double(spiralGoal.getX()
+								+ boatDir.dx, spiralGoal.getY() + boatDir.dy);
 					}
 				}
 			}
