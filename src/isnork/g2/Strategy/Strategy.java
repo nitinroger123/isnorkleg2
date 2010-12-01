@@ -147,7 +147,7 @@ public abstract class Strategy {
 	private void updateMyPosition(Point2D myPosition, Observation o)
 	{
 		SeaCreatureType sc = knownCreatures.get(o.getName());
-		if(sc != null && !sc.seen.contains(o.getName()))
+		if(sc != null && !sc.seen.contains(o.getName()) && !whereIAm.equals(boat))
 		{
 			//add this creature to the list, increment any points that might be gained
 			myHappiness += sc.addSeen(o.getId());
@@ -155,7 +155,7 @@ public abstract class Strategy {
 			//check if the creature is dangerous and decrement points if needed
 			if(o.isDangerous() && myPosition.distance(o.getLocation()) < 1.5)
 			{
-				myHappiness -= (o.happiness() * 2);
+				//myHappiness -= (o.happiness() * 2);
 			}
 		}
 	}
@@ -215,6 +215,8 @@ public abstract class Strategy {
 	 */
 	public Direction goToGoalWithoutGettingBit(Point2D goal,
 			boolean desperateTime) {
+		
+		System.err.println("going to goal without being bit.  I see: " + whatISee);
 
 		if (!desperateTime && board.areThereDangerousCreatures(whatISee)) {
 			return runAwayFromDanger(

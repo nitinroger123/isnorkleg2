@@ -330,10 +330,24 @@ public final class GameEngine {
 		round = 0;
 		config.load();
 		HashSet<SeaLifePrototype> protos = new HashSet<SeaLifePrototype>();
+		
 		for(SeaLifePrototype t : config.sealife)
 		{
 			protos.add((SeaLifePrototype)t.clone());
 		}
+		
+		for (SeaLifePrototype c : protos) {
+
+			if (c.getMaxCount() >= 3)
+				Config.maxscore += 1.75 * c.getHappiness();
+
+			if (c.getMaxCount() == 2)
+				Config.maxscore += 1.5 * c.getHappiness();
+
+			if (c.getMaxCount() == 1)
+				Config.maxscore += c.getHappiness();
+		}
+				
 		for (int i = 0; i < config.getNumDivers(); i++) {
 			long thisSeed = config.randomSeed + i * 3;
 			try {
