@@ -19,8 +19,10 @@ public class SeaBoard {
 	public SeaSpace[][] board;
 	private int radius, distance, maxscore;
 	private ArrayList<Point2D> positionOfDangerousCreatures;
+	private ArrayList<Direction> lastKnownDirectionOfDangerousCreatures;
 	private Point2D boat;
-
+	private boolean areDangerousCreaturesMobile;
+	private ArrayList<Observation> dangerousCreatures;
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d,
 			Point2D b) {
 		creatures = new ArrayList<EachSeaCreature>();
@@ -87,20 +89,33 @@ public class SeaBoard {
 	}
 
 	/*
-	 * Method which checks of there are dangerous creatures around, and adds
+	 * Method which checks if there are dangerous creatures around, and adds
 	 * their locations to a list
 	 */
 	public boolean areThereDangerousCreatures(Set<Observation> whatISee) {
 		boolean isThereDanger = false;
+		areDangerousCreaturesMobile=false;
 		positionOfDangerousCreatures = new ArrayList<Point2D>();
 		positionOfDangerousCreatures.clear();
+		lastKnownDirectionOfDangerousCreatures=new ArrayList<Direction>();
+		dangerousCreatures=new ArrayList<Observation>();
+		dangerousCreatures.clear();
 		for (Observation creature : whatISee) {
 			if (creature.isDangerous()) {
+				dangerousCreatures.add(creature);
+				if(creature.getDirection()!=null){
+					areDangerousCreaturesMobile=true;
+					lastKnownDirectionOfDangerousCreatures.add(creature.getDirection());
+				}
 				positionOfDangerousCreatures.add(creature.getLocation());
 				isThereDanger = true;
 			}
 		}
 		return isThereDanger;
+	}
+	
+	public ArrayList<Observation> getDangerousCreaturesInRadius(){
+		return dangerousCreatures;
 	}
 
 	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation) {
@@ -348,6 +363,16 @@ public class SeaBoard {
 		
 		return false;
 	}
+
+
+	public ArrayList<Direction> getLastDirectionOfHarmfulCreatures() {
+		return lastKnownDirectionOfDangerousCreatures;
+	}
+
+	public boolean isDangerMobile(Point2D whereIAm) {
+		return areDangerousCreaturesMobile;
+	}
+
 	
 	/**Determines whether or not we have seen the creature of type on that space using a probability model*/
 	public boolean seenCreatureOnSpace(SeaCreatureType c, Point2D space, int currRound){
