@@ -13,15 +13,15 @@
 || boards/g3board.xml || isnork.g2.JustKeepSwimming ||6||30||1||-58.95||0||39||-1.511538462||
 ||boards/isnork2.xml || isnork.g2.JustKeepSwimming ||6||30||1||-279.1||0||140||-1.993571429||
 
-||playerclass||board|| radius|| dimension|| divers||Score||Penalty||Max Score Per Diver||Percentage
-|| boards/g2SafeZone.xml|| isnork.g2.JustKeepSwimming||6||30||20||15396||0||827||0.930834341
-|| boards/Lochness.xml|| isnork.g2.JustKeepSwimming||6||30||20||15000||0||1000||0.75
-|| boards/g2Benchmark.xml|| isnork.g2.JustKeepSwimming||6||30||20||9133.16||0||1577||0.289573874
-|| boards/g3board2.xml|| isnork.g2.JustKeepSwimming||6||30||20||178.737||0||39||0.22915
-|| boards/isnork.xml|| isnork.g2.JustKeepSwimming||6||30||20||657.1717||0||282||0.116519805
-|| boards/HiddenTreasureWithMines.xml|| isnork.g2.JustKeepSwimming||6||30||20||1102.8||0||1087||0.050726771
-|| boards/Piranha.xml|| isnork.g2.JustKeepSwimming||6||30||20||907.5||0||1750||0.025928571
-|| boards/happydanger.xml|| isnork.g2.JustKeepSwimming||6||30||20||24.27||0||139||0.008730216
-|| boards/g2DontGetEaten.xml|| isnork.g2.JustKeepSwimming||6||30||20||-11337||0||1127||-0.502972493
-|| boards/isnork2.xml|| isnork.g2.JustKeepSwimming||6||30||20||-3729.05||0||140||-1.331803571
-|| boards/g3board.xml|| isnork.g2.JustKeepSwimming||6||30||20||-1138.62||0||39||-1.459769231
+||playerclass||board|| radius|| dimension|| divers||Score||Penalty||Max Score Per Diver||Percentage||
+|| boards/g2SafeZone.xml|| isnork.g2.JustKeepSwimming||6||30||20||15396||0||827||0.930834341||
+|| boards/Lochness.xml|| isnork.g2.JustKeepSwimming||6||30||20||15000||0||1000||0.75||
+|| boards/g2Benchmark.xml|| isnork.g2.JustKeepSwimming||6||30||20||9133.16||0||1577||0.289573874||
+|| boards/g3board2.xml|| isnork.g2.JustKeepSwimming||6||30||20||178.737||0||39||0.22915||
+|| boards/isnork.xml|| isnork.g2.JustKeepSwimming||6||30||20||657.1717||0||282||0.116519805||
+|| boards/HiddenTreasureWithMines.xml|| isnork.g2.JustKeepSwimming||6||30||20||1102.8||0||1087||0.050726771||
+|| boards/Piranha.xml|| isnork.g2.JustKeepSwimming||6||30||20||907.5||0||1750||0.025928571||
+|| boards/happydanger.xml|| isnork.g2.JustKeepSwimming||6||30||20||24.27||0||139||0.008730216||
+|| boards/g2DontGetEaten.xml|| isnork.g2.JustKeepSwimming||6||30||20||-11337||0||1127||-0.502972493||
+|| boards/isnork2.xml|| isnork.g2.JustKeepSwimming||6||30||20||-3729.05||0||140||-1.331803571||
+|| boards/g3board.xml|| isnork.g2.JustKeepSwimming||6||30||20||-1138.62||0||39||-1.459769231||
