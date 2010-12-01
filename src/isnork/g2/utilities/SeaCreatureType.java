@@ -24,6 +24,7 @@ public class SeaCreatureType implements Comparable<SeaCreatureType> {
 	public int avgPossibleHappiness = 0;
 	public String isnorkMessage = null;
 	public boolean seenOnce = false;
+	public int numSeen = 0;
 	
 	public SeaCreatureType(SeaLifePrototype s){
 		seaCreature = s;
@@ -59,6 +60,8 @@ public class SeaCreatureType implements Comparable<SeaCreatureType> {
 			
 			if(hasValue)
 			{
+				numSeen++;
+				
 				//if the creature can award points, do so!
 				if(seen.size() <= 2)
 				{
