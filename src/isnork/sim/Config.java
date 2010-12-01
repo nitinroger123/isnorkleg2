@@ -4,7 +4,7 @@ public class Config {
 
 	public static int radius = 5;
 	public static int dimension = 20;
-	public static int divers = 1;
+	public static int divers = 20;
 	public static int rescuepenalty = 100;
 	public static int totalScore = 0;
 	public static String playerName = "";

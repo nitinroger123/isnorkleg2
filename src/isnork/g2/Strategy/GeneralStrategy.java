@@ -409,45 +409,7 @@ public class GeneralStrategy extends Strategy {
 		return goToGoalWithoutGettingBit(boat, desperateTime);
 	}
 
-	private Direction goToGoal(Point2D goal) {
-		// System.err.println("Backtracking on round " + (480 - this.roundsleft)
-		// + " from:" + whereIAm + " and boat is: " + boat);
-
-		if (whereIAm.equals(goal)) {
-			log.trace("we are staying put, we reached the goal");
-			return null;
-		}
-
-		ArrayList<Direction> temp = new ArrayList<Direction>();
-		if (board.areThereDangerousCreatures(whatISee))
-			temp = board.getHarmfulDirections(this.whereIAm, whatISee);
-
-		ArrayList<BackTrackMove> backMoves = new ArrayList<BackTrackMove>();
-		for (Direction d : Strategy.directions) {
-
-			if (temp.contains(d))
-				backMoves.add(new BackTrackMove(d, board.toGoal(whereIAm, d,
-						goal), false, roundsleft, whereIAm, goal));
-			else
-				backMoves.add(new BackTrackMove(d, board.toGoal(whereIAm, d,
-						goal), true, roundsleft, whereIAm, goal));
-
-		}
-		Collections.sort(backMoves);
-		for (BackTrackMove safe : backMoves) {
-			log.trace(safe);
-		}
-
-		for (BackTrackMove safe : backMoves) {
-			if (board.isValidMove((int) whereIAm.getX(), (int) whereIAm.getY(),
-					safe.d)) {
-				return safe.d;
-			}
-		}
-
-		// won't get here
-		return null;
-	}
+	
 
 	/**
 	 * Rate the creatures using several heuristics. These are to determine the
