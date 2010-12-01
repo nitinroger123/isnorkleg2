@@ -7,7 +7,7 @@
 || boards/g3board2.xml|| isnork.g2.JustKeepSwimming||6||30||20||280||0||39||0.35|| Up .12 ||
 || boards/isnork.xml|| isnork.g2.JustKeepSwimming||6||30||20||-69||0||282||-.012|| Down .11 ||
 || boards/HiddenTreasureWithMines.xml|| isnork.g2.JustKeepSwimming||6||30||20||5096||0||1087||0.23|| Up .15 ||
-|| boards/Piranha.xml|| isnork.g2.JustKeepSwimming||6||30||20||31036|0||1750||0.88|| Up .86 ||
+|| boards/Piranha.xml|| isnork.g2.JustKeepSwimming||6||30||20||31036||0||1750||0.88|| Up .86 ||
 || boards/happydanger.xml|| isnork.g2.JustKeepSwimming||6||30||20||-2182||0||139||-.78|| Down .8 ||
 || boards/g2DontGetEaten.xml|| isnork.g2.JustKeepSwimming||6||30||20||-49544||0||1127||-2.1|| Down 2 ||
 || boards/isnork2.xml|| isnork.g2.JustKeepSwimming||6||30||20||-13458||0||140||-4.08|| Down 4 ||
