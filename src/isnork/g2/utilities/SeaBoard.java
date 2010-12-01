@@ -17,23 +17,12 @@ public class SeaBoard {
 	private ArrayList<EachSeaCreature> creatures;
 	private Set<SeaLifePrototype> prototypes;
 	public SeaSpace[][] board;
-	private int radius, distance, maxscore;
+	private int radius, distance;
 	private Point2D boat;
 
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d,
 			Point2D b) {
 		creatures = new ArrayList<EachSeaCreature>();
-		for (SeaLifePrototype c : p) {
-
-			if (c.getMaxCount() >= 3)
-				maxscore += 1.75 * c.getHappiness();
-
-			if (c.getMaxCount() == 2)
-				maxscore += 1.5 * c.getHappiness();
-
-			if (c.getMaxCount() == 1)
-				maxscore += c.getHappiness();
-		}
 		prototypes = p;
 		board = new SeaSpace[x + 1][y + 1];
 		for (int i = 0; i < x + 1; i++) {
@@ -208,6 +197,23 @@ public class SeaBoard {
 	}
 
 	public int getMaxScore() {
+		
+		int maxscore = 0;
+		
+		for (SeaLifePrototype c : prototypes) {
+
+			if (c.getMaxCount() >= 3)
+				maxscore += 1.75 * c.getHappiness();
+
+			if (c.getMaxCount() == 2)
+				maxscore += 1.5 * c.getHappiness();
+
+			if (c.getMaxCount() == 1)
+				maxscore += c.getHappiness();
+		}
+		
+		System.err.println("max score is: " + maxscore);
+		
 		return maxscore;
 	}
 
@@ -410,6 +416,24 @@ public class SeaBoard {
 		if (totalprob > .1) // this is a constant that we can change in testing
 			return true;
 
+		return false;
+	}
+
+	/**
+	 * Determines if this is a very dangerous board. We say it is dangerous if
+	 * 100% of the creatures are dangerous
+	 */
+	public boolean dangerdanger() {
+		int numdangerous = 0;
+		
+		for(SeaLifePrototype s : prototypes){
+			if(s.isDangerous())
+				numdangerous++;
+		}
+		
+		if(numdangerous/prototypes.size() == 1)
+			return true;
+		
 		return false;
 	}
 }
