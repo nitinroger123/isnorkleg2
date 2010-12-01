@@ -33,6 +33,7 @@ public class GeneralStrategy extends Strategy {
 
 		super(p, d, r, seaLifePossibilites, rand, id, numDivers);
 		outDirection = getRandomDirection();
+		setupSpiral();
 	}
 
 	private Direction getRandomDirection() {
@@ -41,10 +42,18 @@ public class GeneralStrategy extends Strategy {
 
 	@Override
 	public Direction getMove() {
+//		if(myId == 0)
+//		{
+//			System.out.println(roundsleft + " ---------------------");
+//			System.out.println("board max: " + board.getMaxScore());
+//			System.out.println("intermediate goal: " + intermediateGoal);
+//			System.out.println("spiral goal: " + spiralGoal);
+//		}
+		
 		/*
 		 * temp fix.
 		 */
-		if (roundsleft < TIME_TO_GO_HOME || goingHome) {
+		if (roundsleft<TIME_TO_GO_HOME || goingHome) {
 			return backtrack(true);
 		}
 		/**
@@ -62,14 +71,16 @@ public class GeneralStrategy extends Strategy {
 		// System.err.println("backtracking " + roundsleft);
 		// return backtrack(false);
 		// }
-		if (whereIAm.distance(boat) > roundsleft / 2
-				|| this.myHappiness >= board.getMaxScore()) {
+		if (whereIAm.distance(boat) > roundsleft / 3)
+//				|| this.myHappiness >= board.getMaxScore()) 
+		{
 			goingHome = true;
 			return backtrack(true);
 		}
 		
-		if (whereIAm.distance(boat) > roundsleft / 3
-				|| this.myHappiness >= board.getMaxScore()) {
+		if (whereIAm.distance(boat) > roundsleft / 4)
+//				|| this.myHappiness >= board.getMaxScore()) 
+		{
 			return backtrack(false);
 		}
 
@@ -95,6 +106,7 @@ public class GeneralStrategy extends Strategy {
 			return getDirectionToGoal(intermediateGoal);
 		}
 
+		/**
 		// if he's at the boat, generate a random direction and go out
 		if (!goingOut && whereIAm.getX() == distance
 				&& whereIAm.getY() == distance) {
@@ -137,8 +149,10 @@ public class GeneralStrategy extends Strategy {
 			outDirection = randomMove();
 			return outDirection;
 		}
-
-		return outDirection;
+		
+		return outDirection; */
+		
+		return makeSpiralMove();
 	}
 	
 
@@ -346,10 +360,9 @@ public class GeneralStrategy extends Strategy {
 	}
 
 	/**
-	 * New method to go to a goal without getting hurt. desperate time tells us
+	 * New method to go to a goal without getting hurt. Desperate time tells us
 	 * if its imperative that we reach the boat or not. If true, we just go to
-	 * the boat and don't avoid danger.
-	 * 
+	 * the goal and don't avoid danger.
 	 */
 	public Direction goToGoalWithoutGettingBit(Point2D goal,
 			boolean desperateTime) {
@@ -474,10 +487,12 @@ public class GeneralStrategy extends Strategy {
 		for (SeaCreatureType sc : ratedCreatures) {
 			creatureMapping.put(Character.toString(ALPHABET.charAt(count%26)), sc);
 
-			// if (myId == 0)
-			// System.err.println(count + " " + ALPHABET.charAt(count)
-			// + " id: " + sc.getId() + " "
-			// + sc.returnCreature().getName());
+			 if (myId == 0)
+			 {
+				 System.err.println(count + " " + ALPHABET.charAt(count%26)
+				 + " id: " + sc.getId() + " "
+				 + sc.returnCreature().getName());
+			 }
 			count++;
 		}
 	}
@@ -529,13 +544,16 @@ public class GeneralStrategy extends Strategy {
 			SeaCreatureType sc = creatureMapping.get(ism.getMsg());
 			rcvd = ism.getMsg();
 
-			if ((ism.getMsg().equals("a") || ism.getMsg().equals("b"))
-					&& !sc.seenOnce) {
+			if ((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && !sc.seenOnce) 
+			{
 				// base case
-				if (bestFind == null && sc.nextHappiness > 0) {
-					if (ism.getMsg().equals("a") && !sc.seenOnce) {
+				if (bestFind == null && sc.nextHappiness > 0) 
+				{
+					if (ism.getMsg().equals("a") && !sc.seenOnce) 
+					{
 						// base case
-						if (bestFind == null && sc.nextHappiness > 0) {
+						if (bestFind == null && sc.nextHappiness > 0) 
+						{
 							bestFind = sc;
 							intermediateGoal = newLoc;
 							searchingFor = sc;
@@ -543,10 +561,11 @@ public class GeneralStrategy extends Strategy {
 						}
 						// equality case, it's two of the same creature, get the
 						// closest one
-						else if (sc != null && bestFind != null
-								&& sc.nextHappiness == bestFind.nextHappiness) {
+						else if (sc != null && bestFind != null && sc.nextHappiness == bestFind.nextHappiness) 
+						{
 							double newDist = whereIAm.distance(newLoc);
-							if (newDist < curDist) {
+							if (newDist < curDist) 
+							{
 								curDist = newDist;
 								bestFind = sc;
 								intermediateGoal = newLoc;
@@ -557,8 +576,8 @@ public class GeneralStrategy extends Strategy {
 						// general case, does this new creature have a higher
 						// next
 						// happiness?
-						else if (sc != null && bestFind != null
-								&& sc.nextHappiness > bestFind.nextHappiness) {
+						else if (sc != null && bestFind != null && sc.nextHappiness > bestFind.nextHappiness) 
+						{
 							curDist = whereIAm.distance(newLoc);
 							bestFind = sc;
 							intermediateGoal = newLoc;
@@ -570,9 +589,8 @@ public class GeneralStrategy extends Strategy {
 			}
 		}
 
-		// if (myId == 0 && intermediateGoal != null && changed)
-		// System.err.println(myId + " rcvd: " + rcvd + " ||| going to "
-		// + intermediateGoal.toString());
+		 if (myId == 0 && intermediateGoal != null && changed)
+			 System.err.println(myId + " rcvd: " + rcvd + " ||| going to " + intermediateGoal.toString());
 	}
 
 	public void checkFoundGoal(Set<iSnorkMessage> incomingMessages) {
@@ -581,11 +599,164 @@ public class GeneralStrategy extends Strategy {
 			searchingFor = null;
 		}
 	}
+	
+	//////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	///////////// SPIRAL MOVE CALCULATIONS ///////////////////
+	//////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////	
 
+	public int numWaves = 0;
+	public int waveLength = 0; //distance between snorkelers in different waves
+	public int myStartWave = 0;
+	public int myCurWave = 0;
+	public Direction curDirection = null;
+	public Direction myStartDirection = null;
+	public boolean spanningOut = true;
+	public boolean changingWave = false;
+	public Point2D spiralGoal = null;
+	
+	public void setupSpiral()
+	{
+		int absID = Math.abs(myId);
+		numWaves = (int)Math.ceil(distance / radius);
+		myStartWave = (int)(absID / 4) + 1;
+		myCurWave = myStartWave;
+		waveLength = radius;
+		
+		if(myStartWave % 2 == 1)
+		{
+			//diagonal direction
+			if(absID % 4 == 0)
+				myStartDirection = Direction.NE;
+			if(absID % 4 == 1)
+				myStartDirection = Direction.SW;
+			if(absID % 4 == 2)
+				myStartDirection = Direction.NW;
+			if(absID % 4 == 3)
+				myStartDirection = Direction.SE;
+		}
+		else
+		{
+			//horizontal or vertical direction
+			if(absID % 4 == 0)
+				myStartDirection = Direction.S;
+			if(absID % 4 == 1)
+				myStartDirection = Direction.E;
+			if(absID % 4 == 2)
+				myStartDirection = Direction.N;
+			if(absID % 4 == 3)
+				myStartDirection = Direction.W;
+		}
+		
+		curDirection = myStartDirection;
+	}
 	
 	public Direction makeSpiralMove()
 	{
+		if(spanningOut)
+		{
+			spanOut();
+			return myStartDirection;
+		}
+		else if(!whereIAm.equals(spiralGoal))
+		{
+			return goToGoalWithoutGettingBit(spiralGoal, false);
+		}
+		else
+		{
+			int wallDirection = 0;
+			
+			//if snorkeler reached temporary destination (aka a corner), assign the next goal
+			if(curDirection == Direction.NE || curDirection == Direction.N)
+			{
+				curDirection = Direction.W;
+				wallDirection = 4;
+			}
+			else if(curDirection == Direction.NW || curDirection == Direction.W)
+			{
+				curDirection = Direction.S;
+				wallDirection = 3;
+			}
+			else if(curDirection == Direction.SW || curDirection == Direction.S)
+			{
+				curDirection = Direction.E;
+				wallDirection = 2;
+			}
+			else if(curDirection == Direction.SE || curDirection == Direction.E)
+			{
+				curDirection = Direction.N;
+				wallDirection = 1;
+			}
+			
+			while(distanceFromWall(spiralGoal, wallDirection) >= waveLength*myCurWave)
+			{
+				double newX = spiralGoal.getX() + curDirection.dx;
+				double newY = spiralGoal.getY() + curDirection.dy;
+				spiralGoal = new Point2D.Double(newX, newY);
+			}
+			
+			if(spiralGoal.getX() > distance && spiralGoal.getY() > distance)
+				spiralGoal = new Point2D.Double(spiralGoal.getX()-1, spiralGoal.getY());
+			else if(spiralGoal.getY() > distance)
+				spiralGoal = new Point2D.Double(spiralGoal.getX(), spiralGoal.getY()-1);
+			
+			return curDirection;
+		}		
+	}
+	
+	/**
+	 * Sets the spiral location when the player is initially spanning out from the boat
+	 */
+	public void spanOut()
+	{
+		spanningOut = false;
+		spiralGoal = new Point2D.Double(boat.getX(), boat.getY());
 		
-		return null;
+		while(distanceFromClosestWall(spiralGoal) >= waveLength*myStartWave)
+		{
+			double newX = spiralGoal.getX() + myStartDirection.dx;
+			double newY = spiralGoal.getY() + myStartDirection.dy;
+			
+			spiralGoal = new Point2D.Double(newX, newY);
+		}
+	}
+	
+	public int distanceFromWall(Point2D pt, int wall)
+	{
+		if(wall == 1) //northern wall
+			return (int)pt.getY()+1;
+		if(wall == 2) //eastern wall
+			return distance*2+1 - (int)pt.getX()+1;
+		if(wall == 3) //southern wall
+			return distance*2+1 - (int)pt.getY()+1;
+		if(wall == 4) //western wall
+			return (int)pt.getX()+1;
+		
+		return 0;
+	}
+	
+	/**
+	 * Determines the distance from a player to a closest wall.
+	 */
+	public int distanceFromClosestWall(Point2D pt)
+	{
+		int shortestDistance = Integer.MAX_VALUE;
+		if(pt.getX()+1 < shortestDistance)
+			shortestDistance = (int)pt.getX()+1;
+		if(distance*2+1-pt.getX()+1 < shortestDistance)
+			shortestDistance = distance*2+1-(int)pt.getX()+1;
+		if(pt.getY()+1 < shortestDistance)
+			shortestDistance = (int)pt.getY()+1;
+		if(distance*2+1-pt.getY()+1 < shortestDistance)
+			shortestDistance = distance*2+1-(int)pt.getY()+1;
+		
+		return shortestDistance;
 	}
 }

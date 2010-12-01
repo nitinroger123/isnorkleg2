@@ -205,7 +205,6 @@ public class SeaBoard {
 	}
 
 	public int getMaxScore() {
-		Config.maxscore = maxscore;
 		return maxscore;
 	}
 
