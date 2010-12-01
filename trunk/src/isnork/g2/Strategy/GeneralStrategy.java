@@ -33,8 +33,6 @@ public class GeneralStrategy extends Strategy {
 		setupSpiral();
 	}
 
-	
-
 	@Override
 	public Direction getMove() {
 		// if(myId == 0)
