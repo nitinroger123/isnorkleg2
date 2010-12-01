@@ -193,11 +193,11 @@ public class GeneralStrategy extends Strategy {
 			creatureMapping.put(
 					Character.toString(ALPHABET.charAt(count % 26)), sc);
 
-			if (myId == 0) {
+			/*if (myId == 0) {
 				System.err.println(count + " " + ALPHABET.charAt(count % 26)
 						+ " id: " + sc.getId() + " "
 						+ sc.returnCreature().getName());
-			}
+			}*/
 			count++;
 		}
 	}
@@ -290,9 +290,9 @@ public class GeneralStrategy extends Strategy {
 			}
 		}
 
-		if (myId == 0 && intermediateGoal != null && changed)
+		/*if (myId == 0 && intermediateGoal != null && changed)
 			System.err.println(myId + " rcvd: " + rcvd + " ||| going to "
-					+ intermediateGoal.toString());
+					+ intermediateGoal.toString());*/
 	}
 
 	public void checkFoundGoal(Set<iSnorkMessage> incomingMessages) {
