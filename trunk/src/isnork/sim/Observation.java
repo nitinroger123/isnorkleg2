@@ -8,32 +8,33 @@ public class Observation {
 	Point2D location;
 	int id;
 	String name;
-	Direction dir;
-
-	public Point2D getLocation() {
+	public Point2D getLocation(){
 		return location;
 	}
-
-	public int getId() {
+	public int getId()
+	{
 		return id;
 	}
-
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
-
-	public boolean isDangerous() {
+	public boolean isDangerous()
+	{
 		return danger;
 	}
-
-	public int happiness() {
+	public double happinessD()
+	{
 		return happy;
 	}
-
+	public int happiness()
+	{
+		return (int) happy;
+	}
+	double happy;
+	boolean danger;
+	Direction dir;
 	public Direction getDirection() {
 		return dir;
 	}
-
-	int happy;
-	boolean danger;
 }
