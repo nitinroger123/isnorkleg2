@@ -67,25 +67,21 @@ public final class GameEngine {
 	HashMap<Player, QueuedPlayer> queuedPlayers;
 	HashMap<Player,HashSet<SeaLife>> beenSeenById;
 	HashMap<Player,HashMap<String, Integer>> beenSeenByName;
-	
 	int dsq = 0;
 	public int getDsq() {
 		return dsq;
 	}
-	
 	public boolean step() {
 		if(round > 480)
 		{
 			Point2D origin = new Point2D.Double(0, 0);
 			dsq = 0;
-
 			for (Player pl : players) {
 				if(!pl.location.equals(origin))
 				{
 					pl.happiness-=config.getPenalty();
 					score-=config.getPenalty();
 					dsq++;
-
 				}
 			}
 			notifyListeners(GameUpdateType.GAMEOVER);
@@ -158,11 +154,11 @@ public final class GameEngine {
 						beenSeenById.put(pl, new HashSet<SeaLife>());
 					if(!beenSeenByName.containsKey(pl))
 						beenSeenByName.put(pl, new HashMap<String, Integer>());
-					int happy = 0;
+					double happy = 0;
 					
 					if(!pl.location.equals(new Point2D.Double(0, 0))) { // if on the boat, doesn't affect
 					    if(s.dangerous && s.getLocation().distance(pl.location) <= 1.5)
-					        happy = happy - 2*s.happiness;
+					        happy = happy - s.happiness*2;
 					    else if(beenSeenById.get(pl).contains(s))
 					        happy = 0;
 					    else if(!beenSeenByName.get(pl).containsKey(s.getName()))
@@ -188,6 +184,7 @@ public final class GameEngine {
 					    score += happy;
 					}
 					
+					
 					Observation o = new Observation();
 					o.id=s.getId();
 					o.name=s.getName();
@@ -196,6 +193,7 @@ public final class GameEngine {
 					o.happy=happy;
 					o.danger=s.dangerous;
 					observations.add(o);
+
 				}
 			}
 			HashSet<Observation> locations = new HashSet<Observation>();
@@ -258,7 +256,7 @@ public final class GameEngine {
 	private final static void printUsage() {
 		System.err.println("Usage: GameEngine gui");
 		System.err
-				.println("Usage: GameEngine text <board> <playerclass> <radius> <dimension> <divers> <rescuepenalty>");
+				.println("Usage: GameEngine text <board> <playerclass> <num mosquitos> <num lights> <long|short> {max rounds}");
 	}
 
 	public void removeGameListener(GameListener l) {
@@ -274,35 +272,33 @@ public final class GameEngine {
 
 	public static final void main(String[] args) {
 		
-		if (args.length != 1 && args.length != 7) {
+		if (args.length < 1 || args.length > 7) {
 			printUsage();
 			System.exit(-1);
 		}
 		GameEngine engine = new GameEngine();
 		if (args[0].equalsIgnoreCase("text")) {
-			
 			// TextInterface ti = new TextInterface();
 			// ti.register(engine);
 			// ti.playGame();
+			if (args.length < 6) {
+				printUsage();
+				System.exit(-1);
+			}
 			Text t = new Text(engine);
-			engine.getConfig().setSelectedBoard(new File(args[1]));
-			Config.boardName = args[1];
-			
+			engine.getConfig().setSelectedBoard(new File(args[2]));
 			try {
 				engine.getConfig().setPlayerClass(
-						(Class<Player>) Class.forName(args[2]));
-				
-				Config.playerName = args[2];
+						(Class<Player>) Class.forName(args[3]));
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			Config.radius = Integer.parseInt(args[3]);
-			Config.dimension = Integer.parseInt(args[4]);
-			Config.divers = Integer.parseInt(args[5]);
-			Config.rescuepenalty = Integer.parseInt(args[6]);
-			
+			if (args[6].equals("long"))
+				t.setLongMode(true);
+			if (args.length == 8)
+				engine.getConfig().setMaxRounds(Integer.valueOf(args[7]));
 			t.play();
 			// throw new
 			// RuntimeException("Text interface not implemented. Sorry.");
@@ -330,24 +326,10 @@ public final class GameEngine {
 		round = 0;
 		config.load();
 		HashSet<SeaLifePrototype> protos = new HashSet<SeaLifePrototype>();
-		
 		for(SeaLifePrototype t : config.sealife)
 		{
 			protos.add((SeaLifePrototype)t.clone());
 		}
-		
-		for (SeaLifePrototype c : protos) {
-
-			if (c.getMaxCount() >= 3)
-				Config.maxscore += 1.75 * c.getHappiness();
-
-			if (c.getMaxCount() == 2)
-				Config.maxscore += 1.5 * c.getHappiness();
-
-			if (c.getMaxCount() == 1)
-				Config.maxscore += c.getHappiness();
-		}
-				
 		for (int i = 0; i < config.getNumDivers(); i++) {
 			long thisSeed = config.randomSeed + i * 3;
 			try {
