@@ -288,8 +288,7 @@ public abstract class Strategy {
 		if (board.areThereDangerousCreatures(whatISee)) {
 			ArrayList<Direction> harmfulDirections = board
 					.getHarmfulDirections(whereIAm, whatISee);
-			boolean areTheDangerousCreaturesMoving = board.isDangerMobile(
-					whereIAm, whatISee);
+			boolean areTheDangerousCreaturesMoving = board.isDangerMobile(whatISee);
 			// go to goal by selecting the best possible direction to goal
 			// without getting bit.
 			if (areTheDangerousCreaturesMoving) {
@@ -403,16 +402,42 @@ public abstract class Strategy {
 	protected Direction getRandomDirection() {
 		return Strategy.directions.get(random.nextInt(8));
 	}
+	/**
+	 * Get the location of static dangerous creatures
+	 */
+	public ArrayList<Point2D> getLocationOfStaticDanger(Set<Observation> dangerAround){
+		ArrayList<Point2D> locationOfStaticDanger =new ArrayList<Point2D>();
+		for(Observation creature: dangerAround){
+			if(creature.isDangerous()){
+				locationOfStaticDanger.add(creature.getLocation());
+			}
+		}
+		return locationOfStaticDanger;
+	}
 	
 	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections,
 			Point2D goal) {
-		// If you are on the boat, you dont need to run
-		// System.err.println("run away from danger");
+		/* If you are on the boat and you see some dangerous creatures that move, 
+		 * you dont need to run. stay on the boat.
+		*/
+		System.err.println("Run away from danger");
+		if(whereIAm.equals(boat) && board.isDangerMobile(whatISee)){
+			return null;
+		}
+		ArrayList<Point2D> locationOfDanger=board.getPositionOfDangerousCreatures(whatISee);
+		/*
+		 * handle static creatures. The direction of the static creatures is still safe,
+		 * Just have to avoid it.
+		 */
+		ArrayList<Point2D> locationOfStaticDanger = getLocationOfStaticDanger(whatISee);
+		Set<Direction> safeMoves =new HashSet<Direction>();
+		safeMoves.addAll(getOpposites(harmfulDirections));
 		
-		// if(goal!=null)
-		// System.err.println("Going to goal X: "+goal.getX() +" Y:
-		// "+goal.getY());
-		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
+		//add the direction of static danger to safe moves
+		for(Point2D p: locationOfStaticDanger){
+			safeMoves.addAll(board.getDirections(whereIAm, p));
+		}
+		
 		Direction bestDirection=randomMove();
 		
 		ArrayList<Direction> directionTheDangerousCreaturesMove = 
@@ -429,7 +454,6 @@ public abstract class Strategy {
 					}
 				}
 			}
-			Collections.shuffle(safeMoves);
 		}
 		bestDirection=randomMove();
 		double min = 10000;
@@ -445,17 +469,44 @@ public abstract class Strategy {
 							if(newPos.distance(goal)<min)
 							{
 								//System.err.println("new best dir found");
-								min=newPos.distance(goal);
-								bestDirection=safe;
+								boolean movesTooCloseToADangerousCreature=false;
+								for(Point2D p: locationOfDanger){
+									System.err.println("I'm going to x:"+newPos.getX()+" y:"+newPos.getY());
+									System.err.println("Danger is at x:"+p.getX()+ " y:"+p.getY());
+									if(newPos.distance(p)<2){
+										movesTooCloseToADangerousCreature=true;
+									}
+								}
+								if(!movesTooCloseToADangerousCreature){
+									min=newPos.distance(goal);
+									bestDirection=safe;
+								}
+								
 							}
 					}
 					else{
-						bestDirection=safe;
+						boolean movesTooCloseToADangerousCreature=false;
+						for(Point2D p: locationOfDanger){
+							System.err.println("I'm going to x:"+newPos.getX()+" y:"+newPos.getY());
+							System.err.println("Danger is at x:"+p.getX()+ " y:"+p.getY());
+							if(newPos.distance(p)<1.5){
+								movesTooCloseToADangerousCreature=true;
+								
+							}
+						}
+						if(!movesTooCloseToADangerousCreature){
+							bestDirection=safe;
+						}
+						else{
+							continue;
+						}
 					}
 			// System.err.println("Best Direction :"+bestDirection.name());
-			return bestDirection;
+			
 		}
+				
 			}
+			return bestDirection;	
 		}
 		/*
 		 * We don't have a good safe move but we have a move that just runs in
