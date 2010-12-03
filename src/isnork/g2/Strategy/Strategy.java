@@ -104,7 +104,11 @@ public abstract class Strategy {
 			temp.maxPossibleHappiness = maxH;
 			temp.avgPossibleHappiness = avgH;
 			knownCreatures.put(slp.getName(), temp);
-			ratedCreatures.add(temp);
+			
+			if(temp.returnCreature().getHappiness() != 0)
+			{
+				ratedCreatures.add(temp);
+			}
 		}
 		
 		//given the prototypes, rate all the creatures using several heuristics
