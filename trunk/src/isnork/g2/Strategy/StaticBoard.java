@@ -87,6 +87,7 @@ public class StaticBoard extends Strategy {
 			return getDirectionToGoal(whereIAm, intermediateGoal);
 		}
 
+		System.out.println("making spiral move");
 		return makeSpiralMove();
 	}
 
@@ -559,5 +560,11 @@ public class StaticBoard extends Strategy {
 		}
 		return null;
 
+	}
+
+	@Override
+	public String getTick() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -84,12 +84,17 @@ public class SeaBoard {
 	}
 	
 	public boolean areThereDangerousCreaturesInRadius(Set<Observation> whatISee, Point2D whereIAm, int r) {
-		boolean isThereDanger = false;
+		System.out.println("radius is: " + r);
+		System.out.println("i am at: " + whereIAm);
 		for (Observation creature : whatISee) {
+			/*System.out.println(creature.isDangerous() + 
+					", " + (whereIAm.distance(creature.getLocation())));*/
+			System.out.println();
 			if (creature.isDangerous() && whereIAm.distance(creature.getLocation()) < r) {
 				return true;
 			}
 		}
+		System.out.println("no danger in radius");
 		return false;
 	}
 
@@ -133,11 +138,12 @@ public class SeaBoard {
 			Set<Observation> whatISee, int smallradius) {
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
 
-		for (Point2D p : getPositionOfDangerousCreaturesInRadius
+		/*for (Point2D p : getPositionOfDangerousCreaturesInRadius
 			(whatISee, whereIAm, smallradius)) {
 			
 			harmfulDirections.addAll(getDirections(whereIAm, p));
-		}
+		}*/
+		
 		return harmfulDirections;
 	}
 
