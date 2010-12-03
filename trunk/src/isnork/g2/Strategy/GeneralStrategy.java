@@ -192,9 +192,11 @@ public class GeneralStrategy extends Strategy {
 		Collections.sort(ratedCreatures);
 		Collections.reverse(ratedCreatures);
 
+		//if there are more than 26 creatures, remove the 
+		// ones that are of the least importance
 		while(ratedCreatures.size() > 26)
 		{
-			
+			ratedCreatures.remove(ratedCreatures.size()-1);
 		}
 		
 		int count = 0;
@@ -296,15 +298,12 @@ public class GeneralStrategy extends Strategy {
 					if(snorkId > tempLowestTracker) {
 						tempLowestTracker = snorkId;
 					}
-					
-					//keep chasing creature if you already were chasing
-					if(chasing != null && !seenBestTracker.contains(0))
-					{
-						
-					}
 				}
 				
-				if ((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && !sc.seenOnce) // || ism.getMsg().equals("b")
+//				if ((!sc.seenOnce && whereIAm.distance(newLoc) < distance) &&
+//						(!sc.seenOnce && (ism.getMsg().equals("a") || ism.getMsg().equals("b")))) 
+//				if((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && !sc.seenOnce)
+				if(!sc.seenOnce)
 				{
 					//starting case, will always run on the first iteration of the loop
 					if(bestFind == null && sc.nextHappiness > 0)
