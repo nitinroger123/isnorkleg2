@@ -119,13 +119,14 @@ public class SeaBoard {
 		ArrayList<Point2D> dangerousCreatures = new ArrayList<Point2D>();
 		for (Observation creature : whatISee) {
 			if (creature.isDangerous()) {
-				dangerousCreatures.add(creature.getLocation());
+				Point2D p=new Point2D.Double(creature.getLocation().getX()+boat.getX(),creature.getLocation().getY()+boat.getY());
+				dangerousCreatures.add(p);
 			}
 		}
 		return dangerousCreatures;
 	}
 
-	private Object getPositionOfDangerousCreaturesInRadius(
+	private ArrayList<Point2D> getPositionOfDangerousCreaturesInRadius(
 			Set<Observation> whatISee, Point2D whereIAm, int smallradius) {
 		ArrayList<Point2D> dangerousCreatures = new ArrayList<Point2D>();
 		for (Observation creature : whatISee) {
@@ -140,14 +141,6 @@ public class SeaBoard {
 	public ArrayList<Direction> getHarmfulDirectionsInRadius(Point2D whereIAm,
 			Set<Observation> whatISee, int smallradius) {
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
-
-		/*
-		 * for (Point2D p : getPositionOfDangerousCreaturesInRadius (whatISee,
-		 * whereIAm, smallradius)) {
-		 * 
-		 * harmfulDirections.addAll(getDirections(whereIAm, p)); }
-		 */
-
 		return harmfulDirections;
 	}
 
@@ -163,7 +156,8 @@ public class SeaBoard {
 		return harmfulDirections;
 	}
 
-	private ArrayList<Direction> getDirections(Point2D myLocation, Point2D p) {
+
+	public ArrayList<Direction> getDirections(Point2D myLocation, Point2D p) {
 
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
 
@@ -478,7 +472,7 @@ public class SeaBoard {
 		return lastKnownDirectionOfDangerousCreatures;
 	}
 
-	public boolean isDangerMobile(Point2D whereIAm, Set<Observation> whatISee) {
+	public boolean isDangerMobile(Set<Observation> whatISee) {
 
 		Boolean mobile = false;
 
