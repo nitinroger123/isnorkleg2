@@ -386,14 +386,18 @@ public class GeneralStrategy extends Strategy {
 	public int numTurns = 0;
 
 	public void setupSpiral() {
+		
 		int absID = Math.abs(myId);
 //		numWaves = (int) Math.ceil(distance / radius) + 1;
 		
-		numWaves = ((distance-2*radius) / (2*radius) + 2);
+		numWaves = ((distance-2*radius) / (2*radius)) ;
 		
 		myStartWave = (int) (absID / 4) + 1;
 		myCurWave = myStartWave;
 		waveLength = radius;
+		
+//		System.out.println("numWaves: " + numWaves);
+//		System.out.println("waveLength: " + waveLength);
 
 		if (myStartWave % 2 == 1) {
 			// diagonal direction
@@ -424,64 +428,83 @@ public class GeneralStrategy extends Strategy {
 		if (spanningOut) {
 			spanOut();
 			return myStartDirection;
-		} else if (!whereIAm.equals(spiralGoal)) {
+		} 
+		else if (!whereIAm.equals(spiralGoal)) {
 			return goToGoalWithoutGettingBit(spiralGoal, false);
-		} else {
+		} 
+		else {
+			Point2D oldSpiralGoal = new Point2D.Double(spiralGoal.getX(), spiralGoal.getY());
 			numTurns++;
 			int wallDirection = 0;
 
 			// if snorkeler reached temporary destination (aka a corner), assign
 			// the next goal
-			if (curDirection == Direction.NE || curDirection == Direction.N) {
+			if (curDirection == Direction.NE || curDirection == Direction.N) 
+			{
 				curDirection = Direction.W;
 				wallDirection = 4;
-			} else if (curDirection == Direction.NW
-					|| curDirection == Direction.W) {
+			}
+			else if (curDirection == Direction.NW || curDirection == Direction.W) 
+			{
 				curDirection = Direction.S;
 				wallDirection = 3;
-			} else if (curDirection == Direction.SW
-					|| curDirection == Direction.S) {
+			}
+			else if (curDirection == Direction.SW || curDirection == Direction.S) 
+			{
 				curDirection = Direction.E;
 				wallDirection = 2;
-			} else if (curDirection == Direction.SE
-					|| curDirection == Direction.E) {
+			}
+			else if (curDirection == Direction.SE || curDirection == Direction.E)
+			{
 				curDirection = Direction.N;
 				wallDirection = 1;
 			}
 
-			while (distanceFromWall(spiralGoal, wallDirection) >= waveLength
-					* myCurWave) {
+			while (distanceFromWall(spiralGoal, wallDirection) >= waveLength * myCurWave ||
+					spiralGoal.distance(boat) < (radius+1))
+			{
 				double newX = spiralGoal.getX() + curDirection.dx;
 				double newY = spiralGoal.getY() + curDirection.dy;
 				spiralGoal = new Point2D.Double(newX, newY);
 			}
 
 			if (spiralGoal.getX() > distance && spiralGoal.getY() > distance)
-				spiralGoal = new Point2D.Double(spiralGoal.getX() - 1,
-						spiralGoal.getY());
+				spiralGoal = new Point2D.Double(spiralGoal.getX() - 1, spiralGoal.getY());
 			else if (spiralGoal.getY() > distance)
-				spiralGoal = new Point2D.Double(spiralGoal.getX(),
-						spiralGoal.getY() - 1);
+				spiralGoal = new Point2D.Double(spiralGoal.getX(), spiralGoal.getY() - 1);
 
-			if (numTurns % 4 == 0) {
+			if (numTurns % 4 == 0)
+			{	
 				myCurWave++;
 				Direction boatDir = getDirectionToGoal(spiralGoal, boat);
 
-				if (myCurWave == numWaves) {
+				if (myCurWave > numWaves)
+				{
 					myCurWave = 1;
 					// go from inner most wave to outer
-					for (int x = 0; x < waveLength; x++) {
-						spiralGoal = new Point2D.Double(spiralGoal.getX()
-								+ boatDir.dx * -1, spiralGoal.getY()
-								+ boatDir.dy * -1);
+					Direction oppBoatDir = getDirectionToGoal(oldSpiralGoal, boat);
+					while (spiralGoal.distance(boat) < distance-radius-1)
+					{
+						double newX = spiralGoal.getX() + oppBoatDir.dx;
+						double newY = spiralGoal.getY() + oppBoatDir.dy;
+						spiralGoal = new Point2D.Double(newX, newY);
 					}
-				} else {
+				} 
+				else
+				{
 					// go to an inner wave
-					for (int x = 0; x < waveLength; x++) {
-						spiralGoal = new Point2D.Double(spiralGoal.getX()
-								+ boatDir.dx, spiralGoal.getY() + boatDir.dy);
+					for (int x = 0; x < waveLength; x++)
+					{
+						spiralGoal = new Point2D.Double(spiralGoal.getX() + boatDir.dx, spiralGoal.getY() + boatDir.dy);
 					}
-				}
+					
+					while (spiralGoal.distance(boat) < (radius+1))
+					{
+						double newX = spiralGoal.getX() + curDirection.dx;
+						double newY = spiralGoal.getY() + curDirection.dy;
+						spiralGoal = new Point2D.Double(newX, newY);
+					}
+				}	
 			}
 
 			return curDirection;
@@ -500,14 +523,15 @@ public class GeneralStrategy extends Strategy {
 		if(myStartWave != 1)
 			dist = (waveLength + radius - 1) * myStartWave;
 		
-		while (distanceFromClosestWall(spiralGoal) >= waveLength * myStartWave) {
+		while (distanceFromClosestWall(spiralGoal) >= waveLength * myStartWave ||
+				spiralGoal.distance(boat) < (radius+1)) {
 			double newX = spiralGoal.getX() + myStartDirection.dx;
 			double newY = spiralGoal.getY() + myStartDirection.dy;
 
 			spiralGoal = new Point2D.Double(newX, newY);
 		}
 	}
-
+	
 	public int distanceFromWall(Point2D pt, int wall) {
 		if (wall == 1) // northern wall
 			return (int) pt.getY() + 1;
