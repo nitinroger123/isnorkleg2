@@ -192,6 +192,11 @@ public class GeneralStrategy extends Strategy {
 		Collections.sort(ratedCreatures);
 		Collections.reverse(ratedCreatures);
 
+		while(ratedCreatures.size() > 26)
+		{
+			
+		}
+		
 		int count = 0;
 		for (SeaCreatureType sc : ratedCreatures) {
 			creatureMapping.put(
@@ -218,7 +223,7 @@ public class GeneralStrategy extends Strategy {
 			SeaCreatureType cur = knownCreatures.get(o.getName());
 			
 
-			if (cur != null) {
+			if (cur != null && cur.isnorkMessage != null) {
 				cur.seenOnce = true;
 				
 				if(cur.isnorkMessage.equals("a")) {

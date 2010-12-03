@@ -154,14 +154,14 @@ public class StaticBoard extends Strategy {
 		}
 	}
 
-	public String getTick(Set<Observation> whatYouSee) {
+	public String getTick() {
 		SeaCreatureType bestVisible = null;
 		SeaCreatureType worstVisible = null;
 		double bestRanking = Double.MIN_VALUE;
 		double worstRanking = Double.MAX_VALUE;
 
 		// track which is the best creature that you can currently see
-		for (Observation o : whatYouSee) {
+		for (Observation o : whatISee) {
 			SeaCreatureType cur = knownCreatures.get(o.getName());
 
 			if (cur != null) {
@@ -560,11 +560,5 @@ public class StaticBoard extends Strategy {
 		}
 		return null;
 
-	}
-
-	@Override
-	public String getTick() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
