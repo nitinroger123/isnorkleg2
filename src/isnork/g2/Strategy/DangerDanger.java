@@ -96,7 +96,7 @@ public class DangerDanger extends Strategy{
 	}
 
 	@Override
-	public String getTick(Set<Observation> whatYouSee) {
+	public String getTick() {
 		// TODO Auto-generated method stub
 		return null;
 	}

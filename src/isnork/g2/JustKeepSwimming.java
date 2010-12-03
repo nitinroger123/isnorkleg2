@@ -36,7 +36,7 @@ public class JustKeepSwimming extends Player {
 		strategy.update(myPosition, whatYouSee, incomingMessages, playerLocations);
 		
 		//return message to isnork
-		String mes = strategy.getTick(whatYouSee);
+		String mes = strategy.getTick();
 //		if(getId() == 0)
 //			System.err.println(mes);
 		return (String)mes;

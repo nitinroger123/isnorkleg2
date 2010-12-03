@@ -187,7 +187,7 @@ public abstract class Strategy {
 	/**
 	 * Returns the snorklers message that will be broadcast to the other snorklers.
 	 */
-	public abstract String getTick(Set<Observation> whatYouSee);
+	public abstract String getTick();
 	
 	/**
 	 * Reads in the messages from the other snorklers and determines which
