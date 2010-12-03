@@ -32,7 +32,8 @@ public class DangerDanger extends Strategy{
 			return null;
 		}
 		
-		if (whereIAm.equals(boat) && board.areThereDangerousCreatures(whatISee)) {
+		if (whereIAm.equals(boat) && board.areThereDangerousCreaturesInRadius(whatISee, whereIAm, smallradius)) {
+			
 			return null;
 		}
 		
@@ -40,8 +41,7 @@ public class DangerDanger extends Strategy{
 			return null;
 		
 		else //we have not reached maximum happiness and it is safe to move
-		{
-			
+		{			
 			if(!whereIAm.equals(boat))
 				return getBackOnBoat();
 			
