@@ -321,7 +321,7 @@ public abstract class Strategy {
 		return bestDirectionToGoal;
 	}
 	
-	private ArrayList<Direction> getOpposites(
+	protected ArrayList<Direction> getOpposites(
 			ArrayList<Direction> harmfulDirections) {
 		ArrayList<Direction> opposites = new ArrayList<Direction>();
 		for (Direction d : harmfulDirections) {

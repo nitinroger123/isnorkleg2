@@ -117,60 +117,93 @@ public class SeaBoard {
 		}
 		return dangerousCreatures;
 	}
+	
+	private Object getPositionOfDangerousCreaturesInRadius(
+			Set<Observation> whatISee, Point2D whereIAm, int smallradius) {
+		ArrayList<Point2D> dangerousCreatures = new ArrayList<Point2D>();
+		for (Observation creature : whatISee) {
+			if (creature.isDangerous() && creature.getLocation().distance(whereIAm) < smallradius) {
+				dangerousCreatures.add(creature.getLocation());
+			}
+		}
+		return dangerousCreatures;
+	}
+	
+	public ArrayList<Direction> getHarmfulDirectionsInRadius(Point2D whereIAm,
+			Set<Observation> whatISee, int smallradius) {
+		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
+
+		for (Point2D p : getPositionOfDangerousCreaturesInRadius
+			(whatISee, whereIAm, smallradius)) {
+			
+			harmfulDirections.addAll(getDirections(whereIAm, p));
+		}
+		return harmfulDirections;
+	}
 
 	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation,
 			Set<Observation> whatISee) {
-		double myX = myLocation.getX();
-		double myY = myLocation.getY();
+		
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
 
 		for (Point2D p : getPositionOfDangerousCreatures(whatISee)) {
-			double dangerX = p.getX() + boat.getX();
-			double dangerY = p.getY() + boat.getY();
-			if (myX == dangerX && myY > dangerY) {
-				harmfulDirections.add(Direction.N);
-				harmfulDirections.add(Direction.NE);
-				harmfulDirections.add(Direction.NW);
-			}
-
-			if (myX == dangerX && myY < dangerY) {
-				harmfulDirections.add(Direction.S);
-				harmfulDirections.add(Direction.SE);
-				harmfulDirections.add(Direction.SW);
-			}
-
-			if (myX > dangerX && myY == dangerY) {
-				harmfulDirections.add(Direction.W);
-				harmfulDirections.add(Direction.NW);
-				harmfulDirections.add(Direction.SW);
-			}
-			if (myX < dangerX && myY == dangerY) {
-				harmfulDirections.add(Direction.E);
-				harmfulDirections.add(Direction.NE);
-				harmfulDirections.add(Direction.SE);
-			}
-			if (myX < dangerX && myY > dangerY) {
-				harmfulDirections.add(Direction.NE);
-				harmfulDirections.add(Direction.N);
-				harmfulDirections.add(Direction.E);
-			}
-			if (myX < dangerX && myY < dangerY) {
-				harmfulDirections.add(Direction.SE);
-				harmfulDirections.add(Direction.S);
-				harmfulDirections.add(Direction.E);
-			}
-			if (myX > dangerX && myY > dangerY) {
-				harmfulDirections.add(Direction.NW);
-				harmfulDirections.add(Direction.N);
-				harmfulDirections.add(Direction.W);
-			}
-			if (myX > dangerX && myY < dangerY) {
-				harmfulDirections.add(Direction.SW);
-				harmfulDirections.add(Direction.S);
-				harmfulDirections.add(Direction.W);
-			}
-
+			
+			harmfulDirections.addAll(getDirections(myLocation, p));
 		}
+		return harmfulDirections;
+	}
+	
+	private ArrayList<Direction> getDirections(Point2D myLocation, Point2D p){
+		
+		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
+		
+		double myX = myLocation.getX();
+		double myY = myLocation.getY();
+		double dangerX = p.getX() + boat.getX();
+		double dangerY = p.getY() + boat.getY();
+		if (myX == dangerX && myY > dangerY) {
+			harmfulDirections.add(Direction.N);
+			harmfulDirections.add(Direction.NE);
+			harmfulDirections.add(Direction.NW);
+		}
+
+		if (myX == dangerX && myY < dangerY) {
+			harmfulDirections.add(Direction.S);
+			harmfulDirections.add(Direction.SE);
+			harmfulDirections.add(Direction.SW);
+		}
+
+		if (myX > dangerX && myY == dangerY) {
+			harmfulDirections.add(Direction.W);
+			harmfulDirections.add(Direction.NW);
+			harmfulDirections.add(Direction.SW);
+		}
+		if (myX < dangerX && myY == dangerY) {
+			harmfulDirections.add(Direction.E);
+			harmfulDirections.add(Direction.NE);
+			harmfulDirections.add(Direction.SE);
+		}
+		if (myX < dangerX && myY > dangerY) {
+			harmfulDirections.add(Direction.NE);
+			harmfulDirections.add(Direction.N);
+			harmfulDirections.add(Direction.E);
+		}
+		if (myX < dangerX && myY < dangerY) {
+			harmfulDirections.add(Direction.SE);
+			harmfulDirections.add(Direction.S);
+			harmfulDirections.add(Direction.E);
+		}
+		if (myX > dangerX && myY > dangerY) {
+			harmfulDirections.add(Direction.NW);
+			harmfulDirections.add(Direction.N);
+			harmfulDirections.add(Direction.W);
+		}
+		if (myX > dangerX && myY < dangerY) {
+			harmfulDirections.add(Direction.SW);
+			harmfulDirections.add(Direction.S);
+			harmfulDirections.add(Direction.W);
+		}
+		
 		return harmfulDirections;
 	}
 
@@ -395,6 +428,22 @@ public class SeaBoard {
 		return lastKnownDirectionOfDangerousCreatures;
 	}
 
+	public ArrayList<Direction> getLastDirectionOfHarmfulCreaturesInRadius(
+			Set<Observation> whatISee, Point2D whereIAm, int smallradius) {
+
+		ArrayList<Direction> lastKnownDirectionOfDangerousCreatures = new ArrayList<Direction>();
+
+		for (Observation creature : whatISee) {
+			if (creature.isDangerous() && creature.getLocation().distance(whereIAm) < smallradius) {
+				if (creature.getDirection() != null) {
+					lastKnownDirectionOfDangerousCreatures.add(creature
+							.getDirection());
+				}
+			}
+		}
+		return lastKnownDirectionOfDangerousCreatures;
+	}
+	
 	public boolean isDangerMobile(Point2D whereIAm, Set<Observation> whatISee) {
 
 		Boolean mobile = false;
@@ -443,4 +492,16 @@ public class SeaBoard {
 		
 		return false;
 	}
+
+	/**Checks to see if this is a 100% static board*/
+	public boolean staticboard() {
+		for(SeaLifePrototype s : prototypes){
+			if(s.getSpeed() != 0)
+				return false;
+		}
+		
+		return true;
+	}
+
+	
 }

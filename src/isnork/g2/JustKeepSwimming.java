@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import isnork.g2.Strategy.DangerDanger;
 import isnork.g2.Strategy.GeneralStrategy;
+import isnork.g2.Strategy.StaticBoard;
 import isnork.g2.Strategy.Strategy;
 import isnork.g2.utilities.SeaBoard;
 import isnork.sim.GameConfig;
@@ -58,6 +59,8 @@ public class JustKeepSwimming extends Player {
 
 		if(board.dangerdanger())
 			this.strategy = new DangerDanger(p, d, r, seaLifePossibilites, random, this.getId(), n, board);
+		else if(board.staticboard())
+			this.strategy = new StaticBoard(p, d, r, seaLifePossibilites, random, this.getId(), n, board);
 		else
 			this.strategy = new GeneralStrategy(p, d, r, seaLifePossibilites, random, this.getId(), n, board);
 		
