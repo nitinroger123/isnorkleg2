@@ -24,15 +24,13 @@ public abstract class Strategy {
 	public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz"; 
 	
 	protected Set<Observation> whatISee;
-	
 	public static ArrayList<Direction> directions = Direction.allBut(null);
-	
 	private Logger log = Logger.getLogger(this.getClass());
 	protected SeaBoard board;
 	protected Random random;
 	protected Point2D whereIAm = null;
 	protected Point2D boat;
-	protected int radius, distance, penalty, numrounds;
+	protected int radius, distance, penalty, numrounds, smallradius = 0;
 	protected int roundsleft;
 	
 	public ArrayList<SeaCreatureType> ratedCreatures = new ArrayList<SeaCreatureType>();
@@ -47,6 +45,7 @@ public abstract class Strategy {
 	public Point2D intermediateGoal = null;
 	public SeaCreatureType searchingFor = null;
 	
+	
 	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id, int numDivers, SeaBoard b) {
 		myId = id;
 		penalty = p;
@@ -60,6 +59,12 @@ public abstract class Strategy {
 		random = rand;
 		whatISee=new HashSet<Observation>();
 		board = b;
+		
+		//use a smaller radius to avoid danger
+		if (r > 5)
+			smallradius = 5;
+		else
+			smallradius = r;
 		
 		//create the basic arraylist of points based on the minimum amount that can be there
 		for(SeaLifePrototype slp : seaLifePossibilities)

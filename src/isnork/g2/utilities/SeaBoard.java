@@ -1,6 +1,5 @@
 package isnork.g2.utilities;
 
-import isnork.sim.Config;
 import isnork.sim.Observation;
 import isnork.sim.SeaLifePrototype;
 import java.awt.geom.Point2D;
@@ -78,6 +77,16 @@ public class SeaBoard {
 		boolean isThereDanger = false;
 		for (Observation creature : whatISee) {
 			if (creature.isDangerous()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean areThereDangerousCreaturesInRadius(Set<Observation> whatISee, Point2D whereIAm, int r) {
+		boolean isThereDanger = false;
+		for (Observation creature : whatISee) {
+			if (creature.isDangerous() && whereIAm.distance(creature.getLocation()) < r) {
 				return true;
 			}
 		}
