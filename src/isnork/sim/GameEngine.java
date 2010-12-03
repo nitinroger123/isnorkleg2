@@ -251,6 +251,7 @@ public final class GameEngine {
 		return true;
 	}
 
+
 	private HashSet<iSnorkMessage> messages;
 
 	private final static void printUsage() {

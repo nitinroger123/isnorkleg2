@@ -14,7 +14,8 @@ do
   
   while read LINE
 	do
-  		echo c
+  		echo "Running board"
+  		
   		java -cp log4j-1.2.15.jar:bin/ isnork.sim.GameEngine text "$board" "$LINE" $2 $3 $4 0 >> $1
 		done <$fname
   		java -cp log4j-1.2.15.jar:bin/ isnork.sim.GameEngine text "$board" "$LINE" $2 $3 $4 0 >> $1
