@@ -82,15 +82,17 @@ public class SeaBoard {
 		}
 		return false;
 	}
-	
-	public boolean areThereDangerousCreaturesInRadius(Set<Observation> whatISee, Point2D whereIAm, int r) {
-		System.out.println("radius is: " + r);
-		System.out.println("i am at: " + whereIAm);
+
+	public boolean areThereDangerousCreaturesInRadius(
+			Set<Observation> whatISee, Point2D whereIAm, int r) {
+		
 		for (Observation creature : whatISee) {
-			/*System.out.println(creature.isDangerous() + 
-					", " + (whereIAm.distance(creature.getLocation())));*/
-			System.out.println();
-			if (creature.isDangerous() && whereIAm.distance(creature.getLocation()) < r) {
+			
+			Point2D creatureLocation = new Point2D.Double(creature.getLocation()
+					.getX()
+					+ distance, creature.getLocation().getY() + distance);
+			if (creature.isDangerous()
+					&& whereIAm.distance(creatureLocation) < r) {
 				return true;
 			}
 		}
@@ -122,47 +124,49 @@ public class SeaBoard {
 		}
 		return dangerousCreatures;
 	}
-	
+
 	private Object getPositionOfDangerousCreaturesInRadius(
 			Set<Observation> whatISee, Point2D whereIAm, int smallradius) {
 		ArrayList<Point2D> dangerousCreatures = new ArrayList<Point2D>();
 		for (Observation creature : whatISee) {
-			if (creature.isDangerous() && creature.getLocation().distance(whereIAm) < smallradius) {
+			if (creature.isDangerous()
+					&& creature.getLocation().distance(whereIAm) < smallradius) {
 				dangerousCreatures.add(creature.getLocation());
 			}
 		}
 		return dangerousCreatures;
 	}
-	
+
 	public ArrayList<Direction> getHarmfulDirectionsInRadius(Point2D whereIAm,
 			Set<Observation> whatISee, int smallradius) {
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
 
-		/*for (Point2D p : getPositionOfDangerousCreaturesInRadius
-			(whatISee, whereIAm, smallradius)) {
-			
-			harmfulDirections.addAll(getDirections(whereIAm, p));
-		}*/
-		
+		/*
+		 * for (Point2D p : getPositionOfDangerousCreaturesInRadius (whatISee,
+		 * whereIAm, smallradius)) {
+		 * 
+		 * harmfulDirections.addAll(getDirections(whereIAm, p)); }
+		 */
+
 		return harmfulDirections;
 	}
 
 	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation,
 			Set<Observation> whatISee) {
-		
+
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
 
 		for (Point2D p : getPositionOfDangerousCreatures(whatISee)) {
-			
+
 			harmfulDirections.addAll(getDirections(myLocation, p));
 		}
 		return harmfulDirections;
 	}
-	
-	private ArrayList<Direction> getDirections(Point2D myLocation, Point2D p){
-		
+
+	private ArrayList<Direction> getDirections(Point2D myLocation, Point2D p) {
+
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
-		
+
 		double myX = myLocation.getX();
 		double myY = myLocation.getY();
 		double dangerX = p.getX() + boat.getX();
@@ -209,7 +213,7 @@ public class SeaBoard {
 			harmfulDirections.add(Direction.S);
 			harmfulDirections.add(Direction.W);
 		}
-		
+
 		return harmfulDirections;
 	}
 
@@ -245,9 +249,9 @@ public class SeaBoard {
 	}
 
 	public int getMaxScore() {
-		
+
 		int maxscore = 0;
-		
+
 		for (SeaLifePrototype c : prototypes) {
 
 			if (c.getMaxCount() >= 3)
@@ -259,7 +263,7 @@ public class SeaBoard {
 			if (c.getMaxCount() == 1)
 				maxscore += c.getHappiness();
 		}
-		
+
 		return maxscore;
 	}
 
@@ -349,6 +353,29 @@ public class SeaBoard {
 		return getProbOnSpace(x, y, currRound, ourCreature);
 	}
 
+	/** Get the probability that a creature with an ID is on a particular space */
+	public double getProbOnSpace(EachSeaCreature ourCreature, int x, int y, int currRound) {
+
+		// on space and static creature
+		/*if (board[x][y].isoccupideby(id)
+				&& board[x][y].getCreature(id).returnCreature().getSpeed() == 0)
+			return 1;
+
+		// not on space and static creature
+		if (!board[x][y].isoccupideby(id)
+				&& board[x][y].getCreature(id).returnCreature().getSpeed() == 0)
+			return 0;*/
+
+		// too far away to possibly be there
+		Point2D goingTo = new Point2D.Double(x, y);
+		if (goingTo.distance(ourCreature.location) > (currRound - ourCreature
+				.getLastseen()) / 2)
+			return 0;
+
+		// Otherwise return a probability
+		return getProbOnSpace(x, y, currRound, ourCreature);
+	}
+	
 	/** Internal method to calculate prob when it is not 1 or 0 */
 	private double getProbOnSpace(int x, int y, int currRound,
 			EachSeaCreature ourCreature) {
@@ -440,7 +467,8 @@ public class SeaBoard {
 		ArrayList<Direction> lastKnownDirectionOfDangerousCreatures = new ArrayList<Direction>();
 
 		for (Observation creature : whatISee) {
-			if (creature.isDangerous() && creature.getLocation().distance(whereIAm) < smallradius) {
+			if (creature.isDangerous()
+					&& creature.getLocation().distance(whereIAm) < smallradius) {
 				if (creature.getDirection() != null) {
 					lastKnownDirectionOfDangerousCreatures.add(creature
 							.getDirection());
@@ -449,7 +477,7 @@ public class SeaBoard {
 		}
 		return lastKnownDirectionOfDangerousCreatures;
 	}
-	
+
 	public boolean isDangerMobile(Point2D whereIAm, Set<Observation> whatISee) {
 
 		Boolean mobile = false;
@@ -487,27 +515,26 @@ public class SeaBoard {
 	 */
 	public boolean dangerdanger() {
 		int numdangerous = 0;
-		
-		for(SeaLifePrototype s : prototypes){
-			if(s.isDangerous())
+
+		for (SeaLifePrototype s : prototypes) {
+			if (s.isDangerous())
 				numdangerous++;
 		}
-		
-		if(numdangerous/prototypes.size() == 1)
+
+		if (numdangerous / prototypes.size() == 1)
 			return true;
-		
+
 		return false;
 	}
 
-	/**Checks to see if this is a 100% static board*/
+	/** Checks to see if this is a 100% static board */
 	public boolean staticboard() {
-		for(SeaLifePrototype s : prototypes){
-			if(s.getSpeed() != 0)
+		for (SeaLifePrototype s : prototypes) {
+			if (s.getSpeed() != 0)
 				return false;
 		}
-		
+
 		return true;
 	}
 
-	
 }
