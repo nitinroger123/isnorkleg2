@@ -31,6 +31,9 @@ public class GeneralStrategy extends Strategy {
 		super(p, d, r, seaLifePossibilites, rand, id, numDivers, b);
 		outDirection = getRandomDirection();
 		setupSpiral();
+		
+		for(int x=0; x<numSnorkelers; x++)
+			seenBestTracker.add(0);
 	}
 
 	@Override
@@ -89,6 +92,12 @@ public class GeneralStrategy extends Strategy {
 		/**
 		 * NO DANGEROUS ANIMALS AROUND
 		 */
+		// if he's the chaser of the top creature, chase it!
+		if(chasingGoal != null) {
+			return getDirectionToGoal(whereIAm, chasingGoal);
+		}
+			
+		
 		// if he's reached intermediate goal, do something else
 		if (intermediateGoal != null && intermediateGoal.equals(whereIAm)) {
 			intermediateGoal = null;
@@ -130,6 +139,7 @@ public class GeneralStrategy extends Strategy {
 		 * return outDirection;
 		 */
 
+		//finally, follow your spiralling path
 		return makeSpiralMove();
 	}
 
@@ -196,17 +206,28 @@ public class GeneralStrategy extends Strategy {
 		}
 	}
 
-	public String getTick(Set<Observation> whatYouSee) {
+	public String getTick() {
 		SeaCreatureType bestVisible = null;
 		SeaCreatureType worstVisible = null;
 		double bestRanking = Double.MIN_VALUE;
 		double worstRanking = Double.MAX_VALUE;
+		boolean maxThisRound = false;
 
 		// track which is the best creature that you can currently see
-		for (Observation o : whatYouSee) {
+		for (Observation o : whatISee) {
 			SeaCreatureType cur = knownCreatures.get(o.getName());
+			
 
 			if (cur != null) {
+				cur.seenOnce = true;
+				
+				if(cur.isnorkMessage.equals("a")) {
+					maxThisRound = true;
+					seesMax = true;
+					tempChasingGoal = new Point2D.Double(o.getLocation().getX()+distance,
+							o.getLocation().getY()+distance);
+				}
+				
 				if (cur.ranking > bestRanking) {
 					bestVisible = cur;
 					bestRanking = cur.ranking;
@@ -218,6 +239,12 @@ public class GeneralStrategy extends Strategy {
 				}
 			}
 		}
+		
+		if(!maxThisRound)
+			seesMax = false;
+		
+		if(chasing != null)
+			return chasing.isnorkMessage;
 
 		// send out the message that refers to the best creature
 		if (bestVisible != null && bestVisible.ranking > 0)
@@ -231,49 +258,73 @@ public class GeneralStrategy extends Strategy {
 		return null;
 	}
 
+	public SeaCreatureType chasing = null;
+	public int numSeen = 0;
+	public ArrayList<Integer> seenBestTracker = new ArrayList<Integer>();
+	public boolean seesMax = false;
+	public Point2D chasingGoal = null;
+	public Point2D tempChasingGoal = null;
+	
 	public void updateIncomingMessages(Set<iSnorkMessage> incomingMessages) {
+		
 		SeaCreatureType bestFind = null;
 		double curDist = Double.MAX_VALUE;
 		boolean changed = false;
 		String rcvd = null;
-
-		for (iSnorkMessage ism : incomingMessages) {
-			Point2D newLoc = new Point2D.Double(ism.getLocation().getX()
-					+ distance, ism.getLocation().getY() + distance);
-			SeaCreatureType sc = creatureMapping.get(ism.getMsg());
-			rcvd = ism.getMsg();
-
-			if ((ism.getMsg().equals("a") || ism.getMsg().equals("b"))
-					&& !sc.seenOnce) {
-				// base case
-				if (bestFind == null && sc.nextHappiness > 0) {
-					if (ism.getMsg().equals("a") && !sc.seenOnce) {
-						// base case
-						if (bestFind == null && sc.nextHappiness > 0) {
-							bestFind = sc;
-							intermediateGoal = newLoc;
-							searchingFor = sc;
-							changed = true;
-						}
-						// equality case, it's two of the same creature, get the
-						// closest one
-						else if (sc != null && bestFind != null
-								&& sc.nextHappiness == bestFind.nextHappiness) {
-							double newDist = whereIAm.distance(newLoc);
-							if (newDist < curDist) {
-								curDist = newDist;
-								bestFind = sc;
-								intermediateGoal = newLoc;
-								searchingFor = sc;
-								changed = true;
-							}
-						}
-						// general case, does this new creature have a higher
-						// next
-						// happiness?
-						else if (sc != null && bestFind != null
-								&& sc.nextHappiness > bestFind.nextHappiness) {
-							curDist = whereIAm.distance(newLoc);
+		int tempLowestTracker = Integer.MIN_VALUE;
+		
+		for (iSnorkMessage ism : incomingMessages) 
+		{
+//			if(ism.getSender() != myId)
+//			{
+				Point2D newLoc = new Point2D.Double(ism.getLocation().getX() + distance, ism.getLocation().getY() + distance);
+				SeaCreatureType sc = creatureMapping.get(ism.getMsg());
+				rcvd = ism.getMsg();
+				int snorkId = ism.getSender();
+				
+				//determines if you are tracker of the nemo now
+				if(ism.getMsg().equals("a"))
+				{
+					seenBestTracker.set(Math.abs(snorkId), 1);
+					
+					//if that snorkeler has a lower id than you, then don't start tracking it
+					if(snorkId > tempLowestTracker) {
+						tempLowestTracker = snorkId;
+					}
+					
+					//keep chasing creature if you already were chasing
+					if(chasing != null && !seenBestTracker.contains(0))
+					{
+						
+					}
+				}
+				
+				if ((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && !sc.seenOnce) // || ism.getMsg().equals("b")
+				{
+					//starting case, will always run on the first iteration of the loop
+					if(bestFind == null && sc.nextHappiness > 0)
+					{
+						bestFind = sc;
+						intermediateGoal = newLoc;
+						searchingFor = sc;
+						changed = true;
+					}
+					//general case, does this new creature provide best happiness?
+					else if(sc != null && bestFind != null && sc.nextHappiness > bestFind.nextHappiness)
+					{
+						curDist = whereIAm.distance(newLoc);
+						bestFind = sc;
+						intermediateGoal = newLoc;
+						searchingFor = sc;
+						changed = true;
+					}
+					//equality case, go to the snorkeler that is closest to the best creature
+					else if(sc != null && bestFind != null && sc.nextHappiness == bestFind.nextHappiness)
+					{
+						double newDist = whereIAm.distance(newLoc);
+						if (newDist < curDist) 
+						{
+							curDist = newDist;
 							bestFind = sc;
 							intermediateGoal = newLoc;
 							searchingFor = sc;
@@ -281,7 +332,22 @@ public class GeneralStrategy extends Strategy {
 						}
 					}
 				}
-			}
+				else if (searchingFor != null && searchingFor.seenOnce)
+				{
+					intermediateGoal = null;
+					searchingFor = null;
+				}
+//			}
+		}
+		
+		//check if i'm the tracking snorkeler
+		if(tempLowestTracker <= myId && seesMax && seenBestTracker.contains(0)) {
+			chasing = creatureMapping.get("a");
+			chasingGoal = tempChasingGoal;
+		}
+		else {
+			chasing = null;
+			chasingGoal = null;
 		}
 
 		/*if (myId == 0 && intermediateGoal != null && changed)
@@ -321,7 +387,10 @@ public class GeneralStrategy extends Strategy {
 
 	public void setupSpiral() {
 		int absID = Math.abs(myId);
-		numWaves = (int) Math.ceil(distance / radius) + 1;
+//		numWaves = (int) Math.ceil(distance / radius) + 1;
+		
+		numWaves = ((distance-2*radius) / (2*radius) + 2);
+		
 		myStartWave = (int) (absID / 4) + 1;
 		myCurWave = myStartWave;
 		waveLength = radius;
