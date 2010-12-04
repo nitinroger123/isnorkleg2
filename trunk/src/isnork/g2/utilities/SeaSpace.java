@@ -1,5 +1,6 @@
 package isnork.g2.utilities;
 
+import isnork.sim.SeaLifePrototype;
 import isnork.sim.GameObject.Direction;
 
 import java.awt.geom.Point2D;
@@ -132,11 +133,37 @@ public class SeaSpace {
 		}
 		return null;
 	}
+	
+	public boolean isoccupideby(SeaLifePrototype s) {
+		
+		for(EachSeaCreature e: occupiedby){
+			if(e.returnCreature() == s)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isoccupideby(SeaCreatureType seaCreatureType) {
+		
+		for(EachSeaCreature e: occupiedby){
+			if(seaCreatureType.returnCreature() == e.returnCreature())
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public void addCreature(SeaCreatureType seaCreatureType) {
+		occupiedby.add(new EachSeaCreature(seaCreatureType));
+		
+	}
 
 	private ArrayList<EachSeaCreature> occupiedby;
 	private int roundset;
 	private Point2D location, center;
 	private Logger log;
 	
-
+	
+	
 }

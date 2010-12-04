@@ -14,66 +14,50 @@ import isnork.sim.SeaLifePrototype;
 import isnork.sim.iSnorkMessage;
 import isnork.sim.GameObject.Direction;
 
-public class GeneralStrategy extends Strategy {
+public class StaticBoardOld extends Strategy {
 
 	private static final int TIME_TO_GO_HOME = 55;
+
+	private Logger log = Logger.getLogger(this.getClass());
 	public boolean goingOut = false;
 	public Direction outDirection = null;
 	protected double boatConstant = 2;
 	boolean goingHome = false;
 
-	public GeneralStrategy(int p, int d, int r,
+	public StaticBoardOld(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id,
 			int numDivers, SeaBoard b) {
 
 		super(p, d, r, seaLifePossibilites, rand, id, numDivers, b);
 		outDirection = getRandomDirection();
+		this.smallradius = 3;
 		setupSpiral();
 		
-		for(int x=0; x<numSnorkelers; x++)
-			seenBestTracker.add(0);
+		System.out.println("static bord");
 	}
 
 	@Override
 	public Direction getMove() {
-		// if(myId == 0)
-		// {
-		// System.out.println(roundsleft + " ---------------------");
-		// System.out.println("board max: " + board.getMaxScore());
-		// System.out.println("intermediate goal: " + intermediateGoal);
-		// System.out.println("spiral goal: " + spiralGoal);
-		// }
-
+		
 		/*
 		 * temp fix.
 		 */
 		if (roundsleft < TIME_TO_GO_HOME || goingHome) {
 			return backtrack(true);
 		}
-		/**
-		 * ON BOAT, DANGEROUS CREATURES RIGHT BELOW US
-		 */
-		if (whereIAm.equals(boat) && board.getSeaSpace(boat).hasDanger()) {
-			return null;
-		}
+		
 
 		/**
 		 * GET BACK ON BOAT, NO TIME LEFT!!!
 		 */
-		// if (((whereIAm.distance(boat) + 2) > (roundsleft / 3))
-		// || this.myHappiness >= board.getMaxScore()) {
-		// System.err.println("backtracking " + roundsleft);
-		// return backtrack(false);
-		// }
+		
 		if (whereIAm.distance(boat) > roundsleft / 3)
-		// || this.myHappiness >= board.getMaxScore())
 		{
 			goingHome = true;
 			return backtrack(true);
 		}
 
 		if (whereIAm.distance(boat) > roundsleft / 4)
-		// || this.myHappiness >= board.getMaxScore())
 		{
 			return backtrack(false);
 		}
@@ -81,21 +65,16 @@ public class GeneralStrategy extends Strategy {
 		/**
 		 * DANGEROUS CREATURES NEARBY, RUN LIKE HELL
 		 */
-		if (board.areThereDangerousCreatures(this.whatISee)) {
+		if (board.areThereDangerousCreaturesInRadius(whatISee, whereIAm, smallradius)) {
 			ArrayList<Direction> directionsToAvoid = board
-					.getHarmfulDirections(this.whereIAm, this.whatISee);
+					.getHarmfulDirectionsInRadius(this.whereIAm, this.whatISee, smallradius);
+			System.out.println("run away from danger");
 			return runAwayFromDanger(directionsToAvoid, intermediateGoal);
 		}
 
 		/**
 		 * NO DANGEROUS ANIMALS AROUND
 		 */
-		// if he's the chaser of the top creature, chase it!
-		if(chasingGoal != null) {
-			return getDirectionToGoal(whereIAm, chasingGoal);
-		}
-			
-		
 		// if he's reached intermediate goal, do something else
 		if (intermediateGoal != null && intermediateGoal.equals(whereIAm)) {
 			intermediateGoal = null;
@@ -104,40 +83,11 @@ public class GeneralStrategy extends Strategy {
 		// if he's on route to his goal and there are no dangerous creatures
 		// around, go to goal
 		if (intermediateGoal != null) {
+			System.out.println("get direction to goal");
 			return getDirectionToGoal(whereIAm, intermediateGoal);
 		}
 
-		// if he's at the boat, generate a random direction and go out
-		/*
-		 * if (!goingOut && whereIAm.getX() == distance && whereIAm.getY() ==
-		 * distance) { goingOut = true; outDirection = getRandomDirection();
-		 * return outDirection; }
-		 * 
-		 * // if he's going out and reached an edge, start coming back to the
-		 * boat if (goingOut && !(whereIAm.getX() < radius - 1 ||
-		 * whereIAm.getX() > board.board.length - radius + 1 || whereIAm.getY()
-		 * < radius - 1 || whereIAm.getY() > board.board.length - radius + 1)) {
-		 * return outDirection; }
-		 * 
-		 * // if he's going out and reached an edge, start coming back to the
-		 * boat if (goingOut && (whereIAm.getX() < radius - 1 || whereIAm.getX()
-		 * > board.board.length - radius + 1 || whereIAm.getY() < radius - 1 ||
-		 * whereIAm.getY() > board.board.length - radius + 1)) { goingOut =
-		 * false; outDirection = null; return backtrack(false); }
-		 * 
-		 * // if he's coming in and not at the boat, keep coming in if
-		 * (!goingOut && !(whereIAm.getX() == distance && whereIAm.getY() ==
-		 * distance)) { return backtrack(false); }
-		 * 
-		 * if (!goingOut) { return backtrack(false); }
-		 * 
-		 * if (outDirection == null) { outDirection = randomMove(); return
-		 * outDirection; }
-		 * 
-		 * return outDirection;
-		 */
-
-		//finally, follow your spiralling path
+		System.out.println("making spiral move");
 		return makeSpiralMove();
 	}
 
@@ -190,13 +140,6 @@ public class GeneralStrategy extends Strategy {
 		Collections.sort(ratedCreatures);
 		Collections.reverse(ratedCreatures);
 
-		//if there are more than 26 creatures, remove the 
-		// ones that are of the least importance
-		while(ratedCreatures.size() > 26)
-		{
-			ratedCreatures.remove(ratedCreatures.size()-1);
-		}
-		
 		int count = 0;
 		for (SeaCreatureType sc : ratedCreatures) {
 			creatureMapping.put(
@@ -211,28 +154,17 @@ public class GeneralStrategy extends Strategy {
 		}
 	}
 
-	public String getTick() {
+	public String getTick(Set<Observation> whatYouSee) {
 		SeaCreatureType bestVisible = null;
 		SeaCreatureType worstVisible = null;
 		double bestRanking = Double.MIN_VALUE;
 		double worstRanking = Double.MAX_VALUE;
-		boolean maxThisRound = false;
 
 		// track which is the best creature that you can currently see
-		for (Observation o : whatISee) {
+		for (Observation o : whatYouSee) {
 			SeaCreatureType cur = knownCreatures.get(o.getName());
-			
 
-			if (cur != null && cur.isnorkMessage != null) {
-				cur.seenOnce = true;
-				
-				if(cur.isnorkMessage.equals("a")) {
-					maxThisRound = true;
-					seesMax = true;
-					tempChasingGoal = new Point2D.Double(o.getLocation().getX()+distance,
-							o.getLocation().getY()+distance);
-				}
-				
+			if (cur != null) {
 				if (cur.ranking > bestRanking) {
 					bestVisible = cur;
 					bestRanking = cur.ranking;
@@ -244,12 +176,6 @@ public class GeneralStrategy extends Strategy {
 				}
 			}
 		}
-		
-		if(!maxThisRound)
-			seesMax = false;
-		
-		if(chasing != null)
-			return chasing.isnorkMessage;
 
 		// send out the message that refers to the best creature
 		if (bestVisible != null && bestVisible.ranking > 0)
@@ -263,70 +189,49 @@ public class GeneralStrategy extends Strategy {
 		return null;
 	}
 
-	public SeaCreatureType chasing = null;
-	public int numSeen = 0;
-	public ArrayList<Integer> seenBestTracker = new ArrayList<Integer>();
-	public boolean seesMax = false;
-	public Point2D chasingGoal = null;
-	public Point2D tempChasingGoal = null;
-	
 	public void updateIncomingMessages(Set<iSnorkMessage> incomingMessages) {
-		
 		SeaCreatureType bestFind = null;
 		double curDist = Double.MAX_VALUE;
 		boolean changed = false;
 		String rcvd = null;
-		int tempLowestTracker = Integer.MIN_VALUE;
-		
-		for (iSnorkMessage ism : incomingMessages) 
-		{
-//			if(ism.getSender() != myId)
-//			{
-				Point2D newLoc = new Point2D.Double(ism.getLocation().getX() + distance, ism.getLocation().getY() + distance);
-				SeaCreatureType sc = creatureMapping.get(ism.getMsg());
-				rcvd = ism.getMsg();
-				int snorkId = ism.getSender();
-				
-				//determines if you are tracker of the nemo now
-				if(ism.getMsg().equals("a"))
-				{
-					seenBestTracker.set(Math.abs(snorkId), 1);
-					
-					//if that snorkeler has a lower id than you, then don't start tracking it
-					if(snorkId > tempLowestTracker) {
-						tempLowestTracker = snorkId;
-					}
-				}
-				
-//				if ((!sc.seenOnce && whereIAm.distance(newLoc) < distance) &&
-//						(!sc.seenOnce && (ism.getMsg().equals("a") || ism.getMsg().equals("b")))) 
-//				if((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && !sc.seenOnce)
-				if(!sc.seenOnce)
-				{
-					//starting case, will always run on the first iteration of the loop
-					if(bestFind == null && sc.nextHappiness > 0)
-					{
-						bestFind = sc;
-						intermediateGoal = newLoc;
-						searchingFor = sc;
-						changed = true;
-					}
-					//general case, does this new creature provide best happiness?
-					else if(sc != null && bestFind != null && sc.nextHappiness > bestFind.nextHappiness)
-					{
-						curDist = whereIAm.distance(newLoc);
-						bestFind = sc;
-						intermediateGoal = newLoc;
-						searchingFor = sc;
-						changed = true;
-					}
-					//equality case, go to the snorkeler that is closest to the best creature
-					else if(sc != null && bestFind != null && sc.nextHappiness == bestFind.nextHappiness)
-					{
-						double newDist = whereIAm.distance(newLoc);
-						if (newDist < curDist) 
-						{
-							curDist = newDist;
+
+		for (iSnorkMessage ism : incomingMessages) {
+			Point2D newLoc = new Point2D.Double(ism.getLocation().getX()
+					+ distance, ism.getLocation().getY() + distance);
+			SeaCreatureType sc = creatureMapping.get(ism.getMsg());
+			rcvd = ism.getMsg();
+
+			if ((ism.getMsg().equals("a") || ism.getMsg().equals("b"))
+					&& !sc.seenOnce) {
+				// base case
+				if (bestFind == null && sc.nextHappiness > 0) {
+					if (ism.getMsg().equals("a") && !sc.seenOnce) {
+						// base case
+						if (bestFind == null && sc.nextHappiness > 0) {
+							bestFind = sc;
+							intermediateGoal = newLoc;
+							searchingFor = sc;
+							changed = true;
+						}
+						// equality case, it's two of the same creature, get the
+						// closest one
+						else if (sc != null && bestFind != null
+								&& sc.nextHappiness == bestFind.nextHappiness) {
+							double newDist = whereIAm.distance(newLoc);
+							if (newDist < curDist) {
+								curDist = newDist;
+								bestFind = sc;
+								intermediateGoal = newLoc;
+								searchingFor = sc;
+								changed = true;
+							}
+						}
+						// general case, does this new creature have a higher
+						// next
+						// happiness?
+						else if (sc != null && bestFind != null
+								&& sc.nextHappiness > bestFind.nextHappiness) {
+							curDist = whereIAm.distance(newLoc);
 							bestFind = sc;
 							intermediateGoal = newLoc;
 							searchingFor = sc;
@@ -334,22 +239,7 @@ public class GeneralStrategy extends Strategy {
 						}
 					}
 				}
-				else if (searchingFor != null && searchingFor.seenOnce)
-				{
-					intermediateGoal = null;
-					searchingFor = null;
-				}
-//			}
-		}
-		
-		//check if i'm the tracking snorkeler
-		if(tempLowestTracker <= myId && seesMax && seenBestTracker.contains(0)) {
-			chasing = creatureMapping.get("a");
-			chasingGoal = tempChasingGoal;
-		}
-		else {
-			chasing = null;
-			chasingGoal = null;
+			}
 		}
 
 		/*if (myId == 0 && intermediateGoal != null && changed)
@@ -388,18 +278,11 @@ public class GeneralStrategy extends Strategy {
 	public int numTurns = 0;
 
 	public void setupSpiral() {
-		
 		int absID = Math.abs(myId);
-//		numWaves = (int) Math.ceil(distance / radius) + 1;
-		
-		numWaves = ((distance-2*radius) / (2*radius)) ;
-		
+		numWaves = (int) Math.ceil(distance / radius) + 1;
 		myStartWave = (int) (absID / 4) + 1;
 		myCurWave = myStartWave;
 		waveLength = radius;
-		
-//		System.out.println("numWaves: " + numWaves);
-//		System.out.println("waveLength: " + waveLength);
 
 		if (myStartWave % 2 == 1) {
 			// diagonal direction
@@ -430,83 +313,64 @@ public class GeneralStrategy extends Strategy {
 		if (spanningOut) {
 			spanOut();
 			return myStartDirection;
-		} 
-		else if (!whereIAm.equals(spiralGoal)) {
+		} else if (!whereIAm.equals(spiralGoal)) {
 			return goToGoalWithoutGettingBit(spiralGoal, false);
-		} 
-		else {
-			Point2D oldSpiralGoal = new Point2D.Double(spiralGoal.getX(), spiralGoal.getY());
+		} else {
 			numTurns++;
 			int wallDirection = 0;
 
 			// if snorkeler reached temporary destination (aka a corner), assign
 			// the next goal
-			if (curDirection == Direction.NE || curDirection == Direction.N) 
-			{
+			if (curDirection == Direction.NE || curDirection == Direction.N) {
 				curDirection = Direction.W;
 				wallDirection = 4;
-			}
-			else if (curDirection == Direction.NW || curDirection == Direction.W) 
-			{
+			} else if (curDirection == Direction.NW
+					|| curDirection == Direction.W) {
 				curDirection = Direction.S;
 				wallDirection = 3;
-			}
-			else if (curDirection == Direction.SW || curDirection == Direction.S) 
-			{
+			} else if (curDirection == Direction.SW
+					|| curDirection == Direction.S) {
 				curDirection = Direction.E;
 				wallDirection = 2;
-			}
-			else if (curDirection == Direction.SE || curDirection == Direction.E)
-			{
+			} else if (curDirection == Direction.SE
+					|| curDirection == Direction.E) {
 				curDirection = Direction.N;
 				wallDirection = 1;
 			}
 
-			while (distanceFromWall(spiralGoal, wallDirection) >= waveLength * myCurWave ||
-					spiralGoal.distance(boat) < (radius+1))
-			{
+			while (distanceFromWall(spiralGoal, wallDirection) >= waveLength
+					* myCurWave) {
 				double newX = spiralGoal.getX() + curDirection.dx;
 				double newY = spiralGoal.getY() + curDirection.dy;
 				spiralGoal = new Point2D.Double(newX, newY);
 			}
 
 			if (spiralGoal.getX() > distance && spiralGoal.getY() > distance)
-				spiralGoal = new Point2D.Double(spiralGoal.getX() - 1, spiralGoal.getY());
+				spiralGoal = new Point2D.Double(spiralGoal.getX() - 1,
+						spiralGoal.getY());
 			else if (spiralGoal.getY() > distance)
-				spiralGoal = new Point2D.Double(spiralGoal.getX(), spiralGoal.getY() - 1);
+				spiralGoal = new Point2D.Double(spiralGoal.getX(),
+						spiralGoal.getY() - 1);
 
-			if (numTurns % 4 == 0)
-			{	
+			if (numTurns % 4 == 0) {
 				myCurWave++;
 				Direction boatDir = getDirectionToGoal(spiralGoal, boat);
 
-				if (myCurWave > numWaves)
-				{
+				if (myCurWave == numWaves) {
 					myCurWave = 1;
 					// go from inner most wave to outer
-					Direction oppBoatDir = getDirectionToGoal(oldSpiralGoal, boat);
-					while (spiralGoal.distance(boat) < distance-radius-1)
-					{
-						double newX = spiralGoal.getX() + oppBoatDir.dx;
-						double newY = spiralGoal.getY() + oppBoatDir.dy;
-						spiralGoal = new Point2D.Double(newX, newY);
+					for (int x = 0; x < waveLength; x++) {
+						spiralGoal = new Point2D.Double(spiralGoal.getX()
+								+ boatDir.dx * -1, spiralGoal.getY()
+								+ boatDir.dy * -1);
 					}
-				} 
-				else
-				{
+				} else {
 					// go to an inner wave
-					for (int x = 0; x < waveLength; x++)
-					{
-						spiralGoal = new Point2D.Double(spiralGoal.getX() + boatDir.dx, spiralGoal.getY() + boatDir.dy);
+					for (int x = 0; x < waveLength; x++) {
+						spiralGoal = new Point2D.Double(spiralGoal.getX()
+								+ boatDir.dx, spiralGoal.getY() + boatDir.dy);
 					}
-					
-					while (spiralGoal.distance(boat) < (radius+1))
-					{
-						double newX = spiralGoal.getX() + curDirection.dx;
-						double newY = spiralGoal.getY() + curDirection.dy;
-						spiralGoal = new Point2D.Double(newX, newY);
-					}
-				}	
+				}
 			}
 
 			return curDirection;
@@ -525,15 +389,14 @@ public class GeneralStrategy extends Strategy {
 		if(myStartWave != 1)
 			dist = (waveLength + radius - 1) * myStartWave;
 		
-		while (distanceFromClosestWall(spiralGoal) >= waveLength * myStartWave ||
-				spiralGoal.distance(boat) < (radius+1)) {
+		while (distanceFromClosestWall(spiralGoal) >= waveLength * myStartWave) {
 			double newX = spiralGoal.getX() + myStartDirection.dx;
 			double newY = spiralGoal.getY() + myStartDirection.dy;
 
 			spiralGoal = new Point2D.Double(newX, newY);
 		}
 	}
-	
+
 	public int distanceFromWall(Point2D pt, int wall) {
 		if (wall == 1) // northern wall
 			return (int) pt.getY() + 1;
@@ -562,5 +425,146 @@ public class GeneralStrategy extends Strategy {
 			shortestDistance = distance * 2 + 1 - (int) pt.getY() + 1;
 
 		return shortestDistance;
+	}
+	
+	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections,
+			Point2D goal) {
+		// If you are on the boat, you dont need to run
+		// System.err.println("run away from danger");
+		
+		// if(goal!=null)
+		// System.err.println("Going to goal X: "+goal.getX() +" Y:
+		// "+goal.getY());
+		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
+		Direction bestDirection=randomMove();
+		
+		ArrayList<Direction> directionTheDangerousCreaturesMove = 
+			board.getLastDirectionOfHarmfulCreatures(whatISee);
+		
+		ArrayList<Direction> bestWorstMoves = new ArrayList<Direction>(); 
+		if(!safeMoves.isEmpty()){
+			/*Remove the direction the dangerous fish moves in. its not safe if he chases you*/
+			if(safeMoves.size()>directionTheDangerousCreaturesMove.size()){
+				for(Direction d:directionTheDangerousCreaturesMove){
+					if(safeMoves.contains(d)){
+						safeMoves.remove(d);
+						bestWorstMoves.add(d);
+					}
+				}
+			}
+			Collections.shuffle(safeMoves);
+		}
+		bestDirection=randomMove();
+		double min = 10000;
+		if (!safeMoves.isEmpty()) {
+			for (Direction safe : safeMoves) {
+				// System.err.println("Safe Moves are: "+safe.name());
+				if (board.isValidMove((int) whereIAm.getX(), (int) whereIAm
+						.getY(), safe)) {
+					//System.err.println("Safe Valid Moves are: "+safe.name());
+					Point2D newPos=new Point2D.Double(whereIAm.getX()+safe.getDx(),whereIAm.getY()+safe.getDy());
+					if(goal!=null)
+					{		//System.err.println("Distance to goal : "+newPos.distance(goal));
+							if(newPos.distance(goal)<min)
+							{
+								//System.err.println("new best dir found");
+								min=newPos.distance(goal);
+								bestDirection=safe;
+							}
+					}
+					else{
+						bestDirection=safe;
+					}
+			// System.err.println("Best Direction :"+bestDirection.name());
+			return bestDirection;
+		}
+			}
+		}
+		/*
+		 * We don't have a good safe move but we have a move that just runs in
+		 * the same direction as the dangerous creature
+		 */
+		else if (!bestWorstMoves.isEmpty()) 
+		{
+			//System.err.println("inside bestworst");
+			Collections.shuffle(bestWorstMoves);
+			for(Direction d: bestWorstMoves){
+				if(board.isValidMove((int)whereIAm.getX(), (int)whereIAm.getY(), d))
+				{
+					return d;
+				}
+			}
+			return randomMove();
+		}
+		/* We are screwed, surrounded. Pray to god random move helps you */
+		return randomMove();
+	}
+	
+	/** Move to get the player back to the boat */
+	public Direction backtrack(boolean desperateTime) {
+		System.out.println("backtrack");
+		return goToGoalWithoutGettingBit(boat, desperateTime);
+	}
+	
+	/**
+	 * New method to go to a goal without getting hurt. Desperate time tells us
+	 * if its imperative that we reach the boat or not. If true, we just go to
+	 * the goal and don't avoid danger.
+	 */
+	public Direction goToGoalWithoutGettingBit(Point2D goal,
+			boolean desperateTime) {
+		
+		System.out.println("go to goal");
+		
+		if (!desperateTime && board.areThereDangerousCreaturesInRadius(whatISee, goal, smallradius)) {
+			return runAwayFromDanger(
+					board.getHarmfulDirectionsInRadius(goal, whatISee, smallradius), goal);
+		}
+		double currX = whereIAm.getX();
+		double currY = whereIAm.getY();
+		log.trace("Current X: " + currX + " Current Y: " + currY);
+		if (currX == goal.getX() && currY == goal.getY()) {
+			// stay put, we have reached the goal
+			return null;
+		}
+
+		// in a quadrant
+		if (currX > goal.getX() && currY > goal.getY()) {
+			return Direction.NW;
+		}
+		if (currX < goal.getX() && currY < goal.getY()) {
+			return Direction.SE;
+		}
+		if (currX < goal.getX() && currY > goal.getY()) {
+			return Direction.NE;
+		}
+		if (currX > goal.getX() && currY < goal.getY()) {
+			return Direction.SW;
+		}
+
+		// on a line
+		if (currX < goal.getX() && currY > goal.getY() || currX < goal.getX()
+				&& currY == goal.getY()) {
+			return Direction.E;
+		}
+		if (currX > goal.getX() && currY < goal.getY() || currX == goal.getX()
+				&& currY < goal.getY()) {
+			return Direction.S;
+		}
+
+		if (currX == goal.getX() && currY > goal.getY()) {
+			return Direction.N;
+		}
+		if (currX > goal.getX() && currY == goal.getY()) {
+			return Direction.W;
+		}
+		return null;
+
+	}
+
+	@Override
+	public String getTick() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
