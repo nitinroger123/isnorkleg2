@@ -34,6 +34,10 @@ public class EachSeaCreature{
 		lastseen = r;
 	}
 
+	public EachSeaCreature(SeaCreatureType seaCreatureType) {
+		seaCreature = seaCreatureType.returnCreature();
+	}
+
 	public int getNumTimesSeen() {
 		return numTimesSeen;
 	}

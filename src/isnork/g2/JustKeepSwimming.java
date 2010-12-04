@@ -63,11 +63,6 @@ public class JustKeepSwimming extends Player {
 			this.strategy = new StaticBoard(p, d, r, seaLifePossibilites, random, this.getId(), n, board);
 		else
 			this.strategy = new GeneralStrategy(p, d, r, seaLifePossibilites, random, this.getId(), n, board);
-		
-		/*Pre processing that we should do:
-		 * Is dangerous -> Strategy that basically just leaves you off the board
-		 */
-
 	}
 
 }
