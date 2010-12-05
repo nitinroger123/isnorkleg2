@@ -53,8 +53,9 @@ public class SeaSpace {
 		occupiedby.remove(temp);
 	}
 
-	public void addCreature(EachSeaCreature c, int r, Point2D l) {
+	public void addCreature(EachSeaCreature c, int r, Point2D l, boolean b) {
 		c.setLastSeen(r, l);
+		c.seen = true;
 		occupiedby.add(c);
 	}
 
@@ -73,7 +74,7 @@ public class SeaSpace {
 
 	/** Returns the direction from the diver to the creature */
 	public ArrayList<Direction> getDirection(Point2D me) {
-		
+
 		log.trace("i am on: " + me);
 		ArrayList<Direction> temp = new ArrayList<Direction>();
 
@@ -125,45 +126,55 @@ public class SeaSpace {
 	public Point2D getCenter() {
 		return center;
 	}
-	
+
 	public EachSeaCreature getCreature(int id) {
-		for(int i = 0; i < occupiedby.size(); i++){
-			if(occupiedby.get(i).getId() == id)
+		for (int i = 0; i < occupiedby.size(); i++) {
+			if (occupiedby.get(i).getId() == id)
 				return occupiedby.get(i);
 		}
 		return null;
 	}
-	
+
 	public boolean isoccupideby(SeaLifePrototype s) {
-		
-		for(EachSeaCreature e: occupiedby){
-			if(e.returnCreature() == s)
+
+		for (EachSeaCreature e : occupiedby) {
+			if (e.returnCreature() == s)
 				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	public boolean isoccupideby(SeaCreatureType seaCreatureType) {
-		
-		for(EachSeaCreature e: occupiedby){
-			if(seaCreatureType.returnCreature() == e.returnCreature())
+
+		for (EachSeaCreature e : occupiedby) {
+			if (seaCreatureType.returnCreature() == e.returnCreature())
 				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	public void addCreature(SeaCreatureType seaCreatureType) {
-		occupiedby.add(new EachSeaCreature(seaCreatureType));
-		
+		occupiedby.add(new EachSeaCreature(seaCreatureType, this.location
+				.getX(), this.location.getY()));
+	}
+
+	public ArrayList<EachSeaCreature> getUnseenCreatures() {
+
+		ArrayList<EachSeaCreature> unseen = new ArrayList<EachSeaCreature>();
+
+		for (EachSeaCreature e : occupiedby) {
+			if (!e.seen)
+				unseen.add(e);
+		}
+
+		return unseen;
 	}
 
 	private ArrayList<EachSeaCreature> occupiedby;
 	private int roundset;
 	private Point2D location, center;
 	private Logger log;
-	
-	
-	
+
 }

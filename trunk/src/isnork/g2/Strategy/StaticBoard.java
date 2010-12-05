@@ -1,6 +1,8 @@
 package isnork.g2.Strategy;
 
+import isnork.g2.utilities.DestinationPoints;
 import isnork.g2.utilities.DirectionToSort;
+import isnork.g2.utilities.EachSeaCreature;
 import isnork.g2.utilities.SeaBoard;
 import isnork.g2.utilities.SeaCreatureType;
 import isnork.sim.GameObject;
@@ -19,17 +21,20 @@ import java.util.Set;
 public class StaticBoard extends Strategy {
 
 	private Boolean goingOut;
-	public Direction outDirection = null;
 	private Point2D goal;
 	private ArrayList<Point2D> allgoals;
-	private ArrayList<Direction> directionstraversed;
-	private ArrayList<Point2D> lastthreespaces;
+	private ArrayList<Point2D> goalsLookedFor;
+	private ArrayList<Point2D> spacehistory;
 	public SeaCreatureType chasing = null;
-	public int numSeen = 0;
+	public int numSeen = 0, historytokeep = distance;
 	public ArrayList<Integer> seenBestTracker = new ArrayList<Integer>();
 	public boolean seesMax = false;
 	public Point2D chasingGoal = null;
 	public Point2D tempChasingGoal = null;
+	private double boatconstant = 3;
+	private int breakawaycount = 16;
+	private ArrayList<Direction> pathtogo = null;
+	private Point2D tempboat;
 
 	public StaticBoard(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id,
@@ -38,17 +43,20 @@ public class StaticBoard extends Strategy {
 		smallradius = 2;
 		goingOut = true;
 		allgoals = new ArrayList<Point2D>();
-		allgoals.add(new Point2D.Double(0, distance));
-		allgoals.add(new Point2D.Double(2 * distance, distance));
-		allgoals.add(new Point2D.Double(distance, 0));
+		allgoals.add(new Point2D.Double(0, (distance - radius)));
+		allgoals.add(new Point2D.Double(2 * distance - radius,
+				(distance - radius)));
+		allgoals.add(new Point2D.Double(distance - radius, 0));
 		allgoals.add(new Point2D.Double(0, 0));
-		allgoals.add(new Point2D.Double(2 * distance, 2 * distance));
-		allgoals.add(new Point2D.Double(2 * distance, 0));
-		allgoals.add(new Point2D.Double(distance, 2 * distance));
-		allgoals.add(new Point2D.Double(0, 2 * distance));
+		allgoals.add(new Point2D.Double(2 * distance - radius, 2 * distance
+				- radius));
+		allgoals.add(new Point2D.Double(2 * distance - radius, 0));
+		allgoals.add(new Point2D.Double(distance - radius, 2 * distance
+				- radius));
+		allgoals.add(new Point2D.Double(0, 2 * distance - radius));
 
-		directionstraversed = new ArrayList<Direction>();
-		lastthreespaces = new ArrayList<Point2D>();
+		goalsLookedFor = new ArrayList<Point2D>();
+		spacehistory = new ArrayList<Point2D>();
 
 		rateCreatures(seaLifePossibilities);
 	}
@@ -62,26 +70,109 @@ public class StaticBoard extends Strategy {
 	@Override
 	public Direction getMove() {
 
+		System.out.println("\n\n round: " + this.roundsleft);
+		Direction move = null;
+
+		
+		int offset = 10;
+		
+		if(tempboat != null && roundsleft < 10)
+			boat = tempboat;
+
+		/*
+		 * if(roundsleft < 20 && !board.seenall()) System.out.println(this.myId
+		 * + " has not seen everything...");
+		 */
+
 		// what to do if there is a static under the boat
-
+		if(whereIAm.equals(boat) && board.getSeaSpace(boat).hasDanger()){
+			for(Direction d: this.directions){
+				Point2D newboat = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY() + d.dy);
+				if(!board.getSeaSpace(newboat).hasDanger()){
+					tempboat = boat;
+					boat = newboat;
+				}
+			}
+			move = webMove();
+		}
+		
+		if(board.seenall())
+			System.out.println(myId + " has seen all");
+		
 		if (this.myHappiness == board.getMaxScore())
-			return backtrack(false);
+			move = backtrack(false);
 
-		if (whereIAm.distance(boat) + 3 > this.roundsleft / 3)
-			return backtrack(false);
+		else if (whereIAm.distance(boat) + offset > this.roundsleft / 3) {
+			// System.out.println("we urgently need to get back to the boat");
+			move = backtrack(true);
+		}
 
-		if (whereIAm.distance(boat) > this.roundsleft / 3)
-			return backtrack(true);
+		else if (boatconstant * (whereIAm.distance(boat) + offset) > this.roundsleft / 3) {
+			// System.out.println("we are running out of time, so we should start to head home");
+			move = backtrack(false);
+		}
 
-		if (board.seenall()) {
-			System.out.println("I know where everythign is");
-			// return lookfor()
+		else if (pathtogo != null && pathtogo.size() > 0) {
+			move = pathtogo.get(0);
+			pathtogo.remove(0);
+		}
+
+		else if (board.seenall()) {
+			System.out.println(myId + " has seen all and is creating a path");
+			move = lookfor();
 		}
 
 		// Spend the first two hours going out in different directions
-		return webMove(null);
+		else
+			move = webMove();
 
 		// Anylize map and come up with a good path
+
+		if (spacehistory.size() >= historytokeep)
+			spacehistory.remove(0);
+
+		if (move != null)
+			spacehistory.add(spacehistory.size(), new Point2D.Double(whereIAm
+					.getX()
+					+ move.dx, whereIAm.getY() + move.dy));
+
+		if (move == null && !boat.equals(whereIAm))
+			System.out.println("uhh we somehow got a null move?");
+
+		return move;
+	}
+
+	private Direction lookfor() {
+
+		ArrayList<DestinationPoints> destinations = new ArrayList<DestinationPoints>();
+		for (int i = 0; i < 2 * distance; i++) {
+			for (int j = 0; j < 2 * distance; j++) {
+				for (EachSeaCreature c : board.getSeaSpace(
+						new Point2D.Double(i, j)).getUnseenCreatures()) {
+					destinations.add(new DestinationPoints(c.location,
+							whereIAm, c.returnCreature().getHappinessD()));
+				}
+			}
+		}
+
+		if (destinations.size() > 0) {
+			for (DestinationPoints d : destinations)
+				d.whereIAm = whereIAm;
+
+			Collections.sort(destinations);
+
+			// debugging
+			/*
+			 * for (DestinationPoints d : destinations) System.out.println(d);
+			 */
+			return goToGoalWithoutGettingBit(destinations.get(0).location,
+					false);
+		}
+
+		else {
+			System.out.println("nothing in destination");
+			return goToGoalWithoutGettingBit(boat, false);
+		}
 	}
 
 	public String getTick() {
@@ -139,44 +230,60 @@ public class StaticBoard extends Strategy {
 
 		for (iSnorkMessage m : incomingMessages) {
 
-			if (m.getMsg() != null) {
+			if (m.getSender() != myId) {
 
-				Point2D mloc = new Point2D.Double(m.getLocation().getX() + distance, m.getLocation().getY() + distance);
-				
-				if (!board.getSeaSpace(mloc).isoccupideby(
-						creatureMapping.get(m.getMsg()))) {
-					board.getSeaSpace(mloc).addCreature(
-							creatureMapping.get(m.getMsg()));
+				if (m.getMsg() != null) {
+
+					Point2D mloc = new Point2D.Double(m.getLocation().getX()
+							+ distance, m.getLocation().getY() + distance);
+
+					if (!board.getSeaSpace(mloc).isoccupideby(
+							creatureMapping.get(m.getMsg()))) {
+
+						/*System.out.println("adding: "
+								+ creatureMapping.get(m.getMsg())
+										.returnCreature().getName());*/
+
+						board.getSeaSpace(mloc).addCreature(
+								creatureMapping.get(m.getMsg()));
+						
+						System.out.println(myId + " just added: " + 
+								creatureMapping.get(m.getMsg()).returnCreature().getName()
+								+ " from diver: " + m.getSender());
+					}
 				}
 			}
 		}
 	}
 
-	public Direction webMove(ArrayList<Direction> directionsOffLimits) {
+	public Direction webMove() {
+
+		Direction direction = null;
 
 		boolean indanger = board.areThereDangerousCreaturesInRadius(whatISee,
 				whereIAm, smallradius);
 
 		boolean found = false;
-		if (directionstraversed.size() == this.directions.size())
-			directionstraversed.clear();
+		if (goalsLookedFor.size() == this.allgoals.size())
+			goalsLookedFor.clear();
 		if (goal == null) {
 			while (!found) {
 				Collections.shuffle(allgoals);
-				if (!directionstraversed.contains(allgoals.get(0))) {
+				if (!goalsLookedFor.contains(allgoals.get(0))) {
+					goalsLookedFor.add(allgoals.get(0));
 					goal = allgoals.get(0);
 					found = true;
 				}
-				//System.out.println("just set goal to:" + goal);
+				// System.out.println("just set goal to:" + goal);
 			}
 		}
 
-		//System.out.println("our goal is: " + goal);
+		// System.out.println("our goal is: " + goal);
 
 		if (!goingOut && whereIAm.getX() == distance
 				&& whereIAm.getY() == distance) {
 			goingOut = true;
-			outDirection = this.goToGoalWithoutGettingBit(goal, false);
+			direction = this.goToGoalWithoutGettingBit(goal, false);
 		}
 
 		if (goingOut
@@ -184,43 +291,46 @@ public class StaticBoard extends Strategy {
 						|| whereIAm.getX() > board.board.length - radius + 1
 						|| whereIAm.getY() < radius - 1 || whereIAm.getY() > board.board.length
 						- radius + 1)) {
-			outDirection = this.goToGoalWithoutGettingBit(goal, false);
+			direction = this.goToGoalWithoutGettingBit(goal, false);
 
 		}
 
 		// if he's going out and reached an edge, start coming back to the boat
-		if (goingOut
-				&& (whereIAm.getX() < radius - 1
-						|| whereIAm.getX() > board.board.length - radius + 1
-						|| whereIAm.getY() < radius - 1 || whereIAm.getY() > board.board.length
-						- radius + 1)) {
+		boolean goalcantbereached = false; // if there is danger within two of
+		// the goal then you can't get there
+		if (whereIAm.distance(goal) < smallradius
+				&& board.areThereDangerousCreaturesInRadius(whatISee, whereIAm,
+						smallradius))
+			goalcantbereached = true;
+
+		// turn around and come home
+		if ((goingOut && (whereIAm.getX() < radius - 1
+				|| whereIAm.getX() > board.board.length - radius + 1
+				|| whereIAm.getY() < radius - 1 || whereIAm.getY() > board.board.length
+				- radius + 1))
+				|| goalcantbereached) {
 
 			goingOut = false;
 			goal = null;
-			return backtrack(false);
+			spacehistory.clear();
+			direction = backtrack(false);
 		}
 
 		// if he's coming in and not at the boat, keep coming in
 		if (!goingOut
 				&& !(whereIAm.getX() == distance && whereIAm.getY() == distance)) {
-			return backtrack(false);
+			direction = backtrack(false);
 		}
 
 		if (!goingOut) {
-			return backtrack(false);
+			direction = backtrack(false);
 		}
 
-		if (outDirection == null) {
-			outDirection = this.goToGoalWithoutGettingBit(goal, false);
+		if (direction == null) {
+			direction = this.goToGoalWithoutGettingBit(goal, false);
 		}
 
-		if (lastthreespaces.size() >= 3)
-			lastthreespaces.remove(0);
-		if(outDirection != null)
-			lastthreespaces.add(lastthreespaces.size(), new Point2D.Double(whereIAm
-				.getX()
-				+ outDirection.dx, whereIAm.getY() + outDirection.dy));
-		return outDirection;
+		return direction;
 	}
 
 	/** Gets the closest direction that is not harmful */
@@ -245,28 +355,6 @@ public class StaticBoard extends Strategy {
 
 	}
 
-	public Direction randomBut(ArrayList<Direction> n) {
-		ArrayList<Direction> r = new ArrayList<GameObject.Direction>();
-		for (Direction d : Direction.values()) {
-			if (n == null || !n.contains(d))
-				r.add(d);
-		}
-
-		if (r != null) {
-			Collections.shuffle(r);
-			return r.get(0);
-		}
-
-		return null;
-	}
-
-	/*
-	 * public Direction goToGoalWithoutGettingBit(Point2D goal, boolean
-	 * desperateTime) {
-	 * 
-	 * return null; }
-	 */
-
 	/**
 	 * New method to go to a goal without getting hurt. Desperate time tells us
 	 * if its imperative that we reach the boat or not. If true, we just go to
@@ -280,7 +368,10 @@ public class StaticBoard extends Strategy {
 		double currY = whereIAm.getY();
 		if (currX == goal.getX() && currY == goal.getY()) {
 			// stay put, we have reached the goal
-			return null;
+			if (goal.equals(boat))
+				return null;
+			else
+				return goToGoalWithoutGettingBit(boat, false);
 		}
 
 		// in a quadrant
@@ -314,45 +405,97 @@ public class StaticBoard extends Strategy {
 			ret = Direction.W;
 		}
 
-		if (!moveputsusindanger(ret, whereIAm, whatISee)) {
-			//System.out.println("move does not put us in danger");
+		Point2D.Double going = new Point2D.Double(whereIAm.getX() + ret.dx,
+				whereIAm.getY() + ret.dy);
+		/*
+		 * if(spacehistory.contains(going))
+		 * System.out.println("we are about to reject : " + going +
+		 * " beacuase we have already been there");
+		 */
+		if ((!moveputsusindanger(ret, whereIAm, whatISee) && !spacehistory
+				.contains(going))
+				|| desperateTime) {
+			// System.out.println("move does not put us in danger");
 			return ret;
 		}
 
 		else {
-			//System.out.println("move " + ret + " puts us in danger\n\n");
+			// System.out.println("move " + ret + " was rejected");
 
 			ArrayList<DirectionToSort> directionstosort = new ArrayList<DirectionToSort>();
 			for (Direction d : this.directions) {
-				Point2D going = new Point2D.Double(whereIAm.getX() + d.dx,
-						whereIAm.getY() + d.dy);
+				going = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm
+						.getY()
+						+ d.dy);
 				if (!moveputsusindanger(d, whereIAm, whatISee)
-						&& !lastthreespaces.contains(going))
+						&& !spacehistory.contains(going))
 					directionstosort
 							.add(new DirectionToSort(d, goal, whereIAm));
-				/*if (lastthreespaces.contains(going))
-					System.out.println("cant go: " + d
-							+ " because we have already been there");*/
+				/*
+				 * if (spacehistory.contains(going))
+				 * System.out.println("cant go: " + d +
+				 * " because we have already been there");
+				 */
 			}
 
 			if (directionstosort.size() > 0) {
 				Collections.sort(directionstosort);
 
-				/*for (DirectionToSort d : directionstosort) {
-					System.out.println(d);
-				}*/
+				/*
+				 * for (DirectionToSort d : directionstosort) {
+				 * System.out.println(d); } System.out.println("\n\n");
+				 */
 
-				if (lastthreespaces.size() >= 3)
-					lastthreespaces.remove(0);
-				lastthreespaces.add(lastthreespaces.size(), new Point2D.Double(
-						whereIAm.getX() + directionstosort.get(0).dir.dx,
-						whereIAm.getY() + directionstosort.get(0).dir.dy));
 				return directionstosort.get(0).dir;
 			}
 
-			//System.out.println("could not find a safe move");
-			return null;
+			if (!goal.equals(boat))
+				return goToGoalWithoutGettingBit(boat, false);
+			else {
+				System.out.println("need to breakaway on round: "
+						+ this.roundsleft);
+				return breakaway();
+			}
 		}
+	}
+
+	private Direction breakaway() {
+
+		Direction ret = null;
+		for (Direction d : this.directions) {
+			int count = 0;
+			pathtogo = new ArrayList<Direction>();
+			Point2D going = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm
+					.getY()
+					+ d.dy);
+
+			while (!moveputsusindanger(going) && count < breakawaycount + 1) {
+				for (Direction d2 : this.directions) {
+					if (!moveputsusindanger(going, d2)) {
+						count++;
+						going = new Point2D.Double(going.getX() + d2.dx, going
+								.getY()
+								+ d2.dy);
+						pathtogo.add(d2);
+					}
+				}
+			}
+
+			if (count > breakawaycount) {
+				/*
+				 * System.out.println("returning path: " + pathtogo.size());
+				 * 
+				 * for(Direction p: pathtogo) System.out.println(p);
+				 */
+				return d;
+			}
+
+			pathtogo.clear();
+		}
+
+		System.out.println("grr still null");
+		return null;
+
 	}
 
 	private boolean isopposite(Direction d, Direction lastmove2) {
@@ -374,7 +517,46 @@ public class StaticBoard extends Strategy {
 		Point2D iamgoing = new Point2D.Double(whereIAm.getX() + ret.dx,
 				whereIAm.getY() + ret.dy);
 
-		if (iamgoing == boat)
+		if (iamgoing.equals(boat))
+			return false;
+
+		for (Observation o : whatISee) {
+			Point2D newolocation = new Point2D.Double(o.getLocation().getX()
+					+ distance, o.getLocation().getY() + distance);
+
+			if (o.isDangerous()
+					&& newolocation.distance(iamgoing) < smallradius) {
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean moveputsusindanger(Point2D going) {
+		if (going.equals(boat))
+			return false;
+
+		for (Observation o : whatISee) {
+			Point2D newolocation = new Point2D.Double(o.getLocation().getX()
+					+ distance, o.getLocation().getY() + distance);
+
+			if (o.isDangerous() && newolocation.distance(going) < smallradius) {
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean moveputsusindanger(Point2D me, Direction ret) {
+
+		Point2D iamgoing = new Point2D.Double(me.getX() + ret.dx, me.getY()
+				+ ret.dy);
+
+		if (iamgoing.equals(boat))
 			return false;
 
 		for (Observation o : whatISee) {
@@ -398,8 +580,6 @@ public class StaticBoard extends Strategy {
 	 * of the board you can see.
 	 */
 	public void rateCreatures(Set<SeaLifePrototype> seaLifePossibilities) {
-
-		System.out.println("rating creatures");
 
 		// calculate each of the sea creature's ranking value
 		for (SeaCreatureType sc : ratedCreatures) {
@@ -438,6 +618,12 @@ public class StaticBoard extends Strategy {
 			 */
 			count++;
 		}
+	}
+
+	/** Move to get the player back to the boat */
+	public Direction backtrack(boolean desperateTime) {
+
+		return goToGoalWithoutGettingBit(boat, desperateTime);
 	}
 
 }

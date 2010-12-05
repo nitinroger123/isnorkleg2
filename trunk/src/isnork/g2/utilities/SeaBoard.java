@@ -47,7 +47,7 @@ public class SeaBoard {
 		}
 	}
 
-	public void add(Observation o, int r) {
+	public void add(Observation o, int r, boolean b) {
 
 		Boolean found = false;
 		for (EachSeaCreature c : creatures) {
@@ -56,7 +56,7 @@ public class SeaBoard {
 						.getLocation().getY()
 						+ distance].addCreature(c, r, new Point2D.Double(
 						(int) o.getLocation().getX(), (int) o.getLocation()
-								.getY()));
+								.getY()), b);
 				found = true;
 			}
 		}
@@ -64,7 +64,9 @@ public class SeaBoard {
 		if (!found) {
 			for (SeaLifePrototype p : prototypes) {
 				if (p.getName() == o.getName()) {
-					creatures.add(new EachSeaCreature(p, o.getId(), r));
+					creatures.add(
+							new EachSeaCreature(
+									p, o.getId(), r, b, o.getLocation().getX(), o.getLocation().getY()));
 				}
 			}
 		}
@@ -545,8 +547,10 @@ public class SeaBoard {
 				}
 			}
 
-			if (!(count > 3 || count == s.getMaxCount()))
+			if (!(count > 3 || count > s.getMaxCount())){
+				//System.out.println("we need to see: " + s.getName() + " and have only seen: " + count);
 				return false;
+			}
 		}
 
 		return true;
