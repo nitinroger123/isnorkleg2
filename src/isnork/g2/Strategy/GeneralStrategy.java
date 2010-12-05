@@ -50,13 +50,13 @@ public class GeneralStrategy extends Strategy {
 			System.out.println("intermediate goal: " + intermediateGoal);
 			System.out.println("spiral goal: " + spiralGoal);
 		}
-
-		/*
-		 * temp fix.
-		 */
-		if (roundsleft < TIME_TO_GO_HOME || goingHome) {
-			return backtrack(true);
-		}
+//
+//		/*
+//		 * temp fix.
+//		 */
+//		if (roundsleft < TIME_TO_GO_HOME || goingHome) {
+//			return backtrack(true);
+//		}
 		/**
 		 * ON BOAT, DANGEROUS CREATURES RIGHT BELOW US
 		 */
@@ -72,17 +72,17 @@ public class GeneralStrategy extends Strategy {
 		// System.err.println("backtracking " + roundsleft);
 		// return backtrack(false);
 		// }
-		if (whereIAm.distance(boat) > roundsleft / 3 || goingHome)
+		if ((getRoundsDistance(whereIAm, boat) + 6 >= roundsleft) || goingHome)
 		// || this.myHappiness >= board.getMaxScore())
 		{
 			goingHome = true;
-			return backtrack(true);
+			return goToGoalWithoutGettingBit(boat, true);
 		}
 
-		if (whereIAm.distance(boat) > roundsleft / 4)
+		if (getRoundsDistance(whereIAm, boat) + 20 >= roundsleft)
 		// || this.myHappiness >= board.getMaxScore())
 		{
-			return backtrack(false);
+			return goToGoalWithoutGettingBit(boat, false);
 		}
 
 		/**
@@ -636,5 +636,65 @@ public class GeneralStrategy extends Strategy {
 			shortestDistance = distance * 2 + 1 - (int) pt.getY() + 1;
 
 		return shortestDistance;
+	}
+	
+	/**
+	 * Gets the number of rounds needed to travel from start to goal.
+	 */
+	private int getRoundsDistance(Point2D start, Point2D goal)
+	{
+		int numRounds = 0;
+		
+		while(!start.equals(goal))
+		{
+			Direction move = toGoal(start, goal);
+			if(move == Direction.NW || move == Direction.SE || move == Direction.NE || move == Direction.SW)
+				numRounds += 3;
+			else
+				numRounds += 2;
+			
+			start = new Point2D.Double(start.getX()+move.dx, start.getY()+move.dy);
+		}
+		
+		return numRounds;
+	}
+	
+	/**
+	 * Determines which direction to go to get from the start to the goal.
+	 */
+	private Direction toGoal(Point2D whereIAm, Point2D goal) {
+		// in a quadrant
+		if (whereIAm.getX() > goal.getX() && whereIAm.getY() > goal.getY()) {
+			return Direction.NW;
+		}
+
+		if (whereIAm.getX() < goal.getX() && whereIAm.getY() < goal.getY()) {
+			return Direction.SE;
+		}
+
+		if (whereIAm.getX() < goal.getX() && whereIAm.getY() > goal.getY()) {
+			return Direction.NE;
+		}
+
+		if (whereIAm.getX() > goal.getX() && whereIAm.getY() < goal.getY()) {
+			return Direction.SW;
+		}
+
+		// on a line
+		if (whereIAm.getX() < goal.getX() && whereIAm.getY() == goal.getY()) {
+			return Direction.E; 
+		}
+		if (whereIAm.getX() == goal.getX() && whereIAm.getY() < goal.getY()) {
+			return Direction.S;
+		}
+
+		if (whereIAm.getX() == goal.getX() && whereIAm.getY() > goal.getY()) {
+			return Direction.N;
+		}
+		if (whereIAm.getX() > goal.getX() && whereIAm.getY() == goal.getY()) {
+			return Direction.W;
+		}
+
+		return null;
 	}
 }
