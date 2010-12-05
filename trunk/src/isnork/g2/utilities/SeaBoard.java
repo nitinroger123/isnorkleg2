@@ -13,6 +13,7 @@ import isnork.sim.GameObject.Direction;
 /** Represents board */
 public class SeaBoard {
 
+	private static final double DANGER_RADIUS = 5;
 	private ArrayList<EachSeaCreature> creatures;
 	private Set<SeaLifePrototype> prototypes;
 	public SeaSpace[][] board;
@@ -99,16 +100,18 @@ public class SeaBoard {
 		return false;
 	}
 
-	public ArrayList<Observation> getDangerousCreaturesInRadius(
-			Set<Observation> whatISee) {
-
+	public ArrayList<Observation> getDangerousCreaturesInRadius(Point2D whereIam,Set<Observation> whatISee) {
 		ArrayList<Observation> dangerousCreatures = new ArrayList<Observation>();
 		for (Observation creature : whatISee) {
 			if (creature.isDangerous()) {
-				dangerousCreatures.add(creature);
+				Point2D p = new Point2D.Double(creature.getLocation().getX()
+						+ boat.getX(), creature.getLocation().getY()
+						+ boat.getY());
+				if(p.distance(whereIam)<=DANGER_RADIUS){
+					dangerousCreatures.add(creature);
+				}
 			}
 		}
-
 		return dangerousCreatures;
 	}
 
@@ -144,10 +147,10 @@ public class SeaBoard {
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
 		return harmfulDirections;
 	}
-
+	
+	
 	public ArrayList<Direction> getHarmfulDirections(Point2D myLocation,
 			Set<Observation> whatISee) {
-
 		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
 
 		for (Point2D p : getPositionOfDangerousCreatures(whatISee)) {
@@ -474,18 +477,14 @@ public class SeaBoard {
 		return lastKnownDirectionOfDangerousCreatures;
 	}
 
-	public boolean isDangerMobile(Set<Observation> whatISee) {
-
-		Boolean mobile = false;
-
-		for (Observation creature : whatISee) {
-			if (creature.isDangerous() && creature.getDirection() != null)
-				mobile = true;
+	public boolean isDangerMobile(Set<Observation> danger){
+		for(Observation creature : danger){
+			if(creature.getDirection()!=null){
+				return true;
+			}
 		}
-
-		return mobile;
+		return false;
 	}
-
 	/**
 	 * Determines whether or not we have seen the creature of type on that space
 	 * using a probability model
@@ -551,6 +550,20 @@ public class SeaBoard {
 		}
 
 		return true;
+	}
+	public boolean areThereDangerousCreaturesInRadiusNew(Set<Observation> whatISee, Point2D whereIAm) {
+		for (Observation creature : whatISee) {
+			if(creature.isDangerous()){
+				/*dangerous creature in our radius*/
+				Point2D p = new Point2D.Double(creature.getLocation().getX()+boat.getX(),
+						creature.getLocation().getY()+boat.getY());
+				if(whereIAm.distance(p) <= DANGER_RADIUS){
+					return true;
+				}
+				/*there is a dangerous creature that we see but it is not too close to us*/
+			}
+		}
+		return false;
 	}
 
 }

@@ -1,5 +1,6 @@
 package isnork.g2.utilities;
 
+import isnork.sim.SeaLifePrototype;
 import isnork.sim.GameObject.Direction;
 
 import java.awt.geom.Point2D;
@@ -12,7 +13,7 @@ public class ProbabilityTester {
 
 	public static void main(String[] args) {
 
-		EachSeaCreature ourCreature = new EachSeaCreature(null);
+		EachSeaCreature ourCreature = new EachSeaCreature(new SeaLifePrototype());
 		ourCreature.direction = Direction.N;
 		int currRound = 10;
 		ArrayList<Direction> allDirections = Direction.allBut(null);

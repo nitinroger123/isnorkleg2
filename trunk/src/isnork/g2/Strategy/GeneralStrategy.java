@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.Set;
 import org.apache.log4j.Logger;
 
+import isnork.g2.utilities.ProbabilityBoard;
 import isnork.g2.utilities.SeaBoard;
 import isnork.g2.utilities.SeaCreatureType;
 import isnork.sim.Observation;
@@ -21,6 +22,11 @@ public class GeneralStrategy extends Strategy {
 	public Direction outDirection = null;
 	protected double boatConstant = 2;
 	boolean goingHome = false;
+	ProbabilityBoard probabilityBoard;
+	int chasingId = 0;
+	String curMessage = "";
+	String nextMessage = "";
+	boolean isFollowing = false;
 
 	public GeneralStrategy(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id,
@@ -30,19 +36,20 @@ public class GeneralStrategy extends Strategy {
 		outDirection = getRandomDirection();
 		setupSpiral();
 		
+		probabilityBoard = new ProbabilityBoard(radius, boat);
+		
 		for(int x=0; x<numSnorkelers; x++)
 			seenBestTracker.add(0);
 	}
 
 	@Override
 	public Direction getMove() {
-		// if(myId == 0)
-		// {
-		// System.out.println(roundsleft + " ---------------------");
-		// System.out.println("board max: " + board.getMaxScore());
-		// System.out.println("intermediate goal: " + intermediateGoal);
-		// System.out.println("spiral goal: " + spiralGoal);
-		// }
+		if(myId == 0)
+		{
+			System.out.println(curRound + " ---------------------");
+			System.out.println("intermediate goal: " + intermediateGoal);
+			System.out.println("spiral goal: " + spiralGoal);
+		}
 
 		/*
 		 * temp fix.
@@ -65,7 +72,7 @@ public class GeneralStrategy extends Strategy {
 		// System.err.println("backtracking " + roundsleft);
 		// return backtrack(false);
 		// }
-		if (whereIAm.distance(boat) > roundsleft / 3)
+		if (whereIAm.distance(boat) > roundsleft / 3 || goingHome)
 		// || this.myHappiness >= board.getMaxScore())
 		{
 			goingHome = true;
@@ -81,10 +88,13 @@ public class GeneralStrategy extends Strategy {
 		/**
 		 * DANGEROUS CREATURES NEARBY, RUN LIKE HELL
 		 */
-		if (board.areThereDangerousCreatures(this.whatISee)) {
-			ArrayList<Direction> directionsToAvoid = board
-					.getHarmfulDirections(this.whereIAm, this.whatISee);
-			return runAwayFromDanger(directionsToAvoid, intermediateGoal);
+		if (board.areThereDangerousCreaturesInRadiusNew(this.whatISee, whereIAm)) {
+//			ArrayList<Direction> directionsToAvoid = board
+//					.getHarmfulDirections(this.whereIAm, this.whatISee);
+			if(intermediateGoal != null)
+				return goToGoalWithoutGettingBit(intermediateGoal, false);
+			
+			return goToGoalWithoutGettingBit(spiralGoal, false);
 		}
 
 		/**
@@ -93,6 +103,7 @@ public class GeneralStrategy extends Strategy {
 		// if he's the chaser of the top creature, chase it!
 		if(chasingGoal != null) {
 			return getDirectionToGoal(whereIAm, chasingGoal);
+			//return goToGoalWithoutGettingBit(chasingGoal, false);
 		}
 			
 		
@@ -104,7 +115,8 @@ public class GeneralStrategy extends Strategy {
 		// if he's on route to his goal and there are no dangerous creatures
 		// around, go to goal
 		if (intermediateGoal != null) {
-			return getDirectionToGoal(whereIAm, intermediateGoal);
+			return getDirectionToGoal(whereIAm, chasingGoal);
+			//return goToGoalWithoutGettingBit(intermediateGoal, false);
 		}
 
 		// if he's at the boat, generate a random direction and go out
@@ -137,7 +149,7 @@ public class GeneralStrategy extends Strategy {
 		 * return outDirection;
 		 */
 
-		//finally, follow your spiralling path
+		//finally, follow your spiraling path
 		return makeSpiralMove();
 	}
 
@@ -217,30 +229,44 @@ public class GeneralStrategy extends Strategy {
 		double bestRanking = Double.MIN_VALUE;
 		double worstRanking = Double.MAX_VALUE;
 		boolean maxThisRound = false;
-
+		int bestId = 0;
+		int worstId = 0;
+		
 		// track which is the best creature that you can currently see
 		for (Observation o : whatISee) {
 			SeaCreatureType cur = knownCreatures.get(o.getName());
-			
+			int id = o.getId();
 
 			if (cur != null && cur.isnorkMessage != null) {
 				cur.seenOnce = true;
+				
+				if(knownCreatures.get(o.getName()) != null)
+				{
+					if(!whereIAm.equals(boat))
+					{
+						probabilityBoard.addSeenCreature((int)o.getLocation().getX(), (int)o.getLocation().getY(), 
+							o.getId(), knownCreatures.get(o.getName()), 480-roundsleft);
+					}
+				}
 				
 				if(cur.isnorkMessage.equals("a")) {
 					maxThisRound = true;
 					seesMax = true;
 					tempChasingGoal = new Point2D.Double(o.getLocation().getX()+distance,
 							o.getLocation().getY()+distance);
+					chasingId = id;
 				}
 				
 				if (cur.ranking > bestRanking) {
 					bestVisible = cur;
 					bestRanking = cur.ranking;
+					bestId = id;
 				}
 
 				if (cur.ranking < worstRanking) {
 					worstVisible = cur;
 					worstRanking = cur.ranking;
+					worstId = id;
 				}
 			}
 		}
@@ -248,8 +274,37 @@ public class GeneralStrategy extends Strategy {
 		if(!maxThisRound)
 			seesMax = false;
 		
-		if(chasing != null)
-			return chasing.isnorkMessage;
+//		if(chasing != null)
+//		{
+//			if(curRound % 2 == 0)
+//				return chasing.isnorkMessage;
+//			
+//			return Character.toString(ALPHABET.charAt(chasingId%26));
+//				
+//		}
+//		
+//		if(curRound % 2 == 0)
+//		{
+//			// send out the message that refers to the best creature
+//			if (bestVisible != null && bestVisible.ranking > 0)
+//				nextMessage += bestVisible.isnorkMessage;
+//		}
+//		else
+//		{
+//			// send out the message that refers to the best creature
+//			if (bestVisible != null && bestVisible.ranking > 0)
+//				nextMessage += bestVisible.isnorkMessage;
+//
+//			// if you can't see any good creatures, send out the most dangerous
+//			// creature
+//			if (worstVisible != null)
+//				nextMessage += worstVisible.isnorkMessage;
+//			
+//			nextMessage += bestId % 26;
+//			String charTick = Character.toString(curMessage.charAt(1));
+//			curMessage = nextMessage;
+//			return charTick;
+//		}
 
 		// send out the message that refers to the best creature
 		if (bestVisible != null && bestVisible.ranking > 0)
@@ -300,8 +355,26 @@ public class GeneralStrategy extends Strategy {
 				
 //				if ((!sc.seenOnce && whereIAm.distance(newLoc) < distance) &&
 //						(!sc.seenOnce && (ism.getMsg().equals("a") || ism.getMsg().equals("b")))) 
-//				if((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && !sc.seenOnce)
-				if(!sc.seenOnce)
+				if((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && isFollowing)
+//				double probNew = probabilityBoard.getProbabilityOfNewId(whereIAm, (int)ism.getLocation().getX(), 
+//						(int)ism.getLocation().getY(), sc, 480-roundsleft);
+//				if(ism.getSender() == myId)
+//				{
+//					probNew = -1;
+//				}
+//				if(myId == 0)
+//				{
+//					System.err.println("\n***************");
+//					System.err.println("Round: " + (480 - roundsleft));
+//					System.err.println("Creature: " + sc.returnCreature().getName());
+//					System.err.println("Happiness: " + sc.returnCreature().getHappiness());
+//					System.err.println("Seen: " + sc.seenWithRounds.size());
+//					System.err.println("Location: " + newLoc);
+//					System.err.println("Probability: " + probNew);
+//					
+//				}
+//				if(Math.random() < probNew)
+//				if(!sc.seenOnce)
 				{
 					//starting case, will always run on the first iteration of the loop
 					if(bestFind == null && sc.nextHappiness > 0)
@@ -352,9 +425,8 @@ public class GeneralStrategy extends Strategy {
 			chasingGoal = null;
 		}
 
-		/*if (myId == 0 && intermediateGoal != null && changed)
-			System.err.println(myId + " rcvd: " + rcvd + " ||| going to "
-					+ intermediateGoal.toString());*/
+//		if (myId == 0 && intermediateGoal != null && changed)
+//			System.err.println(myId + " ||| going to " + bestFind.returnCreature().getName());
 	}
 
 	public void checkFoundGoal(Set<iSnorkMessage> incomingMessages) {
@@ -424,11 +496,13 @@ public class GeneralStrategy extends Strategy {
 		}
 
 		curDirection = myStartDirection;
+		spanOut();
 	}
 
 	public Direction makeSpiralMove() {
 		if (spanningOut) {
-			spanOut();
+			//spanOut();
+			spanningOut = false;
 			return myStartDirection;
 		} 
 		else if (!whereIAm.equals(spiralGoal)) {
