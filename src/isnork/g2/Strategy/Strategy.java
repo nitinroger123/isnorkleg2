@@ -44,7 +44,9 @@ public abstract class Strategy {
 	public int numSnorkelers = 0;
 	public Point2D intermediateGoal = null;
 	public SeaCreatureType searchingFor = null;
+	public int curRound = -1;
 	
+	public Set<Observation> dangerousCreaturesInMyRadius;
 	
 	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id, int numDivers, SeaBoard b) {
 		myId = id;
@@ -119,6 +121,8 @@ public abstract class Strategy {
 	public void update(Point2D myPosition, Set<Observation> whatYouSee,
 			Set<iSnorkMessage> incomingMessages,
 			Set<Observation> playerLocations) {
+		
+		curRound++;
 		
 		//Update variables
 		this.whatISee=whatYouSee;
@@ -225,10 +229,11 @@ public abstract class Strategy {
 	public Direction goToGoalWithoutGettingBit(Point2D goal,
 			boolean desperateTime) {
 		
-		if (!desperateTime && board.areThereDangerousCreatures(whatISee)) {
-			return runAwayFromDanger(
-					board.getHarmfulDirections(whereIAm, whatISee), goal);
+		if (!desperateTime && board.areThereDangerousCreaturesInRadiusNew(whatISee, whereIAm)) 
+		{
+			return avoidDanger(goal);
 		}
+		
 		double currX = whereIAm.getX();
 		double currY = whereIAm.getY();
 		log.trace("Current X: " + currX + " Current Y: " + currY);
@@ -487,8 +492,8 @@ public abstract class Strategy {
 					else{
 						boolean movesTooCloseToADangerousCreature=false;
 						for(Point2D p: locationOfDanger){
-							System.err.println("I'm going to x:"+newPos.getX()+" y:"+newPos.getY());
-							System.err.println("Danger is at x:"+p.getX()+ " y:"+p.getY());
+//							System.err.println("I'm going to x:"+newPos.getX()+" y:"+newPos.getY());
+//							System.err.println("Danger is at x:"+p.getX()+ " y:"+p.getY());
 							if(newPos.distance(p)<1.5){
 								movesTooCloseToADangerousCreature=true;
 								
@@ -528,4 +533,169 @@ public abstract class Strategy {
 		return randomMove();
 	}
 
+	/**
+	 * The new avoid danger method
+	 * @param goal
+	 * @return
+	 */
+	public Direction avoidDanger(Point2D goal){
+		//gets the dangerous creatures within a radius of 5
+		dangerousCreaturesInMyRadius=new HashSet<Observation>();
+		dangerousCreaturesInMyRadius.addAll(board.getDangerousCreaturesInRadius(whereIAm,whatISee));
+		/*The fish has not made any move, but we know it is dangerous. Stay on the boat*/
+		if(roundsleft>=476){
+			System.err.println("first moves "+roundsleft );
+			return null;
+		}
+		//if the danger is moving and you are on the boat. stay put.
+		if(board.isDangerMobile(dangerousCreaturesInMyRadius)&&whereIAm.equals(boat)){
+			System.err.println("Staying on the boat");
+			return null;
+		}
+		//All the danger you see is static. Just go to your goal without getting too close to the danger
+		else if(!board.isDangerMobile(dangerousCreaturesInMyRadius)){
+			System.err.println("All static dangerous creatures");
+			return avoidStaticDangerAndGoToGoal(goal);
+		}
+		//The danger has some moving danger. We need to make sure we dont get hit.
+		else{
+			System.err.println("moving dangerous creatures");
+			return avoidMovingDangerAndGoToGoal(goal);
+		}
+		
+		//Never gets here
+	}
+	
+	/**
+	 * Simple place holder class
+	 * @author nitin
+	 *
+	 */
+	class DirectionHolder implements Comparable<DirectionHolder>
+	{
+		public Direction direction;
+		public double distance; 
+		public DirectionHolder(Direction d,double dist ){
+			direction=d;
+			distance=dist;
+		}
+		@Override
+		public int compareTo(DirectionHolder o) {
+			if(this.distance<=o.distance){
+				return -1;
+			}
+			else{
+				return 1;
+			}
+		}
+		
+	}
+	
+	private ArrayList<Direction> getBestDirsToGoal(Point2D goal){
+		if(goal==null){
+			return Direction.allBut(null);
+		}
+		ArrayList<DirectionHolder> tosort =new ArrayList<DirectionHolder>();
+		for(Direction d: Direction.allBut(null)){
+			Point2D newpos=new Point2D.Double(whereIAm.getX()+d.getDx(),whereIAm.getY()+d.getDy());
+			double distance=newpos.distance(goal);
+			tosort.add(new DirectionHolder(d, distance));
+		}
+		Collections.sort(tosort);
+		ArrayList<Direction> toReturn=new ArrayList<Direction>();
+		for(DirectionHolder d:tosort){
+			toReturn.add(d.direction);
+		}
+		return toReturn;
+	}
+	
+	/**
+	 * avoids harm when it sees atleast one dangerous moving creature within its danger radius
+	 * @param goal
+	 * @return
+	 */
+	private Direction avoidMovingDangerAndGoToGoal(Point2D goal){
+		ArrayList<Direction> safeMoves =new ArrayList<Direction>();
+		ArrayList<Direction> positionOfDanger=new ArrayList<Direction>();
+		ArrayList<Direction> bestDirToGoal= getBestDirsToGoal(goal);
+		for(Observation o: dangerousCreaturesInMyRadius){
+			positionOfDanger.addAll(board.getDirections(whereIAm, o.getLocation()));
+		}
+		safeMoves.addAll(getOpposites(board.getHarmfulDirections(whereIAm,dangerousCreaturesInMyRadius)));
+		for(Direction best : bestDirToGoal){
+			if(safeMoves.contains(best)&&board.isValidMove((int)whereIAm.getX(), (int)whereIAm.getY(),best)){
+				return best;
+			}
+		}
+		return randomMove();
+	}
+    /**
+     * avoids harm when all it sees as danger are static creatures
+     * @param goal
+     * @return
+     */
+	private Direction avoidStaticDangerAndGoToGoal(Point2D goal) {
+		/*	Look at all the directions and choose the best direction 
+		 *	 which does not take you one cell away from the creature
+		*/
+		if(goal==null){
+			System.err.println("We dont have a goal ?");
+		}
+		else{
+			System.err.println("Going to our goal! "+goal.getX()+" y: "+goal.getY());
+			if(goal.equals(boat)){
+				System.err.println("Going to Boat!");
+			}
+		}
+		Direction bestDirection=randomMove();
+		double minDistance=1000;
+		ArrayList<Direction> safeMoves=new ArrayList<Direction>();
+		for(Direction direction: Strategy.directions){
+			boolean isSafe=true;
+			//the direction we want to go in must be a valid one.
+			if(board.isValidMove((int)whereIAm.getX(), (int)whereIAm.getY(), direction)){
+				Point2D newpos=new Point2D.Double(whereIAm.getX()+direction.getDx(),whereIAm.getY()+direction.getDy());
+				for(Observation creature : dangerousCreaturesInMyRadius){
+					/*it is not safe to go in that direction*/
+					Point2D p = new Point2D.Double(creature.getLocation().getX()
+							+ boat.getX(), creature.getLocation().getY()
+							+ boat.getY());
+					System.err.println("Danger "+creature.getLocation().getX()+" "+creature.getLocation().getY());
+					if(newpos.distance(p)<1.6){
+						isSafe=false;
+						break;
+					}
+				}
+				if(isSafe){
+					safeMoves.add(direction);
+				}
+			}
+		}
+		Collections.shuffle(safeMoves);
+		/*Set the best direction to some safe move. This is for the times when we don't have a goal 
+		 * So we make some safe move to avoid getting hurt
+		 */
+		if(!safeMoves.isEmpty()){
+			bestDirection=safeMoves.get(0);
+		}
+		/*
+		 * We are surrounded by mines. The only time this happens is when we are on the boat
+		 * So just stay on the boat
+		 */
+		else{
+			return null;
+		}
+		
+		/*Find the best safe direction for the goal we want to go to*/
+		for(Direction direction: safeMoves){
+			Point2D newpos=new Point2D.Double(whereIAm.getX()+direction.getDx(),whereIAm.getY()+direction.getDy());
+			/*check if it is one of the best directions to the goal*/
+			if(goal!=null)
+			if(newpos.distance(goal)<minDistance){
+				bestDirection=direction;
+				minDistance= newpos.distance(goal);
+			}
+		}
+		return bestDirection;
+	}
 }

@@ -1,11 +1,13 @@
 package isnork.g2.utilities;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 
 import isnork.sim.SeaLife;
 import isnork.sim.SeaLifePrototype;
+import isnork.sim.GameObject.Direction;
 
 /**Represents a sea creature!*/
 public class SeaCreatureType implements Comparable<SeaCreatureType> {
@@ -16,6 +18,8 @@ public class SeaCreatureType implements Comparable<SeaCreatureType> {
 	private int lastseen = 0;
 	
 	public Set<Integer> seen = new HashSet<Integer>();
+	public Set<Integer> probableSeen = new HashSet<Integer>();
+	public ArrayList<IdRoundTracker> seenWithRounds = new ArrayList<IdRoundTracker>(); 
 	public int nextHappiness = 0;
 	public boolean hasValue = true; 
 	public double ranking = 0;
@@ -41,6 +45,40 @@ public class SeaCreatureType implements Comparable<SeaCreatureType> {
 		seaCreature = p;
 		this.id = id2;
 		lastseen = r;
+	}
+	
+	public void addSeenWithRound(int id, int round, int x, int y)
+	{
+		seenWithRounds.add(new IdRoundTracker(id, round, new Point2D.Double(x, y)));
+	}
+	
+	public void addSeenWithRound(int id, int round, int x, int y, Direction d)
+	{
+		seenWithRounds.add(new IdRoundTracker(id, round, new Point2D.Double(x, y), d));
+	}
+	
+	public class IdRoundTracker
+	{
+		Point2D loc;
+		int myId;
+		int myRound;
+		Direction myDir;
+		double probNotMe = 0;
+		
+		public IdRoundTracker(int id, int round, Point2D l, Direction d)
+		{
+			myId = id;
+			myRound = round;
+			loc = l;
+			myDir = d;
+		}
+		
+		public IdRoundTracker(int id, int round, Point2D l)
+		{
+			myId = id;
+			myRound = round;
+			loc = l;
+		}
 	}
 	
 	/**
