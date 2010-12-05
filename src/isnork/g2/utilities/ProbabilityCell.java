@@ -54,10 +54,6 @@ public class ProbabilityCell {
 	}
 
 	public void ammendsameprob(Probability prob, Direction d, double s) {
-		
-		if (ProbabilityTester.verbose && s * prob.prob > 0)
-			System.out.println("ammending prob at: " + location + " to be: "
-					+ s * prob.prob);
 
 		Boolean found = false;
 		for (Probability p : newprobs) {
@@ -71,10 +67,7 @@ public class ProbabilityCell {
 	}
 
 	public void ammenddif(Probability prob, Direction d, double df) {
-		if (ProbabilityTester.verbose && df * prob.prob > 0)
-			System.out.println("ammending prob at: " + location + " to be: "
-					+ df * prob.prob);
-
+		
 		Boolean found = false;
 		for (Probability p : newprobs) {
 			if (p.dir.equals(d)) {

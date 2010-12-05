@@ -71,7 +71,7 @@ public abstract class Strategy {
 		//create the basic arraylist of points based on the minimum amount that can be there
 		for(SeaLifePrototype slp : seaLifePossibilities)
 		{
-			EachSeaCreature sc = new EachSeaCreature(slp);
+			SeaCreatureType sc = new SeaCreatureType(slp);
 			int h = slp.getHappiness();
 			int combinedH = (h + (int)((double)h * .5) + (int)((double)h * .25));
 			int minH = 0;
@@ -138,7 +138,7 @@ public abstract class Strategy {
 			board.remove(o.getId());
 			
 			//add to board
-			board.add(o, numrounds - roundsleft);
+			board.add(o, numrounds - roundsleft, true);
 			if(o.isDangerous())
 				log.trace("Dangerous");
 			
@@ -579,7 +579,6 @@ public abstract class Strategy {
 			direction=d;
 			distance=dist;
 		}
-		@Override
 		public int compareTo(DirectionHolder o) {
 			if(this.distance<=o.distance){
 				return -1;
