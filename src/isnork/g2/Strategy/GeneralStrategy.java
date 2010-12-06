@@ -51,13 +51,13 @@ public class GeneralStrategy extends Strategy {
 
 	@Override
 	public Direction getMove() {
-		if(myId == 0)
-		{
-			System.out.println(curRound + " ---------------------");
-			System.out.println("board max: " + board.getMaxScore());
-			System.out.println("intermediate goal: " + intermediateGoal);
-			System.out.println("spiral goal: " + spiralGoal);
-		}
+//		if(myId == 0)
+//		{
+//			System.out.println(curRound + " ---------------------");
+//			System.out.println("board max: " + board.getMaxScore());
+//			System.out.println("intermediate goal: " + intermediateGoal);
+//			System.out.println("spiral goal: " + spiralGoal);
+//		}
 //
 //		/*
 //		 * temp fix.
@@ -81,7 +81,6 @@ public class GeneralStrategy extends Strategy {
 		// return backtrack(false);
 		// }
 		if ((getRoundsDistance(whereIAm, boat) + 6 >= roundsleft) || goingHome)
-			//|| this.myHappiness >= board.getMaxScore())
 		{
 			goingHome = true;
 			return goToGoalWithoutGettingBit(boat, true);
@@ -101,9 +100,7 @@ public class GeneralStrategy extends Strategy {
 			intermediateGoal = null;
 		}
 		setupSpiralMove();
-		if (intermediateGoal != null && intermediateGoal.equals(whereIAm)) {
-			intermediateGoal = null;
-		}
+		checkSpiralGoal();
 		
 		if (board.areThereDangerousCreaturesInRadiusNew(this.whatISee, whereIAm)) {
 //			ArrayList<Direction> directionsToAvoid = board
@@ -662,62 +659,25 @@ public class GeneralStrategy extends Strategy {
 	}
 	
 	/**
-	 * Gets the number of rounds needed to travel from start to goal.
+	 * Moves the spiral goal if it is next to a static mine.
 	 */
-	private int getRoundsDistance(Point2D start, Point2D goal)
-	{
-		int numRounds = 0;
-		
-		while(!start.equals(goal))
-		{
-			Direction move = toGoal(start, goal);
-			if(move == Direction.NW || move == Direction.SE || move == Direction.NE || move == Direction.SW)
-				numRounds += 3;
-			else
-				numRounds += 2;
-			
-			start = new Point2D.Double(start.getX()+move.dx, start.getY()+move.dy);
+	public void checkSpiralGoal() {
+		if(spiralGoal != null && distanceToStaticDangerous()) {
+			Direction d = getDirectionToGoal(spiralGoal, boat);
+			spiralGoal = new Point2D.Double((int)spiralGoal.getX()+d.dx, (int)spiralGoal.getY()+d.dy);
 		}
-		
-		return numRounds;
 	}
 	
-	/**
-	 * Determines which direction to go to get from the start to the goal.
-	 */
-	private Direction toGoal(Point2D whereIAm, Point2D goal) {
-		// in a quadrant
-		if (whereIAm.getX() > goal.getX() && whereIAm.getY() > goal.getY()) {
-			return Direction.NW;
+	private boolean distanceToStaticDangerous() {
+		for(Observation o : whatISee) {
+			if(o.getDirection() == null) {
+				if(spiralGoal.distance(new Point2D.Double((int)o.getLocation().getX()+distance, 
+						(int)o.getLocation().getY()+distance)) < 1.5) {
+					return true;
+				}
+			}
 		}
-
-		if (whereIAm.getX() < goal.getX() && whereIAm.getY() < goal.getY()) {
-			return Direction.SE;
-		}
-
-		if (whereIAm.getX() < goal.getX() && whereIAm.getY() > goal.getY()) {
-			return Direction.NE;
-		}
-
-		if (whereIAm.getX() > goal.getX() && whereIAm.getY() < goal.getY()) {
-			return Direction.SW;
-		}
-
-		// on a line
-		if (whereIAm.getX() < goal.getX() && whereIAm.getY() == goal.getY()) {
-			return Direction.E; 
-		}
-		if (whereIAm.getX() == goal.getX() && whereIAm.getY() < goal.getY()) {
-			return Direction.S;
-		}
-
-		if (whereIAm.getX() == goal.getX() && whereIAm.getY() > goal.getY()) {
-			return Direction.N;
-		}
-		if (whereIAm.getX() > goal.getX() && whereIAm.getY() == goal.getY()) {
-			return Direction.W;
-		}
-
-		return null;
+		
+		return false;
 	}
 }
