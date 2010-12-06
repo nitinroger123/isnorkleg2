@@ -627,7 +627,6 @@ public abstract class Strategy {
 	 * we don't run into him.
 	 * @param safeMoves
 	 * @return
-	 * TODO fill up the safe directions
 	 */
 	private ArrayList<Direction> pruneSafeDirectionsBasedOnHowTheFishMoves(ArrayList<Direction> safeMoves){
 		for(Observation creature: dangerousCreaturesInMyRadius){
@@ -815,7 +814,7 @@ public abstract class Strategy {
 				safeMoves.add(d);
 			}
 		}
-		/*TODO if the fish is in a direction and we know it moves in 80% chance 
+		/*if the fish is in a direction and we know it moves in 80% chance 
 		 * in one direction, we need to avoid the direction that make it catch up to us
 		 * Example its at your SE and moves W. You move SW*/
 		safeMoves=pruneSafeDirectionsBasedOnHowTheFishMoves(safeMoves);
@@ -896,7 +895,6 @@ public abstract class Strategy {
 		else{
 			return null;
 		}
-		
 		/*Find the best safe direction for the goal we want to go to*/
 		for(Direction direction: safeMoves){
 			Point2D newpos=new Point2D.Double(whereIAm.getX()+direction.getDx(),whereIAm.getY()+direction.getDy());
@@ -911,6 +909,7 @@ public abstract class Strategy {
 		 * into a loop. Just keep track of the last 5 moves and if we go to the same
 		 * spot again, that direction that takes us there should be removed.
 		 */
+		
 		return bestDirection;
 	}
 }

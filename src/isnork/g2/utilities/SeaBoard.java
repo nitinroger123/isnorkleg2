@@ -514,12 +514,17 @@ public class SeaBoard {
 	 */
 	public boolean dangerdanger() {
 		int numdangerous = 0;
-
+		double numOfDangerousStuff=0,sumOfUnhappiness=0;
 		for (SeaLifePrototype s : prototypes) {
-			if (s.isDangerous())
+			if (s.isDangerous()){
 				numdangerous++;
+				numOfDangerousStuff+=(s.getMaxCount()+s.getMinCount())/2.0;
+				sumOfUnhappiness=((s.getMaxCount()+s.getMinCount())/2.0)*(2*s.getHappiness());
+			}
 		}
-
+		System.err.println("Num of dangerous creatures "+numOfDangerousStuff);
+		System.err.println("Average unhappiness "+sumOfUnhappiness/numOfDangerousStuff);
+		System.err.println("Density of unhappiness danger/distance : "+numOfDangerousStuff/distance);
 		if (numdangerous / prototypes.size() == 1)
 			return true;
 
