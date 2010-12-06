@@ -525,16 +525,16 @@ public class SeaBoard {
 		System.err.println("Num of dangerous creatures "+numOfDangerousStuff);
 		System.err.println("Average unhappiness "+sumOfUnhappiness/numOfDangerousStuff);
 		System.err.println("Density of unhappiness danger/distance : "+numOfDangerousStuff/distance);
-		if(numOfDangerousStuff/distance>1.0){
+/*		if(numOfDangerousStuff/distance>1.0){
 			return true;
 		}
 		else{
 			return false;
-		}
-		/*if (numdangerous / prototypes.size() == 1)
+		}*/
+		if (numdangerous / prototypes.size() == 1)
 			return true;
 
-		return false;*/
+		return false;
 	}
 
 	/** Checks to see if this is a 100% static board */
