@@ -514,8 +514,11 @@ public class SeaBoard {
 	 */
 	public boolean dangerdanger() {
 		int numdangerous = 0;
-		double numOfDangerousStuff=0,sumOfUnhappiness=0;
+		double numOfDangerousStuff=0,sumOfUnhappiness=0,numOfStatic=0,totalCreatures=prototypes.size();
 		for (SeaLifePrototype s : prototypes) {
+			if(s.getSpeed()==0){
+				numOfStatic++;
+			}
 			if (s.isDangerous()){
 				numdangerous++;
 				numOfDangerousStuff+=(s.getMaxCount()+s.getMinCount())/2.0;
@@ -525,16 +528,18 @@ public class SeaBoard {
 //		System.err.println("Num of dangerous creatures "+numOfDangerousStuff);
 //		System.err.println("Average unhappiness "+sumOfUnhappiness/numOfDangerousStuff);
 //		System.err.println("Density of unhappiness danger/distance : "+numOfDangerousStuff/distance);
-/*		if(numOfDangerousStuff/distance>1.0){
+		System.err.println("Num of static creatures "+numOfStatic);
+		System.err.println("number of creatures "+prototypes.size());
+		if(numOfDangerousStuff/distance>1.0 && numOfStatic/totalCreatures<.5){
 			return true;
 		}
 		else{
 			return false;
-		}*/
-		if (numdangerous / prototypes.size() == 1)
+		}
+		/*if (numdangerous / prototypes.size() == 1)
 			return true;
 
-		return false;
+		return false;*/
 	}
 
 	/** Checks to see if this is a 100% static board */
