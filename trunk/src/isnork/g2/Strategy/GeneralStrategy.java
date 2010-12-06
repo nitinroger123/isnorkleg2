@@ -54,6 +54,7 @@ public class GeneralStrategy extends Strategy {
 		if(myId == 0)
 		{
 			System.out.println(curRound + " ---------------------");
+			System.out.println("board max: " + board.getMaxScore());
 			System.out.println("intermediate goal: " + intermediateGoal);
 			System.out.println("spiral goal: " + spiralGoal);
 		}
@@ -80,14 +81,14 @@ public class GeneralStrategy extends Strategy {
 		// return backtrack(false);
 		// }
 		if ((getRoundsDistance(whereIAm, boat) + 6 >= roundsleft) || goingHome)
-		// || this.myHappiness >= board.getMaxScore())
+			//|| this.myHappiness >= board.getMaxScore())
 		{
 			goingHome = true;
 			return goToGoalWithoutGettingBit(boat, true);
 		}
 
-		if (getRoundsDistance(whereIAm, boat) + 20 >= roundsleft)
-		// || this.myHappiness >= board.getMaxScore())
+		if (getRoundsDistance(whereIAm, boat) + 21 >= roundsleft
+			|| this.myHappiness >= board.getMaxScore())
 		{
 			return goToGoalWithoutGettingBit(boat, false);
 		}
@@ -95,7 +96,15 @@ public class GeneralStrategy extends Strategy {
 		/**
 		 * DANGEROUS CREATURES NEARBY, RUN LIKE HELL
 		 */
+		// if he's reached intermediate goal, do something else
+		if (intermediateGoal != null && intermediateGoal.equals(whereIAm)) {
+			intermediateGoal = null;
+		}
 		setupSpiralMove();
+		if (intermediateGoal != null && intermediateGoal.equals(whereIAm)) {
+			intermediateGoal = null;
+		}
+		
 		if (board.areThereDangerousCreaturesInRadiusNew(this.whatISee, whereIAm)) {
 //			ArrayList<Direction> directionsToAvoid = board
 //					.getHarmfulDirections(this.whereIAm, this.whatISee);
@@ -112,12 +121,6 @@ public class GeneralStrategy extends Strategy {
 		if(chasingGoal != null) {
 			return avoidDanger(chasingGoal);
 			//return goToGoalWithoutGettingBit(chasingGoal, false);
-		}
-			
-		
-		// if he's reached intermediate goal, do something else
-		if (intermediateGoal != null && intermediateGoal.equals(whereIAm)) {
-			intermediateGoal = null;
 		}
 
 		// if he's on route to his goal and there are no dangerous creatures
@@ -343,8 +346,8 @@ public class GeneralStrategy extends Strategy {
 		
 		for (iSnorkMessage ism : incomingMessages) 
 		{
-//			if(ism.getSender() != myId)
-//			{
+			if(ism.getSender() != myId)
+			{
 				Point2D newLoc = new Point2D.Double(ism.getLocation().getX() + distance, ism.getLocation().getY() + distance);
 				SeaCreatureType sc = creatureMapping.get(ism.getMsg());
 				rcvd = ism.getMsg();
@@ -363,7 +366,7 @@ public class GeneralStrategy extends Strategy {
 				
 //				if ((!sc.seenOnce && whereIAm.distance(newLoc) < distance) &&
 //						(!sc.seenOnce && (ism.getMsg().equals("a") || ism.getMsg().equals("b")))) 
-				if((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && isFollowing)
+				if((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && isFollowing && !sc.seenOnce)
 //				double probNew = probabilityBoard.getProbabilityOfNewId(whereIAm, (int)ism.getLocation().getX(), 
 //						(int)ism.getLocation().getY(), sc, 480-roundsleft);
 //				if(ism.getSender() == myId)
@@ -420,7 +423,7 @@ public class GeneralStrategy extends Strategy {
 					intermediateGoal = null;
 					searchingFor = null;
 				}
-//			}
+			}
 		}
 		
 		//check if i'm the tracking snorkeler
