@@ -1,5 +1,4 @@
 g3Board (were getting ~200):
 
-DangerDanger:
+DangerDanger
 480.571 over 10 rounds
-
