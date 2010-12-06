@@ -2,6 +2,7 @@ package isnork.g2.utilities;
 
 import isnork.sim.SeaLifePrototype;
 import isnork.sim.GameObject.Direction;
+import isnork.sim.SeaLifePrototype;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;

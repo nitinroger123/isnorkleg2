@@ -555,6 +555,7 @@ public class SeaBoard {
 
 		return true;
 	}
+
 	public boolean areThereDangerousCreaturesInRadiusNew(Set<Observation> whatISee, Point2D whereIAm) {
 		for (Observation creature : whatISee) {
 			if(creature.isDangerous()){
@@ -568,6 +569,44 @@ public class SeaBoard {
 			}
 		}
 		return false;
+	}
+
+	public Direction getRelativeDirection(Point2D whereIAm, Point2D location) {
+		Point2D creatureLoc =new Point2D.Double(location.getX()+boat.getX(),location.getY()+boat.getY());
+		ArrayList<Direction> harmfulDirections = new ArrayList<Direction>();
+
+		double myX = whereIAm.getX();
+		double myY = whereIAm.getY();
+		double dangerX = creatureLoc.getX();
+		double dangerY = creatureLoc.getY();
+		if (myX == dangerX && myY > dangerY) {
+			return Direction.N;
+		}
+
+		if (myX == dangerX && myY < dangerY) {
+			return (Direction.S);
+		}
+
+		if (myX > dangerX && myY == dangerY) {
+			return (Direction.W);
+		}
+		if (myX < dangerX && myY == dangerY) {
+			return (Direction.E);
+		}
+		if (myX < dangerX && myY > dangerY) {
+			return (Direction.NE);
+			
+		}
+		if (myX < dangerX && myY < dangerY) {
+			return (Direction.SE);
+		}
+		if (myX > dangerX && myY > dangerY) {
+			return (Direction.NW);
+		}
+		if (myX > dangerX && myY < dangerY) {
+			return (Direction.SW);	
+		}
+		return null;
 	}
 
 }

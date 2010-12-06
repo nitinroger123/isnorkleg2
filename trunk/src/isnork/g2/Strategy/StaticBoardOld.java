@@ -435,7 +435,7 @@ public class StaticBoardOld extends Strategy {
 		// if(goal!=null)
 		// System.err.println("Going to goal X: "+goal.getX() +" Y:
 		// "+goal.getY());
-		ArrayList<Direction> safeMoves = getOpposites(harmfulDirections);
+		ArrayList<Direction> safeMoves = getSafeDirections(harmfulDirections);
 		Direction bestDirection=randomMove();
 		
 		ArrayList<Direction> directionTheDangerousCreaturesMove = 
