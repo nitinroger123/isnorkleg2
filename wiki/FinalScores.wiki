@@ -1,18 +1,18 @@
 #Use this page to track our scores across boards
 
-||playerclass||board|| radius|| dimension|| divers||Score||Penalty||Max Score Per Diver||Percentage||Change||
-|| boards/g2SafeZone.xml|| isnork.g2.JustKeepSwimming||6||30||20|| 16464 ||0||827||0.99|| Up .04 ||
+||playerclass||board|| radius|| dimension|| divers||Average Score Per Player||Penalty||Max Score Per Diver||Percentage||Change||
+|| boards/g2SafeZone.xml|| isnork.g2.JustKeepSwimming||6||30||20|| 820.697619 ||0||827||0.99|| Up .04 ||
 || boards/Lochness.xml|| isnork.g2.JustKeepSwimming||6||30||20|| 20000 ||0||1000||1|| up  ||
-|| boards/g2Benchmark.xml|| isnork.g2.JustKeepSwimming||6||30||20||9715||0||1577||0..308|| Up .03 ||
-|| boards/g3board2.xml|| isnork.g2.JustKeepSwimming||6||30||20||280||0||39||0.35|| Up .12 ||
-|| boards/isnork.xml|| isnork.g2.JustKeepSwimming||6||30||20||-69||0||282||-.012|| Down .11 ||
-|| boards/HiddenTreasureWithMines.xml|| isnork.g2.JustKeepSwimming||6||30||20||21740||0||1087||1|| Up .8 ||
-|| boards/Piranha.xml|| isnork.g2.JustKeepSwimming||6||30||20|| 35000 ||0||1750||1|| Up .22 ||
-|| boards/happydanger.xml|| isnork.g2.JustKeepSwimming||6||30||20||-2182||0||139||-.78|| Down .8 ||
-|| boards/g2DontGetEaten.xml|| isnork.g2.JustKeepSwimming||6||30||20||-32947||0||1127||-2.1|| Down 2 ||
-|| boards/isnork2.xml|| isnork.g2.JustKeepSwimming||6||30||20||-13458||0||140||-4.08|| Down 4 ||
-|| boards/g3board.xml|| isnork.g2.JustKeepSwimming||6||30||20||-33658||0||39||-4.3|| Down 4 ||
-||boards/isnorksafe.xml || just keep swimming || 6 || 30 || 20 || 5456 || 0 || 401 || .6 || n/a ||
+|| boards/g2Benchmark.xml|| isnork.g2.JustKeepSwimming||6||30||20||503.5547619||0||1577||0.31|| Up .03 ||
+|| boards/g3board2.xml|| isnork.g2.JustKeepSwimming||6||30||20||27.2047619||0||39||0.69|| Same ||
+|| boards/isnork.xml|| isnork.g2.JustKeepSwimming||6||30||20||-34.375||0||282||-.012|| Down .11 ||
+|| boards/HiddenTreasureWithMines.xml|| isnork.g2.JustKeepSwimming||6||30||20||914.2690476||0||1087||.84|| Up .8 ||
+|| boards/Piranha.xml|| isnork.g2.JustKeepSwimming||6||30||20|| 1634.52381 ||0||1750||.934|| Up .18||
+|| boards/happydanger.xml|| isnork.g2.JustKeepSwimming||6||30||20||35.40238095||0||139||.25|| Up 1 ||
+|| boards/g2DontGetEaten.xml|| isnork.g2.JustKeepSwimming||6||30||20||-862.8928571||0||1127||-.76|| up 1.3 ||
+|| boards/isnork2.xml|| isnork.g2.JustKeepSwimming||6||30||20||-396.8375||0||140||-2.834553571||Up 2 ||
+|| boards/g3board.xml|| isnork.g2.JustKeepSwimming||6||30||20||-83.56428571||0||39||-2.1|| Up 2 ||
+||boards/isnorksafe.xml || just keep swimming || 6 || 30 || 20 || 272.0225 || 0 || 401 || .67 || up .07 ||
 
 || playerclass ||board|| radius || dimension || divers ||Score||Penalty||Average Score Per Diver||Percentage||
 || boards/g2SafeZone.xml || isnork.g2.JustKeepSwimming ||6||30||1||652.8||0||827||0.789359129||
