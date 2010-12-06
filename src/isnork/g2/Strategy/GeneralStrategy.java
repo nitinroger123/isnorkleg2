@@ -26,7 +26,7 @@ public class GeneralStrategy extends Strategy {
 	int chasingId = 0;
 	String curMessage = "";
 	String nextMessage = "";
-	boolean isFollowing = false;
+	boolean isFollowing = true;
 
 	public GeneralStrategy(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id,
@@ -40,6 +40,13 @@ public class GeneralStrategy extends Strategy {
 		
 		for(int x=0; x<numSnorkelers; x++)
 			seenBestTracker.add(0);
+		
+		double firstVal = 0;
+		double secondVal = 0;
+		for(SeaLifePrototype s : seaLifePossibilites)
+		{
+			
+		}
 	}
 
 	@Override
@@ -88,6 +95,7 @@ public class GeneralStrategy extends Strategy {
 		/**
 		 * DANGEROUS CREATURES NEARBY, RUN LIKE HELL
 		 */
+		setupSpiralMove();
 		if (board.areThereDangerousCreaturesInRadiusNew(this.whatISee, whereIAm)) {
 //			ArrayList<Direction> directionsToAvoid = board
 //					.getHarmfulDirections(this.whereIAm, this.whatISee);
@@ -115,7 +123,7 @@ public class GeneralStrategy extends Strategy {
 		// if he's on route to his goal and there are no dangerous creatures
 		// around, go to goal
 		if (intermediateGoal != null) {
-			return getDirectionToGoal(whereIAm, chasingGoal);
+			return getDirectionToGoal(whereIAm, intermediateGoal);
 			//return goToGoalWithoutGettingBit(intermediateGoal, false);
 		}
 
@@ -509,6 +517,20 @@ public class GeneralStrategy extends Strategy {
 			return goToGoalWithoutGettingBit(spiralGoal, false);
 		} 
 		else {
+			return curDirection;
+		}
+	}
+	
+	public void setupSpiralMove()
+	{
+		if (spanningOut) {
+			spanOut();
+			//spanningOut = false;
+		} 
+		else if (!whereIAm.equals(spiralGoal)) {
+			return;
+		}
+		else {
 			Point2D oldSpiralGoal = new Point2D.Double(spiralGoal.getX(), spiralGoal.getY());
 			numTurns++;
 			int wallDirection = 0;
@@ -582,8 +604,6 @@ public class GeneralStrategy extends Strategy {
 					}
 				}	
 			}
-
-			return curDirection;
 		}
 	}
 
