@@ -35,6 +35,7 @@ public class StaticBoard extends Strategy {
 	private int breakawaycount = 16;
 	private ArrayList<Direction> pathtogo = null;
 	private boolean seenall = false;
+	private boolean goingHome = false;
 
 	public StaticBoard(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id,
@@ -85,43 +86,36 @@ public class StaticBoard extends Strategy {
 			System.out.println("\n\n round: " + this.roundsleft);*/
 		Direction move = null;
 
-		
-		int offset = 15;
-		
-		/*if(tempboat != null && roundsleft < 10)
-			boat = tempboat;*/
+		/*
+		 * if(tempboat != null && roundsleft < 10) boat = tempboat;
+		 */
 
-		 //if(roundsleft < 20 && !board.seenall()) System.out.println(this.myId + " has not seen everything...");
-		 
+		// if(roundsleft < 20 && !board.seenall())
+		// System.out.println(this.myId + " has not seen everything...");
+		//if(roundsleft < 20 && !board.seenall()) System.out.println(this.myId + " has not seen everything...");
 
 		// what to do if there is a static under the boat
-		/*if(whereIAm.equals(boat) && board.getSeaSpace(boat).hasDanger()){
-			for(Direction d: this.directions){
-				Point2D newboat = new Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY() + d.dy);
-				if(!board.getSeaSpace(newboat).hasDanger()){
-					tempboat = boat;
-					boat = newboat;
-				}
-			}
-			move = webMove();
-		}
-		
-		else*/
-				
-		if (whereIAm.distance(boat) + offset > this.roundsleft / 3) {
-			//System.out.println(myId + " we urgently need to get back to the boat");
+		/*
+		 * if(whereIAm.equals(boat) && board.getSeaSpace(boat).hasDanger()){
+		 * for(Direction d: this.directions){ Point2D newboat = new
+		 * Point2D.Double(whereIAm.getX() + d.dx, whereIAm.getY() + d.dy);
+		 * if(!board.getSeaSpace(newboat).hasDanger()){ tempboat = boat; boat =
+		 * newboat; } } move = webMove(); }
+		 * 
+		 * else
+		 */
+
+		// Urgent return to boat
+		if (goingHome || (getRoundsDistance(whereIAm, boat) + 6 >= roundsleft)) {
+			goingHome = true;
 			move = backtrack(true);
 		}
 
-		else if (boatconstant * (whereIAm.distance(boat) + offset) > this.roundsleft / 3) {
-			//System.out.println(myId + " we are running out of time, so we should start to head home");
+		// Start returning to the boat
+		if (getRoundsDistance(whereIAm, boat) + 21 >= roundsleft
+				|| this.myHappiness >= board.getMaxScore()) {
 			move = backtrack(false);
 		}
-		
-		else if (this.myHappiness == board.getMaxScore()){
-			//System.out.println(myId + " have max score, going home");
-			move = backtrack(false);
-		} 
 
 		else if (pathtogo != null && pathtogo.size() > 0) {
 			//System.out.println(myId + " is moving on a path");
@@ -130,22 +124,22 @@ public class StaticBoard extends Strategy {
 		}
 
 		else if (board.seenall()) {
+			if (seenall = false) {
 			//System.out.println(myId + " has seen all and is creating a path");
-			if(seenall = false){
 				seenall = true;
 				spacehistory.clear();
 			}
 			move = lookfor();
 		}
-		
-		/*else if (this.roundsleft < 200) {
-			System.out.println(myId + " assumes we have seen everything");
-			move = lookfor();
-		}*/
+
+		/*
+		 * else if (this.roundsleft < 200) { System.out.println(myId + " assumes
+		 * we have seen everything"); move = lookfor(); }
+		 */
 
 		// Spend the first two hours going out in different directions
-		else{
-			//System.out.println(myId + " is creating a web move");
+		else {
+			// System.out.println(myId + " is creating a web move");
 			move = webMove();
 		}
 		// Anylize map and come up with a good path
@@ -157,10 +151,8 @@ public class StaticBoard extends Strategy {
 			spacehistory.add(spacehistory.size(), new Point2D.Double(whereIAm
 					.getX()
 					+ move.dx, whereIAm.getY() + move.dy));
-
 		/*if (move == null && !boat.equals(whereIAm))
 			System.out.println("uhh we somehow got a null move?");*/
-
 		return move;
 	}
 
@@ -182,11 +174,6 @@ public class StaticBoard extends Strategy {
 				d.whereIAm = whereIAm;
 
 			Collections.sort(destinations);
-
-			// debugging
-			/*
-			 * for (DestinationPoints d : destinations) System.out.println(d);
-			 */
 			return goToGoalWithoutGettingBit(destinations.get(0).location,
 					false);
 		}
@@ -262,16 +249,20 @@ public class StaticBoard extends Strategy {
 					if (!board.getSeaSpace(mloc).isoccupideby(
 							creatureMapping.get(m.getMsg()))) {
 
-						/*System.out.println("adding: "
-								+ creatureMapping.get(m.getMsg())
-										.returnCreature().getName());*/
+						/*
+						 * System.out.println("adding: " +
+						 * creatureMapping.get(m.getMsg())
+						 * .returnCreature().getName());
+						 */
 
 						board.getSeaSpace(mloc).addCreature(
 								creatureMapping.get(m.getMsg()));
-						
-						/*System.out.println(myId + " just added: " + 
-								creatureMapping.get(m.getMsg()).returnCreature().getName()
-								+ " from diver: " + m.getSender());*/
+
+						/*
+						 * System.out.println(myId + " just added: " +
+						 * creatureMapping.get(m.getMsg()).returnCreature().getName() + "
+						 * from diver: " + m.getSender());
+						 */
 					}
 				}
 			}
@@ -430,30 +421,30 @@ public class StaticBoard extends Strategy {
 		Point2D.Double going = new Point2D.Double(whereIAm.getX() + ret.dx,
 				whereIAm.getY() + ret.dy);
 		/*
-		 * if(spacehistory.contains(going))
-		 * System.out.println("we are about to reject : " + going +
-		 * " beacuase we have already been there");
+		 * if(spacehistory.contains(going)) System.out.println("we are about to
+		 * reject : " + going + " beacuase we have already been there");
 		 */
-		if(going.equals(boat))
+		if (going.equals(boat))
 			return ret;
-		
+
 		else if (desperateTime) {
-			//System.out.println(myId + " Desparate time, going directly back");
+			// System.out.println(myId + " Desparate time, going directly
+			// back");
 			return ret;
 		}
-		
+
 		else if ((!moveputsusindanger(ret, whereIAm, whatISee) && !spacehistory
 				.contains(going))) {
 			// System.out.println("move does not put us in danger");
 			return ret;
 		}
 
-
 		else {
-			System.out.println(myId + " move " + ret + " was rejected, desparate: " + 
-					desperateTime 
-					+  ", danger: " + moveputsusindanger(ret, whereIAm, whatISee) + 
-					", history: " + spacehistory.contains(going));
+			System.out.println(myId + " move " + ret
+					+ " was rejected, desparate: " + desperateTime
+					+ ", danger: "
+					+ moveputsusindanger(ret, whereIAm, whatISee)
+					+ ", history: " + spacehistory.contains(going));
 
 			ArrayList<DirectionToSort> directionstosort = new ArrayList<DirectionToSort>();
 			for (Direction d : this.directions) {
@@ -465,9 +456,8 @@ public class StaticBoard extends Strategy {
 					directionstosort
 							.add(new DirectionToSort(d, goal, whereIAm));
 				/*
-				 * if (spacehistory.contains(going))
-				 * System.out.println("cant go: " + d +
-				 * " because we have already been there");
+				 * if (spacehistory.contains(going)) System.out.println("cant
+				 * go: " + d + " because we have already been there");
 				 */
 			}
 
@@ -515,11 +505,6 @@ public class StaticBoard extends Strategy {
 			}
 
 			if (count > breakawaycount) {
-				/*
-				 * System.out.println("returning path: " + pathtogo.size());
-				 * 
-				 * for(Direction p: pathtogo) System.out.println(p);
-				 */
 				return d;
 			}
 
@@ -553,7 +538,6 @@ public class StaticBoard extends Strategy {
 
 		if (d.getDegrees() == lastmove2.getDegrees() + 180
 				|| d.getDegrees() == lastmove2.getDegrees() - 180) {
-			//System.out.println(d + " and " + lastmove2 + " are opposites");
 			return true;
 		}
 

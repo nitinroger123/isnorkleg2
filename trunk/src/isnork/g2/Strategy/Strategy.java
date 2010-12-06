@@ -912,4 +912,64 @@ public abstract class Strategy {
 		
 		return bestDirection;
 	}
+	
+	/**
+	 * Gets the number of rounds needed to travel from start to goal.
+	 */
+	public int getRoundsDistance(Point2D start, Point2D goal)
+	{
+		int numRounds = 0;
+		
+		while(!start.equals(goal))
+		{
+			Direction move = toGoal(start, goal);
+			if(move == Direction.NW || move == Direction.SE || move == Direction.NE || move == Direction.SW)
+				numRounds += 3;
+			else
+				numRounds += 2;
+			
+			start = new Point2D.Double(start.getX()+move.dx, start.getY()+move.dy);
+		}
+		
+		return numRounds;
+	}
+	
+	/**
+	 * Determines which direction to go to get from the start to the goal.
+	 */
+	public Direction toGoal(Point2D whereIAm, Point2D goal) {
+		// in a quadrant
+		if (whereIAm.getX() > goal.getX() && whereIAm.getY() > goal.getY()) {
+			return Direction.NW;
+		}
+
+		if (whereIAm.getX() < goal.getX() && whereIAm.getY() < goal.getY()) {
+			return Direction.SE;
+		}
+
+		if (whereIAm.getX() < goal.getX() && whereIAm.getY() > goal.getY()) {
+			return Direction.NE;
+		}
+
+		if (whereIAm.getX() > goal.getX() && whereIAm.getY() < goal.getY()) {
+			return Direction.SW;
+		}
+
+		// on a line
+		if (whereIAm.getX() < goal.getX() && whereIAm.getY() == goal.getY()) {
+			return Direction.E; 
+		}
+		if (whereIAm.getX() == goal.getX() && whereIAm.getY() < goal.getY()) {
+			return Direction.S;
+		}
+
+		if (whereIAm.getX() == goal.getX() && whereIAm.getY() > goal.getY()) {
+			return Direction.N;
+		}
+		if (whereIAm.getX() > goal.getX() && whereIAm.getY() == goal.getY()) {
+			return Direction.W;
+		}
+
+		return null;
+	}
 }

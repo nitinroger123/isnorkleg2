@@ -522,9 +522,9 @@ public class SeaBoard {
 				sumOfUnhappiness=((s.getMaxCount()+s.getMinCount())/2.0)*(2*s.getHappiness());
 			}
 		}
-		System.err.println("Num of dangerous creatures "+numOfDangerousStuff);
-		System.err.println("Average unhappiness "+sumOfUnhappiness/numOfDangerousStuff);
-		System.err.println("Density of unhappiness danger/distance : "+numOfDangerousStuff/distance);
+//		System.err.println("Num of dangerous creatures "+numOfDangerousStuff);
+//		System.err.println("Average unhappiness "+sumOfUnhappiness/numOfDangerousStuff);
+//		System.err.println("Density of unhappiness danger/distance : "+numOfDangerousStuff/distance);
 /*		if(numOfDangerousStuff/distance>1.0){
 			return true;
 		}
