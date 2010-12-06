@@ -14,7 +14,7 @@ public class ProbabilityTester {
 
 	public static void main(String[] args) {
 
-		EachSeaCreature ourCreature = new EachSeaCreature(new SeaLifePrototype());
+		EachSeaCreature ourCreature = new EachSeaCreature();
 		ourCreature.direction = Direction.N;
 		int currRound = 10;
 		ArrayList<Direction> allDirections = Direction.allBut(null);
