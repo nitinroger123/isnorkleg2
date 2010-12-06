@@ -20,6 +20,10 @@ public class EachSeaCreature{
 	public Direction direction;
 	public boolean seen = false;
 	
+	public EachSeaCreature()
+	{
+		
+	}
 	
 	public EachSeaCreature(SeaLifePrototype s, double x, double y){
 		seaCreature = s;
