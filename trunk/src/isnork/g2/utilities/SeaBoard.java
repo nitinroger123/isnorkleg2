@@ -19,9 +19,10 @@ public class SeaBoard {
 	public SeaSpace[][] board;
 	private int radius, distance;
 	private Point2D boat;
+	private int myId;
 
 	public SeaBoard(int x, int y, int r, Set<SeaLifePrototype> p, int d,
-			Point2D b) {
+			Point2D b, int id) {
 		creatures = new ArrayList<EachSeaCreature>();
 		prototypes = p;
 		board = new SeaSpace[x + 1][y + 1];
@@ -34,6 +35,7 @@ public class SeaBoard {
 		radius = r;
 		distance = d;
 		boat = b;
+		myId = id;
 	}
 
 	public void remove(int id) {
@@ -546,11 +548,18 @@ public class SeaBoard {
 						count++;
 				}
 			}
-
-			if (!(count > 3 || count > s.getMaxCount())){
-				//System.out.println("we need to see: " + s.getName() + " and have only seen: " + count);
+			
+			if((count < 3 && s.getMaxCount() > 3)){
+				System.out.println(myId + " needs to see: " + s.getName() + " and have only seen: " + count);
 				return false;
 			}
+			
+			if((s.getMaxCount() < 3 && count < s.getMaxCount())){
+				System.out.println(myId + " needs to see: " + s.getName() + " and have only seen: " + count);
+				return false;
+			}
+		
+			System.out.println("for " + s.getName() + " we have seen: " + count + " and max is: " + s.getMaxCount());
 		}
 
 		return true;

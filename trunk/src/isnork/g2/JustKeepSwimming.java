@@ -55,7 +55,8 @@ public class JustKeepSwimming extends Player {
 			int d, int r, int n) {
 				
 		//initialize strategy
-		SeaBoard board = new SeaBoard(2*d, 2*d, r, seaLifePossibilites, d, new Point2D.Double(d, d));
+		SeaBoard board = new SeaBoard(
+				2*d, 2*d, r, seaLifePossibilites, d, new Point2D.Double(d, d), this.getId());
 
 		if(board.dangerdanger())
 			this.strategy = new DangerDanger(p, d, r, seaLifePossibilites, random, this.getId(), n, board);
