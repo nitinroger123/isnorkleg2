@@ -34,7 +34,6 @@ public class StaticBoard extends Strategy {
 	private double boatconstant = 2;
 	private int breakawaycount = 16;
 	private ArrayList<Direction> pathtogo = null;
-	private Point2D tempboat;
 	private boolean seenall = false;
 
 	public StaticBoard(int p, int d, int r,
@@ -55,7 +54,18 @@ public class StaticBoard extends Strategy {
 		allgoals.add(new Point2D.Double(distance - radius, 2 * distance
 				- radius));
 		allgoals.add(new Point2D.Double(0, 2 * distance - radius));
+		allgoals.add(new Point2D.Double(distance/2, 0));
+		allgoals.add(new Point2D.Double(3*distance/2, 0));
+		allgoals.add(new Point2D.Double(0, distance/2));
+		allgoals.add(new Point2D.Double(0, 3*distance/2));
+		allgoals.add(new Point2D.Double(distance/2, 2*distance));
+		allgoals.add(new Point2D.Double(3*distance/2, 2*distance));
+		allgoals.add(new Point2D.Double(2*distance, distance/2));
+		allgoals.add(new Point2D.Double(2*distance, 3*distance/2));
+		
 
+
+		
 		goalsLookedFor = new ArrayList<Point2D>();
 		spacehistory = new ArrayList<Point2D>();
 
@@ -71,8 +81,8 @@ public class StaticBoard extends Strategy {
 	@Override
 	public Direction getMove() {
 
-		if(myId == 0)
-			System.out.println("\n\n round: " + this.roundsleft);
+		/*if(myId == 0)
+			System.out.println("\n\n round: " + this.roundsleft);*/
 		Direction move = null;
 
 		
@@ -81,7 +91,7 @@ public class StaticBoard extends Strategy {
 		/*if(tempboat != null && roundsleft < 10)
 			boat = tempboat;*/
 
-		 if(roundsleft < 20 && !board.seenall()) System.out.println(this.myId + " has not seen everything...");
+		 //if(roundsleft < 20 && !board.seenall()) System.out.println(this.myId + " has not seen everything...");
 		 
 
 		// what to do if there is a static under the boat
@@ -109,18 +119,18 @@ public class StaticBoard extends Strategy {
 		}
 		
 		else if (this.myHappiness == board.getMaxScore()){
-			System.out.println(myId + " have max score, going home");
+			//System.out.println(myId + " have max score, going home");
 			move = backtrack(false);
 		} 
 
 		else if (pathtogo != null && pathtogo.size() > 0) {
-			System.out.println(myId + " is moving on a path");
+			//System.out.println(myId + " is moving on a path");
 			move = pathtogo.get(0);
 			pathtogo.remove(0);
 		}
 
 		else if (board.seenall()) {
-			System.out.println(myId + " has seen all and is creating a path");
+			//System.out.println(myId + " has seen all and is creating a path");
 			if(seenall = false){
 				seenall = true;
 				spacehistory.clear();
@@ -148,8 +158,8 @@ public class StaticBoard extends Strategy {
 					.getX()
 					+ move.dx, whereIAm.getY() + move.dy));
 
-		if (move == null && !boat.equals(whereIAm))
-			System.out.println("uhh we somehow got a null move?");
+		/*if (move == null && !boat.equals(whereIAm))
+			System.out.println("uhh we somehow got a null move?");*/
 
 		return move;
 	}
@@ -182,7 +192,7 @@ public class StaticBoard extends Strategy {
 		}
 
 		else {
-			System.out.println("nothing in destination");
+			//System.out.println("nothing in destination");
 			return goToGoalWithoutGettingBit(boat, false);
 		}
 	}
@@ -516,9 +526,24 @@ public class StaticBoard extends Strategy {
 			pathtogo.clear();
 		}
 
-		System.out.println("grr still null");
-		return null;
-
+		//System.out.println("grr still null");
+		goal = null;
+		boolean found = false;
+		if (goalsLookedFor.size() == this.allgoals.size())
+			goalsLookedFor.clear();
+		if (goal == null) {
+			while (!found) {
+				Collections.shuffle(allgoals);
+				if (!goalsLookedFor.contains(allgoals.get(0))) {
+					goalsLookedFor.add(allgoals.get(0));
+					goal = allgoals.get(0);
+					found = true;
+				}
+				// System.out.println("just set goal to:" + goal);
+			}
+		}
+		
+		return goToGoalWithoutGettingBit(goal, false);
 	}
 
 	private boolean isopposite(Direction d, Direction lastmove2) {
@@ -528,7 +553,7 @@ public class StaticBoard extends Strategy {
 
 		if (d.getDegrees() == lastmove2.getDegrees() + 180
 				|| d.getDegrees() == lastmove2.getDegrees() - 180) {
-			System.out.println(d + " and " + lastmove2 + " are opposites");
+			//System.out.println(d + " and " + lastmove2 + " are opposites");
 			return true;
 		}
 
