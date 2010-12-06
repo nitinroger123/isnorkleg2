@@ -102,7 +102,7 @@ public class GeneralStrategy extends Strategy {
 		 */
 		// if he's the chaser of the top creature, chase it!
 		if(chasingGoal != null) {
-			return getDirectionToGoal(whereIAm, chasingGoal);
+			return avoidDanger(chasingGoal);
 			//return goToGoalWithoutGettingBit(chasingGoal, false);
 		}
 			
