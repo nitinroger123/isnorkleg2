@@ -27,6 +27,8 @@ public class GeneralStrategy extends Strategy {
 	String curMessage = "";
 	String nextMessage = "";
 	boolean isFollowing = true;
+	public int numStaticDangers = 0;
+	public int numMovingDangers = 0;
 
 	public GeneralStrategy(int p, int d, int r,
 			Set<SeaLifePrototype> seaLifePossibilites, Random rand, int id,
@@ -41,23 +43,30 @@ public class GeneralStrategy extends Strategy {
 		for(int x=0; x<numSnorkelers; x++)
 			seenBestTracker.add(0);
 		
+		
 		double firstVal = 0;
 		double secondVal = 0;
 		for(SeaLifePrototype s : seaLifePossibilites)
 		{
-			
+			if(s.isDangerous() && s.getSpeed() == 0)
+				numStaticDangers += ((s.getMaxCount() + s.getMinCount()) / 2.0);
+			else if(s.isDangerous() && s.getSpeed() > 0)
+				numMovingDangers += ((s.getMaxCount() + s.getMinCount()) / 2.0);
 		}
+		
+		System.err.println("static " + numStaticDangers);
+		System.err.println("moving " + numMovingDangers);
 	}
 
 	@Override
 	public Direction getMove() {
-//		if(myId == 0)
-//		{
-//			System.out.println(curRound + " ---------------------");
-//			System.out.println("board max: " + board.getMaxScore());
-//			System.out.println("intermediate goal: " + intermediateGoal);
-//			System.out.println("spiral goal: " + spiralGoal);
-//		}
+		if(myId == 0)
+		{
+			System.out.println(curRound + " ---------------------");
+			System.out.println("board max: " + board.getMaxScore());
+			System.out.println("intermediate goal: " + intermediateGoal);
+			System.out.println("spiral goal: " + spiralGoal);
+		}
 //
 //		/*
 //		 * temp fix.
@@ -86,10 +95,17 @@ public class GeneralStrategy extends Strategy {
 			return goToGoalWithoutGettingBit(boat, true);
 		}
 
-		if (getRoundsDistance(whereIAm, boat) + 21 >= roundsleft
-			|| this.myHappiness >= board.getMaxScore())
+		//check that there are any dangerous creatures
+		if(numMovingDangers+numStaticDangers > 0)
 		{
-			return goToGoalWithoutGettingBit(boat, false);
+			if(this.myHappiness >= board.getMaxScore())
+				return goToGoalWithoutGettingBit(boat, false);
+			
+			if((getRoundsDistance(whereIAm, boat) + 21 >= roundsleft) &&
+					 (numMovingDangers > 0 || numStaticDangers >= 3))
+			{
+				return goToGoalWithoutGettingBit(boat, false);
+			}
 		}
 
 		/**
@@ -201,8 +217,8 @@ public class GeneralStrategy extends Strategy {
 			double ranking = sc.avgPossibleHappiness;
 
 			// if he's dangerous, super low rank him
-			// if (sc.returnCreature().isDangerous())
-			// ranking *= -1.0;
+			 if (sc.returnCreature().isDangerous())
+				 ranking -= 5.0;
 
 			sc.ranking = ranking;
 		}
@@ -486,19 +502,19 @@ public class GeneralStrategy extends Strategy {
 			if (absID % 4 == 0)
 				myStartDirection = Direction.NE;
 			if (absID % 4 == 1)
-				myStartDirection = Direction.SW;
-			if (absID % 4 == 2)
 				myStartDirection = Direction.NW;
+			if (absID % 4 == 2)
+				myStartDirection = Direction.SW;
 			if (absID % 4 == 3)
 				myStartDirection = Direction.SE;
 		} else {
 			// horizontal or vertical direction
 			if (absID % 4 == 0)
-				myStartDirection = Direction.S;
+				myStartDirection = Direction.N;
 			if (absID % 4 == 1)
 				myStartDirection = Direction.E;
 			if (absID % 4 == 2)
-				myStartDirection = Direction.N;
+				myStartDirection = Direction.S;
 			if (absID % 4 == 3)
 				myStartDirection = Direction.W;
 		}
@@ -671,8 +687,9 @@ public class GeneralStrategy extends Strategy {
 	private boolean distanceToStaticDangerous() {
 		for(Observation o : whatISee) {
 			if(o.getDirection() == null) {
-				if(spiralGoal.distance(new Point2D.Double((int)o.getLocation().getX()+distance, 
-						(int)o.getLocation().getY()+distance)) < 1.5) {
+				double dist = spiralGoal.distance(new Point2D.Double((int)o.getLocation().getX()+distance, 
+						(int)o.getLocation().getY()+distance)); 
+				if(dist < 1.5) {
 					return true;
 				}
 			}
