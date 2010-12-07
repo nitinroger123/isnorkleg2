@@ -51,7 +51,7 @@ public abstract class Strategy {
 	public Set<Observation> dangerousCreaturesInMyRadius;
 
 	public int curRound = -1;
-
+	private ArrayList<Point2D> visitedInLastFiveRounds=new ArrayList<Point2D>();
 	
 	
 	public Strategy(int p, int d, int r, Set<SeaLifePrototype> seaLifePossibilities, Random rand, int id, int numDivers, SeaBoard b) {
@@ -895,14 +895,32 @@ public abstract class Strategy {
 		else{
 			return null;
 		}
+		
+		if(visitedInLastFiveRounds.size()>16){
+			visitedInLastFiveRounds.clear();
+		}
 		/*Find the best safe direction for the goal we want to go to*/
 		for(Direction direction: safeMoves){
+			System.err.println("The last 10 moves are ");
+			for(Point2D p : visitedInLastFiveRounds){
+				System.err.println(" X :"+p.getX()+" Y: "+p.getY());
+			}
+			Point2D visitedCell=null;
 			Point2D newpos=new Point2D.Double(whereIAm.getX()+direction.getDx(),whereIAm.getY()+direction.getDy());
+			if(visitedInLastFiveRounds.contains(newpos)){
+				System.err.println("Already visited this cell in the last five rounds x: "+newpos.getX()+" y: "+newpos.getY());
+				continue;
+			}
 			/*check if it is one of the best directions to the goal*/
 			if(goal!=null)
 			if(newpos.distance(goal)<minDistance){
 				bestDirection=direction;
 				minDistance= newpos.distance(goal);
+				visitedCell=newpos;
+			}
+			if(visitedCell!=null){
+				System.err.println("The cell visited is x: "+visitedCell.getX()+" y: "+visitedCell.getY());
+				visitedInLastFiveRounds.add(visitedCell);
 			}
 		}
 		/*TODO if stuck in a loop we need to remove that direction which takes us 
