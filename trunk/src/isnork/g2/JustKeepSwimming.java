@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import isnork.g2.Strategy.DangerDanger;
 import isnork.g2.Strategy.GeneralStrategy;
-import isnork.g2.Strategy.StaticBoard;
 import isnork.g2.Strategy.Strategy;
 import isnork.g2.utilities.SeaBoard;
 import isnork.sim.GameConfig;
@@ -38,8 +37,6 @@ public class JustKeepSwimming extends Player {
 		
 		//return message to isnork
 		String mes = strategy.getTick();
-//		if(getId() == 0)
-//			System.err.println(mes);
 		return (String)mes;
 	}
 

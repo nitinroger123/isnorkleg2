@@ -536,20 +536,18 @@ public class SeaBoard {
 		else{
 			return false;
 		}
-		/*if (numdangerous / prototypes.size() == 1)
-			return true;
-
-		return false;*/
 	}
 
 	/** Checks to see if this is a 100% static board */
 	public boolean staticboard() {
-		for (SeaLifePrototype s : prototypes) {
+		/*for (SeaLifePrototype s : prototypes) {
 			if (s.getSpeed() != 0)
 				return false;
 		}
 
-		return true;
+		return true;*/
+		
+		return false;
 	}
 
 	public boolean seenall() {

@@ -2,45 +2,36 @@
 <java version="1.6.0_22" class="java.beans.XMLDecoder"> 
  <object class="isnork.sim.SeaLifePrototype"> 
   <void property="dangerous"> 
-   <boolean>true</boolean> 
+   <boolean>false</boolean> 
   </void> 
   <void property="filename"> 
-   <string>jellyfish.png</string> 
+   <string>lochness.png</string> 
   </void> 
   <void property="happiness"> 
-   <int>50</int> 
+   <int>1000</int> 
   </void> 
   <void property="maxCount"> 
-   <int>5</int> 
+   <int>1</int> 
   </void> 
   <void property="minCount"> 
-   <int>5</int> 
+   <int>1</int> 
   </void> 
   <void property="name"> 
-   <string>danger</string> 
-  </void> 
-  <void property="speed"> 
-   <int>1</int> 
+   <string>Lochness</string> 
   </void> 
  </object> 
  <object class="isnork.sim.SeaLifePrototype"> 
   <void property="filename"> 
-   <string>nemo.png</string> 
-  </void> 
-  <void property="happiness"> 
-   <int>30</int> 
+   <string>seaweed.png</string> 
   </void> 
   <void property="maxCount"> 
-   <int>5</int> 
+   <int>100</int> 
   </void> 
   <void property="minCount"> 
-   <int>5</int> 
+   <int>50</int> 
   </void> 
   <void property="name"> 
-   <string>happy</string> 
-  </void> 
-  <void property="speed"> 
-   <int>1</int> 
+   <string>Seaweed</string> 
   </void> 
  </object> 
 </java> 
