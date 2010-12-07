@@ -871,7 +871,7 @@ public abstract class Strategy {
 							+ boat.getX(), creature.getLocation().getY()
 							+ boat.getY());
 					//System.err.println("Danger "+creature.getLocation().getX()+" "+creature.getLocation().getY());
-					if(newpos.distance(p)<1.6){
+					if(newpos.distance(p)<1.6 && !newpos.equals(boat)){
 						isSafe=false;
 						break;
 					}
@@ -896,7 +896,7 @@ public abstract class Strategy {
 			return null;
 		}
 		
-		if(visitedInLastFiveRounds.size()>16){
+		if(visitedInLastFiveRounds.size()>24){
 			visitedInLastFiveRounds.clear();
 		}
 		/*Find the best safe direction for the goal we want to go to*/
