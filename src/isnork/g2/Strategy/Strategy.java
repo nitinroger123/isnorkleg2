@@ -509,9 +509,13 @@ public abstract class Strategy {
     for(Observation creature: dangerousCreaturesInMyRadius){
     	Point2D current=new Point2D.Double(creature.getLocation().getX()+boat.getX(),
     			creature.getLocation().getY()+boat.getY());
-    	Point2D next=new Point2D.Double(current.getX()+creature.getDirection().getDx(),
-    			current.getY()+creature.getDirection().getDy());
-    	possibleLocationsOfDanger.add(next);
+    	
+//    	if(current != null && creature.getDirection() != null)
+//    	{
+	    	Point2D next=new Point2D.Double(current.getX()+creature.getDirection().getDx(),
+	    			current.getY()+creature.getDirection().getDy());
+	    	possibleLocationsOfDanger.add(next);
+//    	}
     }
     for(Direction dir: Direction.allBut(null)){
     	if(!board.isValidMove((int)whereIAm.getX(),(int)whereIAm.getY(),dir)){

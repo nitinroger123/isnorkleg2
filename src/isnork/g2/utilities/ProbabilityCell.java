@@ -37,8 +37,8 @@ public class ProbabilityCell {
 	public void update() {
 
 		probs = new ArrayList<Probability>(newprobs);
-		if (probs.size() > 8)
-			System.out.println("len probs: " + probs.size());
+//		if (probs.size() > 8)
+//			System.out.println("len probs: " + probs.size());
 		
 		newprobs = new ArrayList<Probability>();
 	}
