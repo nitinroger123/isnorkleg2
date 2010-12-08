@@ -52,6 +52,8 @@ public class GameConfig {
 	public void setRandomSeed(long randomSeed) {
 		this.randomSeed = randomSeed;
 		random = new Random(randomSeed);
+		System.err.println("setting random see to: " + randomSeed);
+		Config.randomseed = randomSeed;
 	}
 
 	public static int d = Config.dimension;

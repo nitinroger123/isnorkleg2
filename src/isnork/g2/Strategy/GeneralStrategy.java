@@ -54,18 +54,18 @@ public class GeneralStrategy extends Strategy {
 				numMovingDangers += ((s.getMaxCount() + s.getMinCount()) / 2.0);
 		}
 		
-		System.err.println("static " + numStaticDangers);
-		System.err.println("moving " + numMovingDangers);
+		//System.err.println("static " + numStaticDangers);
+		//System.err.println("moving " + numMovingDangers);
 	}
 
 	@Override
 	public Direction getMove() {
 		if(myId == 0)
 		{
-			System.out.println(curRound + " ---------------------");
-			System.out.println("board max: " + board.getMaxScore());
-			System.out.println("intermediate goal: " + intermediateGoal);
-			System.out.println("spiral goal: " + spiralGoal);
+			//System.out.println(curRound + " ---------------------");
+			//System.out.println("board max: " + board.getMaxScore());
+			//System.out.println("intermediate goal: " + intermediateGoal);
+			//System.out.println("spiral goal: " + spiralGoal);
 		}
 //
 //		/*
@@ -86,7 +86,7 @@ public class GeneralStrategy extends Strategy {
 		 */
 		// if (((whereIAm.distance(boat) + 2) > (roundsleft / 3))
 		// || this.myHappiness >= board.getMaxScore()) {
-		// System.err.println("backtracking " + roundsleft);
+		// //System.err.println("backtracking " + roundsleft);
 		// return backtrack(false);
 		// }
 		if ((getRoundsDistance(whereIAm, boat) + 6 >= roundsleft) || goingHome)
@@ -239,7 +239,7 @@ public class GeneralStrategy extends Strategy {
 					Character.toString(ALPHABET.charAt(count % 26)), sc);
 
 			/*if (myId == 0) {
-				System.err.println(count + " " + ALPHABET.charAt(count % 26)
+				//System.err.println(count + " " + ALPHABET.charAt(count % 26)
 						+ " id: " + sc.getId() + " "
 						+ sc.returnCreature().getName());
 			}*/
@@ -388,13 +388,13 @@ public class GeneralStrategy extends Strategy {
 //				}
 //				if(myId == 0)
 //				{
-//					System.err.println("\n***************");
-//					System.err.println("Round: " + (480 - roundsleft));
-//					System.err.println("Creature: " + sc.returnCreature().getName());
-//					System.err.println("Happiness: " + sc.returnCreature().getHappiness());
-//					System.err.println("Seen: " + sc.seenWithRounds.size());
-//					System.err.println("Location: " + newLoc);
-//					System.err.println("Probability: " + probNew);
+//					//System.err.println("\n***************");
+//					//System.err.println("Round: " + (480 - roundsleft));
+//					//System.err.println("Creature: " + sc.returnCreature().getName());
+//					//System.err.println("Happiness: " + sc.returnCreature().getHappiness());
+//					//System.err.println("Seen: " + sc.seenWithRounds.size());
+//					//System.err.println("Location: " + newLoc);
+//					//System.err.println("Probability: " + probNew);
 //					
 //				}
 //				if(Math.random() < probNew)
@@ -450,7 +450,7 @@ public class GeneralStrategy extends Strategy {
 		}
 
 //		if (myId == 0 && intermediateGoal != null && changed)
-//			System.err.println(myId + " ||| going to " + bestFind.returnCreature().getName());
+//			//System.err.println(myId + " ||| going to " + bestFind.returnCreature().getName());
 	}
 
 	public void checkFoundGoal(Set<iSnorkMessage> incomingMessages) {
@@ -494,8 +494,8 @@ public class GeneralStrategy extends Strategy {
 		myCurWave = myStartWave;
 		waveLength = radius;
 		
-//		System.out.println("numWaves: " + numWaves);
-//		System.out.println("waveLength: " + waveLength);
+//		//System.out.println("numWaves: " + numWaves);
+//		//System.out.println("waveLength: " + waveLength);
 
 		if (myStartWave % 2 == 1) {
 			// diagonal direction
