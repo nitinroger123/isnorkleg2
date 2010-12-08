@@ -101,7 +101,7 @@ public class GeneralStrategy extends Strategy {
 			if(this.myHappiness >= board.getMaxScore())
 				return goToGoalWithoutGettingBit(boat, false);
 			
-			if((getRoundsDistance(whereIAm, boat) + 21 >= roundsleft) &&
+			if((getRoundsDistance(whereIAm, boat) + 28 >= roundsleft) &&
 					 (numMovingDangers > 0 || numStaticDangers >= 3))
 			{
 				return goToGoalWithoutGettingBit(boat, false);
@@ -359,8 +359,8 @@ public class GeneralStrategy extends Strategy {
 		
 		for (iSnorkMessage ism : incomingMessages) 
 		{
-			if(ism.getSender() != myId)
-			{
+//			if(ism.getSender() != myId)
+//			{
 				Point2D newLoc = new Point2D.Double(ism.getLocation().getX() + distance, ism.getLocation().getY() + distance);
 				SeaCreatureType sc = creatureMapping.get(ism.getMsg());
 				rcvd = ism.getMsg();
@@ -379,7 +379,7 @@ public class GeneralStrategy extends Strategy {
 				
 //				if ((!sc.seenOnce && whereIAm.distance(newLoc) < distance) &&
 //						(!sc.seenOnce && (ism.getMsg().equals("a") || ism.getMsg().equals("b")))) 
-				if((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && isFollowing && !sc.seenOnce)
+//				if((ism.getMsg().equals("a") || ism.getMsg().equals("b")) && isFollowing && !sc.seenOnce)
 //				double probNew = probabilityBoard.getProbabilityOfNewId(whereIAm, (int)ism.getLocation().getX(), 
 //						(int)ism.getLocation().getY(), sc, 480-roundsleft);
 //				if(ism.getSender() == myId)
@@ -398,7 +398,7 @@ public class GeneralStrategy extends Strategy {
 //					
 //				}
 //				if(Math.random() < probNew)
-//				if(!sc.seenOnce)
+				if(!sc.seenOnce)
 				{
 					//starting case, will always run on the first iteration of the loop
 					if(bestFind == null && sc.nextHappiness > 0)
@@ -437,7 +437,7 @@ public class GeneralStrategy extends Strategy {
 					searchingFor = null;
 				}
 			}
-		}
+//		}
 		
 		//check if i'm the tracking snorkeler
 		if(tempLowestTracker <= myId && seesMax && seenBestTracker.contains(0)) {
