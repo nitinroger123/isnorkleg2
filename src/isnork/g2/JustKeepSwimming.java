@@ -6,9 +6,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import isnork.g2.Strategy.DangerDanger;
-import isnork.g2.Strategy.DirectionalStrategy;
 import isnork.g2.Strategy.GeneralStrategy;
-import isnork.g2.Strategy.RandomStrategy;
 import isnork.g2.Strategy.Strategy;
 import isnork.g2.utilities.SeaBoard;
 import isnork.sim.GameConfig;
