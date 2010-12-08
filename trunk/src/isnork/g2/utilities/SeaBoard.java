@@ -525,29 +525,12 @@ public class SeaBoard {
 				sumOfUnhappiness=((s.getMaxCount()+s.getMinCount())/2.0)*(2*s.getHappiness());
 			}
 		}
-//		System.err.println("Num of dangerous creatures "+numOfDangerousStuff);
-//		System.err.println("Average unhappiness "+sumOfUnhappiness/numOfDangerousStuff);
-//		System.err.println("Density of unhappiness danger/distance : "+numOfDangerousStuff/distance);
-		System.err.println("Num of static creatures "+numOfStatic);
-		System.err.println("number of creatures "+prototypes.size());
 		if(numOfDangerousStuff/distance>1.0 && numOfStatic/totalCreatures<.5){
 			return true;
 		}
 		else{
 			return false;
 		}
-	}
-
-	/** Checks to see if this is a 100% static board */
-	public boolean staticboard() {
-		/*for (SeaLifePrototype s : prototypes) {
-			if (s.getSpeed() != 0)
-				return false;
-		}
-
-		return true;*/
-		
-		return false;
 	}
 
 	public boolean seenall() {
@@ -564,16 +547,16 @@ public class SeaBoard {
 			}
 			
 			if((count < 3 && s.getMaxCount() > 3)){
-				System.out.println(myId + " needs to see: " + s.getName() + " and have only seen: " + count);
+				//Systemout.println(myId + " needs to see: " + s.getName() + " and have only seen: " + count);
 				return false;
 			}
 			
 			if((s.getMaxCount() < 3 && count < s.getMaxCount())){
-				System.out.println(myId + " needs to see: " + s.getName() + " and have only seen: " + count);
+				//Systemout.println(myId + " needs to see: " + s.getName() + " and have only seen: " + count);
 				return false;
 			}
 		
-			System.out.println("for " + s.getName() + " we have seen: " + count + " and max is: " + s.getMaxCount());
+			//Systemout.println("for " + s.getName() + " we have seen: " + count + " and max is: " + s.getMaxCount());
 		}
 
 		return true;

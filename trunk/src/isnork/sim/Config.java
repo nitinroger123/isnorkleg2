@@ -11,6 +11,7 @@ public class Config {
 	public static String boardName = "";
 	public static int dq = 0;
 	public static int maxscore = 0;
+	public static long randomseed = 0;
 
 	//set this to false if you don't want to restructure the board to be an array of 2 * d
 	public static boolean useConfig = true;

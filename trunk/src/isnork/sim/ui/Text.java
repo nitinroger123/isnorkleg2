@@ -71,13 +71,13 @@ public final class Text implements GameListener
 		{
 		case GAMEOVER:
 			
-			double denom = (double) (Config.maxscore/Config.divers);
+			double denom = (double) (Config.maxscore*Config.divers);
 			double percentage = (double) (engine.getScores()/denom);
 			
 			System.out.println("||" + Config.boardName + " || " + Config.playerName + " || " + 
 					Config.radius + " || " + Config.dimension + " || " +
 					Config.divers + " || "  +
-					engine.getScores()+ " || " + engine.getDsq() + " || " +  Config.maxscore + " || " + percentage);
+					engine.getScores()+ " || " + engine.getDsq() + " || " +  Config.maxscore + " || " + percentage + "||" + Config.randomseed);
 			break;
 		case MOVEPROCESSED:
 			if(longMode)

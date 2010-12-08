@@ -432,10 +432,10 @@ public abstract class Strategy {
 	public Direction runAwayFromDanger(ArrayList<Direction> harmfulDirections,
             Point2D goal) {
     // If you are on the boat, you dont need to run
-    // System.err.println("run away from danger");
+    // //System.err.println("run away from danger");
     
     // if(goal!=null)
-    // System.err.println("Going to goal X: "+goal.getX() +" Y:
+    // //System.err.println("Going to goal X: "+goal.getX() +" Y:
     // "+goal.getY());
     ArrayList<Direction> safeMoves = getSafeDirections(harmfulDirections);
     Direction bestDirection=randomMove();
@@ -460,16 +460,16 @@ public abstract class Strategy {
     double min = 10000;
     if (!safeMoves.isEmpty()) {
             for (Direction safe : safeMoves) {
-                    // System.err.println("Safe Moves are: "+safe.name());
+                    // //System.err.println("Safe Moves are: "+safe.name());
                     if (board.isValidMove((int) whereIAm.getX(), (int) whereIAm
                                     .getY(), safe)) {
-                            //System.err.println("Safe Valid Moves are: "+safe.name());
+                            ////System.err.println("Safe Valid Moves are: "+safe.name());
                             Point2D newPos=new Point2D.Double(whereIAm.getX()+safe.getDx(),whereIAm.getY()+safe.getDy());
                             if(goal!=null)
-                            {               //System.err.println("Distance to goal : "+newPos.distance(goal));
+                            {               ////System.err.println("Distance to goal : "+newPos.distance(goal));
                                             if(newPos.distance(goal)<min)
                                             {
-                                                    //System.err.println("new best dir found");
+                                                    ////System.err.println("new best dir found");
                                                     min=newPos.distance(goal);
                                                     bestDirection=safe;
                                             }
@@ -477,7 +477,7 @@ public abstract class Strategy {
                             else{
                                     bestDirection=safe;
                             }
-            // System.err.println("Best Direction :"+bestDirection.name());
+            // //System.err.println("Best Direction :"+bestDirection.name());
             return bestDirection;
     }
             }
@@ -488,7 +488,7 @@ public abstract class Strategy {
      */
     else if (!bestWorstMoves.isEmpty()) 
     {
-            //System.err.println("inside bestworst");
+            ////System.err.println("inside bestworst");
             Collections.shuffle(bestWorstMoves);
             for(Direction d: bestWorstMoves){
                     if(board.isValidMove((int)whereIAm.getX(), (int)whereIAm.getY(), d))
@@ -496,14 +496,14 @@ public abstract class Strategy {
                             return d;
                     }
             }
-            //System.err.println("Random move gets called 1");
+            ////System.err.println("Random move gets called 1");
             return randomMove();
     }
     /* We are screwed, surrounded. Pray to god you survive. figure out the last direction of all the creatures 
      * surrounding you and anticipate its next move. If there is a direction which does not put you into trouble
      * take that direction
      * */
-    //System.err.println("surrounded. Choose a direction of minimal harm");
+    ////System.err.println("surrounded. Choose a direction of minimal harm");
     ArrayList<Point2D> possibleLocationsOfDanger=new ArrayList<Point2D>();
     ArrayList<Direction> possibleSafeDirection=new ArrayList<Direction>();
     for(Observation creature: dangerousCreaturesInMyRadius){
@@ -535,7 +535,7 @@ public abstract class Strategy {
     	return possibleSafeDirection.get(0);
     }
     else{
-    	//System.err.println("Random move gets called 2");
+    	////System.err.println("Random move gets called 2");
     	return randomMove();
     }
 }
@@ -554,22 +554,22 @@ public abstract class Strategy {
 		dangerousCreaturesInMyRadius.addAll(board.getDangerousCreaturesInRadius(whereIAm,whatISee));
 		/*The fish has not made any move, but we know it is dangerous. Stay on the boat*/
 		if(roundsleft>=476){
-			//System.err.println("first moves "+roundsleft );
+			////System.err.println("first moves "+roundsleft );
 			return null;
 		}
 		//if the danger is moving and you are on the boat. stay put.
 		if(board.isDangerMobile(dangerousCreaturesInMyRadius)&&whereIAm.equals(boat)){
-			//System.err.println("Staying on the boat");
+			////System.err.println("Staying on the boat");
 			return null;
 		}
 		//All the danger you see is static. Just go to your goal without getting too close to the danger
 		else if(!board.isDangerMobile(dangerousCreaturesInMyRadius)){
-			//System.err.println("All static dangerous creatures");
+			////System.err.println("All static dangerous creatures");
 			return avoidStaticDangerAndGoToGoal(goal);
 		}
 		//The danger has some moving danger. We need to make sure we dont get hit.
 		else{
-			//System.err.println("moving dangerous creatures");
+			////System.err.println("moving dangerous creatures");
 			//return avoidMovingDangerAndGoToGoal(goal);
 			ArrayList<Direction> dangerousDirections=new ArrayList<Direction>();
 			for(Observation o: dangerousCreaturesInMyRadius){
@@ -634,7 +634,7 @@ public abstract class Strategy {
 				continue;
 			}
 			if(board.getRelativeDirection(whereIAm,creature.getLocation()).equals(Direction.N)){
-				//System.err.println("Danger at my North and he is moving "+creature.getDirection());
+				////System.err.println("Danger at my North and he is moving "+creature.getDirection());
 				if(creature.getDirection().equals(Direction.N)){	
 				}
 				if(creature.getDirection().equals(Direction.S)){	
@@ -654,7 +654,7 @@ public abstract class Strategy {
 				
 			}
 			if(board.getRelativeDirection(whereIAm,creature.getLocation()).equals(Direction.S)){
-				//System.err.println("Danger at my South and he is moving "+creature.getDirection());
+				////System.err.println("Danger at my South and he is moving "+creature.getDirection());
 				if(creature.getDirection().equals(Direction.N)){	
 				}
 				if(creature.getDirection().equals(Direction.S)){	
@@ -673,7 +673,7 @@ public abstract class Strategy {
 				}
 			}
 			if(board.getRelativeDirection(whereIAm,creature.getLocation()).equals(Direction.E)){
-				//System.err.println("Danger at my East and he is moving "+creature.getDirection());
+				////System.err.println("Danger at my East and he is moving "+creature.getDirection());
 				if(creature.getDirection().equals(Direction.N)){	
 				}
 				if(creature.getDirection().equals(Direction.S)){	
@@ -692,7 +692,7 @@ public abstract class Strategy {
 				}
 			}
 			if(board.getRelativeDirection(whereIAm,creature.getLocation()).equals(Direction.W)){
-				//System.err.println("Danger at my west and he is moving "+creature.getDirection());
+				////System.err.println("Danger at my west and he is moving "+creature.getDirection());
 				if(creature.getDirection().equals(Direction.N)){	
 				}
 				if(creature.getDirection().equals(Direction.S)){	
@@ -711,7 +711,7 @@ public abstract class Strategy {
 				}
 			}
 			if(board.getRelativeDirection(whereIAm,creature.getLocation()).equals(Direction.NW)){
-				//System.err.println("Danger at my Northwest and he is moving "+creature.getDirection());
+				////System.err.println("Danger at my Northwest and he is moving "+creature.getDirection());
 				if(creature.getDirection().equals(Direction.N)){	
 				}
 				if(creature.getDirection().equals(Direction.S)){	
@@ -730,7 +730,7 @@ public abstract class Strategy {
 				}
 			}
 			if(board.getRelativeDirection(whereIAm,creature.getLocation()).equals(Direction.NE)){
-				//System.err.println("Danger at my Northeast and he is moving "+creature.getDirection());
+				////System.err.println("Danger at my Northeast and he is moving "+creature.getDirection());
 				if(creature.getDirection().equals(Direction.N)){	
 				}
 				if(creature.getDirection().equals(Direction.S)){	
@@ -749,7 +749,7 @@ public abstract class Strategy {
 				}
 			}
 			if(board.getRelativeDirection(whereIAm,creature.getLocation()).equals(Direction.SW)){
-				//System.err.println("Danger at my southwest and he is moving "+creature.getDirection());
+				////System.err.println("Danger at my southwest and he is moving "+creature.getDirection());
 				if(creature.getDirection().equals(Direction.N)){	
 				}
 				if(creature.getDirection().equals(Direction.S)){	
@@ -768,7 +768,7 @@ public abstract class Strategy {
 				}
 			}
 			if(board.getRelativeDirection(whereIAm,creature.getLocation()).equals(Direction.SE)){
-				//System.err.println("Danger at my southeast and he is moving "+creature.getDirection());
+				////System.err.println("Danger at my southeast and he is moving "+creature.getDirection());
 				if(creature.getDirection().equals(Direction.N)){	
 				}
 				if(creature.getDirection().equals(Direction.S)){	
@@ -806,7 +806,7 @@ public abstract class Strategy {
 		}
 		/*Get the safe directions*/
 //		for(Direction d: positionOfDanger){
-//			System.err.println(" Danger dirs are "+d.name());
+//			//System.err.println(" Danger dirs are "+d.name());
 //		}
 		oppositeDirections=getSafeDirections(positionOfDanger);
 		for(Direction d: oppositeDirections){
@@ -819,7 +819,7 @@ public abstract class Strategy {
 		 * Example its at your SE and moves W. You move SW*/
 		safeMoves=pruneSafeDirectionsBasedOnHowTheFishMoves(safeMoves);
 //		for(Direction d: safeMoves){
-//			System.err.println(" safe Moves are "+d.name());
+//			//System.err.println(" safe Moves are "+d.name());
 //		}
 		/*Return the best direction to goal which is safe and valid*/
 		for(Direction d:bestDirToGoal){
@@ -828,14 +828,14 @@ public abstract class Strategy {
 			}
 			if(safeMoves.contains(d)){
 //				if(goal!=null){
-//					System.err.println("Goal is at x: "+goal.getX()+" y: "+goal.getY());
+//					//System.err.println("Goal is at x: "+goal.getX()+" y: "+goal.getY());
 //				}
-//				System.err.println("Returned a safe valid move that is the best dir to goal "+d.name());
+//				//System.err.println("Returned a safe valid move that is the best dir to goal "+d.name());
 				return d;
 			}
 		}
 		/*If code comes here, we don't have an obvious safe valid moves.*/
-		//System.err.println("We are surrounded :(");
+		////System.err.println("We are surrounded :(");
 		
 		return null;
 	}
@@ -849,12 +849,12 @@ public abstract class Strategy {
 		 *	 which does not take you one cell away from the creature
 		*/
 //		if(goal==null){
-//			System.err.println("We dont have a goal ?");
+//			//System.err.println("We dont have a goal ?");
 //		}
 //		else{
-//			System.err.println("Going to our goal! "+goal.getX()+" y: "+goal.getY());
+//			//System.err.println("Going to our goal! "+goal.getX()+" y: "+goal.getY());
 //			if(goal.equals(boat)){
-//				System.err.println("Going to Boat!");
+//				//System.err.println("Going to Boat!");
 //			}
 //		}
 		Direction bestDirection=randomMove();
@@ -870,7 +870,7 @@ public abstract class Strategy {
 					Point2D p = new Point2D.Double(creature.getLocation().getX()
 							+ boat.getX(), creature.getLocation().getY()
 							+ boat.getY());
-					//System.err.println("Danger "+creature.getLocation().getX()+" "+creature.getLocation().getY());
+					////System.err.println("Danger "+creature.getLocation().getX()+" "+creature.getLocation().getY());
 					if(newpos.distance(p)<1.6 && !newpos.equals(boat)){
 						isSafe=false;
 						break;
@@ -901,14 +901,14 @@ public abstract class Strategy {
 		}
 		/*Find the best safe direction for the goal we want to go to*/
 		for(Direction direction: safeMoves){
-			System.err.println("The last 10 moves are ");
+			//System.err.println("The last 10 moves are ");
 			for(Point2D p : visitedInLastFiveRounds){
-				System.err.println(" X :"+p.getX()+" Y: "+p.getY());
+				//System.err.println(" X :"+p.getX()+" Y: "+p.getY());
 			}
 			Point2D visitedCell=null;
 			Point2D newpos=new Point2D.Double(whereIAm.getX()+direction.getDx(),whereIAm.getY()+direction.getDy());
 			if(visitedInLastFiveRounds.contains(newpos)){
-				System.err.println("Already visited this cell in the last five rounds x: "+newpos.getX()+" y: "+newpos.getY());
+				//System.err.println("Already visited this cell in the last five rounds x: "+newpos.getX()+" y: "+newpos.getY());
 				continue;
 			}
 			/*check if it is one of the best directions to the goal*/
@@ -919,7 +919,7 @@ public abstract class Strategy {
 				visitedCell=newpos;
 			}
 			if(visitedCell!=null){
-				System.err.println("The cell visited is x: "+visitedCell.getX()+" y: "+visitedCell.getY());
+				//System.err.println("The cell visited is x: "+visitedCell.getX()+" y: "+visitedCell.getY());
 				visitedInLastFiveRounds.add(visitedCell);
 			}
 		}

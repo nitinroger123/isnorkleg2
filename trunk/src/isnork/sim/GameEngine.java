@@ -348,6 +348,7 @@ public final class GameEngine {
 				Config.maxscore += c.getHappiness();
 		}
 				
+		Config.randomseed = config.randomSeed;
 		for (int i = 0; i < config.getNumDivers(); i++) {
 			long thisSeed = config.randomSeed + i * 3;
 			try {
